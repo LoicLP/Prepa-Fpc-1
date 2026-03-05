@@ -92,9 +92,9 @@ export default function HomePage() {
           <div className="flex items-center gap-4">
             {!authLoading && (user ? (
               <>
-                <a href="/dashboard" className="hidden md:block text-slate-600 font-bold hover:text-slate-900 transition text-sm">{firstName}</a>
-                <a href="/dashboard" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5 text-sm">Mon espace</a>
-              </>
+        <a href="/dashboard" className="hidden md:block text-slate-600 font-bold hover:text-slate-900 transition text-sm">{firstName}</a>
+        <a href="/dashboard" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5 text-sm">Mon espace</a>
+        <button onClick={handleLogout} className="hidden md:block text-red-600 font-bold hover:text-red-700 transition text-sm cursor-pointer">Déconnexion</button>   </>
             ) : (
               <>
                 <a href="/login" className="hidden md:block text-slate-600 font-bold hover:text-slate-900 transition text-sm">Connexion</a>

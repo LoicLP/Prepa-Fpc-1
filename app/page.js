@@ -78,7 +78,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
             <div className="bg-red-600 text-white p-2 rounded-xl shadow-sm">
-              <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.8 2.1L2 5v2.8A4.8 4.8 0 0 0 6.8 12h2.4A4.8 4.8 0 0 0 14 7.2V5l-2.8-2.9"/><path d="M8 15v1a2 2 0 0 0 4 0v-1"/><circle cx="20" cy="10" r="2"/><path d="M20 12v2a4 4 0 0 1-4 4h-1"/><line x1="2" y1="2" x2="5" y2="2"/><line x1="11" y1="2" x2="14" y2="2"/></svg>
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.1L2 5v2.8c0 2.7 2.2 4.8 4.8 4.8h2.4c2.7 0 4.8-2.2 4.8-4.8V5l-2.8-2.9"/><path d="M8 15v1a2 2 0 0 0 4 0v-1"/><circle cx="20" cy="10" r="2"/><path d="M20 12v2c0 2.2-1.8 4-4 4h-1"/><path d="M2 2h3"/><path d="M11 2h3"/></svg>
             </div>
             <div>
               <span className="font-black text-2xl tracking-tight text-slate-900 block leading-none">Prépa <span className="text-red-600">FPC</span></span>
@@ -374,7 +374,7 @@ export default function HomePage() {
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M4.8 2.1L2 5v2.8A4.8 4.8 0 0 0 6.8 12h2.4A4.8 4.8 0 0 0 14 7.2V5l-2.8-2.9"/><path d="M8 15v1a2 2 0 0 0 4 0v-1"/><circle cx="20" cy="10" r="2"/><path d="M20 12v2a4 4 0 0 1-4 4h-1"/><line x1="2" y1="2" x2="5" y2="2"/><line x1="11" y1="2" x2="14" y2="2"/></svg>
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.1L2 5v2.8c0 2.7 2.2 4.8 4.8 4.8h2.4c2.7 0 4.8-2.2 4.8-4.8V5l-2.8-2.9"/><path d="M8 15v1a2 2 0 0 0 4 0v-1"/><circle cx="20" cy="10" r="2"/><path d="M20 12v2c0 2.2-1.8 4-4 4h-1"/><path d="M2 2h3"/><path d="M11 2h3"/></svg>
               <h4 className="text-white font-bold text-lg">Prépa FPC</h4>
             </div>
             <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier (Aides-Soignants et Auxiliaires de Puériculture).</p>

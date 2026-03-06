@@ -26,6 +26,24 @@ const quizData = [
 
 const letters = ['A', 'B', 'C', 'D']
 
+const categoryColors = {
+  "Calcul de dose": { bg: "bg-red-50", text: "text-red-600", border: "border-red-100" },
+  "Pourcentage": { bg: "bg-purple-50", text: "text-purple-600", border: "border-purple-100" },
+  "Produit en croix": { bg: "bg-amber-50", text: "text-amber-600", border: "border-amber-100" },
+  "Calcul mental": { bg: "bg-blue-50", text: "text-blue-600", border: "border-blue-100" },
+  "Équation": { bg: "bg-emerald-50", text: "text-emerald-600", border: "border-emerald-100" },
+  "Conversion": { bg: "bg-orange-50", text: "text-orange-600", border: "border-orange-100" }
+}
+
+const categoryWrapperColors = {
+  "Calcul de dose": "bg-red-100/60",
+  "Pourcentage": "bg-purple-100/60",
+  "Produit en croix": "bg-amber-100/60",
+  "Calcul mental": "bg-blue-100/60",
+  "Équation": "bg-emerald-100/60",
+  "Conversion": "bg-orange-100/60"
+}
+
 export default function QuizPage() {
   const [current, setCurrent] = useState(0)
   const [selected, setSelected] = useState(null)
@@ -127,66 +145,66 @@ export default function QuizPage() {
 
       <Nav />
 
-      <main className="flex-grow w-full max-w-6xl mx-auto px-4 py-8 sm:py-10">
-        <div className={`grid grid-cols-1 ${hasAnswered ? 'lg:grid-cols-5' : ''} gap-8 mt-6`}>
+      <main className="flex-grow w-full max-w-6xl mx-auto px-4 py-4 sm:py-6">
+        <div className={`grid grid-cols-1 ${hasAnswered ? 'lg:grid-cols-5' : ''} gap-4 lg:gap-6 mt-2 sm:mt-4`}>
           
           {/* QCM COLUMN */}
-          <div className={`${hasAnswered ? 'lg:col-span-3' : 'lg:col-span-5 max-w-3xl mx-auto'} w-full flex flex-col gap-6 transition-all duration-500`}>
-            <div className="bg-[#fceceb] rounded-[2.5rem] p-4 sm:p-8 shadow-sm">
-              <div className="bg-white rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
+          <div className={`${hasAnswered ? 'lg:col-span-3' : 'lg:col-span-5 max-w-3xl mx-auto'} w-full flex flex-col gap-4 transition-all duration-500`}>
+            <div className={`${categoryWrapperColors[data.category] || 'bg-red-100/60'} rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6 shadow-sm transition-colors duration-300`}>
+              <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
                 {/* Header */}
-                <div className="relative flex justify-between items-center p-6 border-b border-slate-100">
-                  <div className="flex items-center gap-4">
-                    <span className="text-slate-600 font-bold text-sm tracking-wide">Question {current + 1}/{quizData.length}</span>
-                    <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-bold text-slate-700 text-xs">
+                <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-6 border-b border-slate-100 gap-2">
+                  <div className="flex items-center gap-2 sm:gap-4">
+                    <span className="text-slate-600 font-bold text-xs sm:text-sm tracking-wide">Question {current + 1}/{quizData.length}</span>
+                    <div className="flex items-center gap-1.5 bg-slate-100 border border-slate-200 px-2 sm:px-3 py-1 rounded-lg font-bold text-slate-700 text-xs">
                       <svg className="w-3 h-3 text-blue-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                       <span className="tabular-nums">{mins}:{secs}</span>
                     </div>
                   </div>
-                  <span className="bg-[#fceceb] text-[#d65d5d] px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase">{data.category}</span>
+                  <span className={`${categoryColors[data.category]?.bg || 'bg-red-50'} ${categoryColors[data.category]?.text || 'text-red-600'} px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold tracking-wide uppercase transition-colors duration-300`}>{data.category}</span>
                   <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-50">
                     <div className="h-full bg-slate-900 transition-all duration-500" style={{width: `${progress}%`}}></div>
                   </div>
                 </div>
 
                 {/* Question */}
-                <div className="p-6 sm:p-8 flex-grow">
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 mb-8 leading-relaxed">{data.question}</h2>
-                  <div className="space-y-3 mb-8">
+                <div className="p-4 sm:p-6 lg:p-8 flex-grow">
+                  <h2 className="text-base sm:text-lg lg:text-xl font-bold text-slate-900 mb-4 sm:mb-6 leading-relaxed">{data.question}</h2>
+                  <div className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                     {data.options.map((option, index) => {
-                      let optClass = 'p-4 border rounded-xl flex justify-between items-center mb-1 group transition-all '
-                      let letterClass = 'w-8 h-8 rounded-lg font-bold flex items-center justify-center text-sm shrink-0 transition-all '
+                      let optClass = 'p-3 sm:p-4 border rounded-xl flex justify-between items-center group transition-all '
+                      let letterClass = 'w-7 h-7 sm:w-8 sm:h-8 rounded-lg font-bold flex items-center justify-center text-xs sm:text-sm shrink-0 transition-all '
                       let circleContent = null
 
                       if (hasAnswered) {
                         if (index === data.correct) {
                           optClass += 'border-green-500 bg-green-50 '
                           letterClass += 'bg-green-500 text-white '
-                          circleContent = <div className="w-6 h-6 rounded-full bg-green-500 border-2 border-green-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
+                          circleContent = <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-green-500 border-2 border-green-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
                         } else if (index === answers[current]) {
                           optClass += 'border-red-500 bg-red-50 '
                           letterClass += 'bg-red-500 text-white '
-                          circleContent = <div className="w-6 h-6 rounded-full bg-red-500 border-2 border-red-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></div>
+                          circleContent = <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-red-500 border-2 border-red-500 flex items-center justify-center"><svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg></div>
                         } else {
                           optClass += 'border-slate-200 opacity-50 '
                           letterClass += 'bg-slate-100 text-slate-500 '
-                          circleContent = <div className="w-6 h-6 rounded-full border-2 border-slate-300"></div>
+                          circleContent = <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-slate-300"></div>
                         }
                       } else if (selected === index) {
                         optClass += 'border-slate-900 bg-slate-50 shadow-[0_0_0_4px_rgba(15,23,42,0.05)] cursor-pointer '
                         letterClass += 'bg-slate-900 text-white '
-                        circleContent = <div className="w-6 h-6 rounded-full border-2 border-slate-900 flex items-center justify-center"><div className="w-2.5 h-2.5 bg-slate-900 rounded-full"></div></div>
+                        circleContent = <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-slate-900 flex items-center justify-center"><div className="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-slate-900 rounded-full"></div></div>
                       } else {
                         optClass += 'border-slate-200 cursor-pointer hover:bg-slate-50 '
                         letterClass += 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 '
-                        circleContent = <div className="w-6 h-6 rounded-full border-2 border-slate-300"></div>
+                        circleContent = <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 border-slate-300"></div>
                       }
 
                       return (
                         <div key={index} className={optClass} onClick={() => !hasAnswered && selectOption(index)}>
-                          <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-3 sm:gap-4">
                             <span className={letterClass}>{letters[index]}</span>
-                            <span className="font-bold text-slate-800">{option}</span>
+                            <span className="font-bold text-slate-800 text-sm sm:text-base">{option}</span>
                           </div>
                           {circleContent}
                         </div>
@@ -196,14 +214,14 @@ export default function QuizPage() {
                 </div>
 
                 {/* Actions */}
-                <div className="p-6 pt-0 flex gap-4">
+                <div className="p-4 sm:p-6 pt-0 flex gap-3 sm:gap-4">
                   {current > 0 && (
-                    <button onClick={goPrev} className="bg-slate-100 text-slate-700 font-bold py-4 px-6 rounded-2xl transition-colors hover:bg-slate-200 flex items-center justify-center gap-2">
+                    <button onClick={goPrev} className="bg-slate-100 text-slate-700 font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl transition-colors hover:bg-slate-200 flex items-center justify-center gap-2 text-sm">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg>
                       <span className="hidden sm:inline">Précédent</span>
                     </button>
                   )}
-                  <button onClick={handleAction} className={`flex-grow bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl transition-colors hover:bg-black flex items-center justify-center gap-2 text-base shadow-md ${state === 'questioning' && selected === null ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
+                  <button onClick={handleAction} className={`flex-grow bg-slate-900 text-white font-bold py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl transition-colors hover:bg-black flex items-center justify-center gap-2 text-sm sm:text-base shadow-md ${state === 'questioning' && selected === null ? 'opacity-50 cursor-not-allowed' : 'opacity-100 cursor-pointer'}`}>
                     {state === 'questioning' ? (
                       <>Valider ma réponse <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></>
                     ) : current === quizData.length - 1 ? (
@@ -219,24 +237,24 @@ export default function QuizPage() {
 
           {/* EXPLANATION COLUMN */}
           {hasAnswered && (
-            <div className="lg:col-span-2 h-full animate-fade-in">
-              <div className={`rounded-[2rem] shadow-lg p-6 sm:p-8 flex flex-col border-2 min-h-[350px] transition-colors duration-300 ${isCorrect ? 'bg-green-50 border-green-400 text-green-900' : 'bg-red-50 border-red-400 text-red-900'}`}>
-                <h3 className={`text-lg font-extrabold mb-6 flex items-center gap-3 border-b pb-4 ${isCorrect ? 'border-green-400/30 text-green-900' : 'border-red-400/30 text-red-900'}`}>
-                  <div className={`w-8 h-8 rounded-full text-white flex items-center justify-center text-sm ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            <div className="lg:col-span-2 animate-fade-in">
+              <div className={`rounded-xl sm:rounded-[2rem] shadow-lg p-4 sm:p-6 lg:p-8 flex flex-col border-2 transition-colors duration-300 ${isCorrect ? 'bg-green-50 border-green-400 text-green-900' : 'bg-red-50 border-red-400 text-red-900'}`}>
+                <h3 className={`text-base sm:text-lg font-extrabold mb-4 sm:mb-6 flex items-center gap-3 border-b pb-3 sm:pb-4 ${isCorrect ? 'border-green-400/30 text-green-900' : 'border-red-400/30 text-red-900'}`}>
+                  <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full text-white flex items-center justify-center text-sm shrink-0 ${isCorrect ? 'bg-green-500' : 'bg-red-500'}`}>
+                    <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
                   </div>
                   Explications
                 </h3>
-                <div className="flex flex-col gap-2 mt-2">
-                  <div className="flex flex-col items-center text-center mb-6">
+                <div className="flex flex-col gap-2">
+                  <div className="flex flex-col items-center text-center mb-3 sm:mb-6">
                     {isCorrect ? (
-                      <svg className="w-12 h-12 mb-3 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+                      <svg className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 text-green-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
                     ) : (
-                      <svg className="w-12 h-12 mb-3 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+                      <svg className="w-10 h-10 sm:w-12 sm:h-12 mb-2 sm:mb-3 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
                     )}
-                    <span className="text-2xl font-black">{isCorrect ? 'Bonne réponse !' : 'Mauvaise réponse'}</span>
+                    <span className="text-xl sm:text-2xl font-black">{isCorrect ? 'Bonne réponse !' : 'Mauvaise réponse'}</span>
                   </div>
-                  <div className="leading-relaxed font-medium text-slate-900 bg-white/60 p-5 rounded-xl border border-white/40 shadow-sm" dangerouslySetInnerHTML={{__html: data.explanation}}></div>
+                  <div className="leading-relaxed font-medium text-slate-900 bg-white/60 p-3 sm:p-5 rounded-xl border border-white/40 shadow-sm text-sm sm:text-base" dangerouslySetInnerHTML={{__html: data.explanation}}></div>
                 </div>
               </div>
             </div>

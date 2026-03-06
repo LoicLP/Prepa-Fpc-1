@@ -27,12 +27,12 @@ const quizData = [
 const letters = ['A', 'B', 'C', 'D']
 
 const catColors = {
-  "Calcul de dose": { badge: "bg-red-50 text-red-600", wrapper: "bg-red-100/60" },
-  "Pourcentage": { badge: "bg-purple-50 text-purple-600", wrapper: "bg-purple-100/60" },
-  "Produit en croix": { badge: "bg-amber-50 text-amber-600", wrapper: "bg-amber-100/60" },
-  "Calcul mental": { badge: "bg-blue-50 text-blue-600", wrapper: "bg-blue-100/60" },
-  "Équation": { badge: "bg-emerald-50 text-emerald-600", wrapper: "bg-emerald-100/60" },
-  "Conversion": { badge: "bg-orange-50 text-orange-600", wrapper: "bg-orange-100/60" }
+  "Calcul de dose": { badge: "bg-red-50 text-red-600", wrapper: "bg-red-100/60", card: "bg-red-50 border-red-200", iconText: "text-red-600", progressBar: "bg-red-600" },
+  "Pourcentage": { badge: "bg-purple-50 text-purple-600", wrapper: "bg-purple-100/60", card: "bg-purple-50 border-purple-200", iconText: "text-purple-600", progressBar: "bg-purple-600" },
+  "Produit en croix": { badge: "bg-amber-50 text-amber-600", wrapper: "bg-amber-100/60", card: "bg-amber-50 border-amber-200", iconText: "text-amber-600", progressBar: "bg-amber-500" },
+  "Calcul mental": { badge: "bg-blue-50 text-blue-600", wrapper: "bg-blue-100/60", card: "bg-blue-50 border-blue-200", iconText: "text-blue-600", progressBar: "bg-blue-600" },
+  "Équation": { badge: "bg-emerald-50 text-emerald-600", wrapper: "bg-emerald-100/60", card: "bg-emerald-50 border-emerald-200", iconText: "text-emerald-600", progressBar: "bg-emerald-500" },
+  "Conversion": { badge: "bg-cyan-50 text-cyan-600", wrapper: "bg-cyan-100/60", card: "bg-cyan-50 border-cyan-200", iconText: "text-cyan-600", progressBar: "bg-cyan-500" }
 }
 
 export default function QuizPage() {
@@ -94,27 +94,113 @@ export default function QuizPage() {
   const isCorrect = hasAnswered && answers[current] === data.correct
 
   if (showResults) {
+    // Calcul du score final
+    const finalScore = answers.reduce((acc, answer, index) => {
+      return acc + (answer === quizData[index].correct ? 1 : 0);
+    }, 0);
+    const percentage = (finalScore / quizData.length) * 100;
+    
+    // Statistiques par catégorie
+    const categoryStats = {};
+    quizData.forEach((q, index) => {
+      if (!categoryStats[q.category]) {
+        categoryStats[q.category] = { total: 0, correct: 0 };
+      }
+      categoryStats[q.category].total++;
+      if (answers[index] === q.correct) {
+        categoryStats[q.category].correct++;
+      }
+    });
+
+    // Dictionnaire d'icônes SVG pour chaque catégorie avec les nouveaux logos
+    const catIcons = {
+      "Calcul de dose": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg>,
+      "Pourcentage": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M19 5L5 19M9 7a2 2 0 100-4 2 2 0 000 4zM19 21a2 2 0 100-4 2 2 0 000 4z"/></svg>,
+      "Produit en croix": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 6l12 12M6 18L18 6"/></svg>,
+      "Calcul mental": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5M9 18h6M10 22h4"/></svg>,
+      "Équation": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M9 17c2 0 2.8-1 2.8-2.8V10c0-2 1-3.3 3.2-3"/><path d="M9 11.2h5.7"/></svg>,
+      "Conversion": <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 1l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 23l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+    };
+
+    // Message conditionnel selon la note
+    let resultMessage = "";
+    if (finalScore < 10) {
+      resultMessage = "Pas mal de chose à revoir, nous vous conseillons le Pack Sérénité";
+    } else if (finalScore < 15) {
+      resultMessage = "Bravo , vous avez déjà les bases ! Nous vous conseillons 6 mois de révision pour assurer au concours (oral et rédaction)";
+    } else {
+      resultMessage = "Bravo , les maths c'est acquis ! Nous vous conseillons 2 mois de révision pour assurer la partie rédactionnelle et oral";
+    }
+
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col">
         <Nav />
         <main className="flex-grow flex items-center justify-center px-4 py-8 sm:py-12">
-          <div className="max-w-2xl w-full bg-white rounded-2xl sm:rounded-[3rem] shadow-2xl p-8 sm:p-16 text-center border border-slate-100 relative overflow-hidden">
-            <div className="absolute top-[-20%] left-[-10%] w-64 h-64 bg-red-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-64 h-64 bg-blue-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+          <div className="max-w-3xl w-full bg-white rounded-2xl sm:rounded-[2.5rem] shadow-2xl p-6 sm:p-10 border border-slate-100 relative overflow-hidden text-center">
+            
+            {/* Effets de fond */}
+            <div className="absolute top-[-20%] left-[-10%] w-64 h-64 bg-slate-100 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-60 pointer-events-none"></div>
+            
+            {/* Croix pour fermer / revenir à l'accueil */}
+            <a href="/" className="absolute top-5 right-5 sm:top-6 sm:right-6 p-2 bg-slate-50 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-full transition-colors z-20">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </a>
+
             <div className="relative z-10">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 bg-red-50 text-red-600 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 ring-8 ring-red-50/50">
-                <svg className="w-10 h-10 sm:w-12 sm:h-12" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              <div className="mb-2">
+                <span className="text-xs sm:text-sm font-bold tracking-widest uppercase text-slate-900">Votre Résultat Global</span>
               </div>
-              <h2 className="text-3xl sm:text-5xl font-black text-slate-900 mb-4 sm:mb-6 tracking-tight">Découvrez votre score !</h2>
-              <p className="text-slate-600 mb-8 sm:mb-10 font-medium text-base sm:text-xl leading-relaxed">Félicitations pour avoir terminé ce test de 20 questions. Pour découvrir votre résultat, identifier vos points faibles et accéder aux corrections illimitées, créez un compte gratuitement.</p>
-              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center">
-                <a href="/signup" className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl transition-all shadow-xl shadow-red-600/20 flex items-center justify-center gap-3 text-base sm:text-lg transform hover:-translate-y-1">
-                  Créer mon compte gratuit <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
-                </a>
-                <a href="/login" className="w-full sm:w-auto bg-white border-2 border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50 font-bold py-4 sm:py-5 px-8 sm:px-10 rounded-2xl transition-all flex items-center justify-center gap-3 text-base sm:text-lg transform hover:-translate-y-1">
-                  Me connecter
+              
+              {/* Note globale (Toujours en rouge text-red-600) */}
+              <div className="flex justify-center items-center mb-4">
+                <span className="text-6xl sm:text-7xl font-black text-red-600 tracking-tighter">{finalScore}</span>
+                <span className="text-6xl sm:text-7xl font-black text-slate-900 tracking-tighter">/{quizData.length}</span>
+              </div>
+              
+              <p className="text-slate-600 mb-8 font-medium text-base sm:text-lg leading-relaxed max-w-xl mx-auto">
+                {resultMessage}
+              </p>
+
+              {/* Détail par catégorie */}
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-6 mb-8 text-left">
+                <h3 className="font-bold text-slate-800 mb-4 text-sm sm:text-base">Détail de vos compétences :</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+                  {Object.entries(categoryStats).map(([cat, stats]) => {
+                    const catColor = catColors[cat] || catColors["Calcul de dose"];
+                    const catPercent = Math.round((stats.correct / stats.total) * 100);
+                    
+                    // La barre de progression utilise maintenant la couleur de la matière
+                    const barColor = catColor.progressBar;
+
+                    return (
+                      <div key={cat} className={`p-3 sm:p-4 rounded-xl border shadow-sm flex items-center gap-3 sm:gap-4 transition-transform hover:-translate-y-0.5 ${catColor.card}`}>
+                        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-white shadow-sm flex items-center justify-center shrink-0 ${catColor.iconText}`}>
+                          {catIcons[cat] || <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>}
+                        </div>
+                        <div className="flex-grow">
+                          <div className="flex justify-between items-center mb-1.5">
+                            <span className="font-bold text-slate-800 text-xs sm:text-sm">{cat}</span>
+                            <span className="font-black text-slate-900 text-xs sm:text-sm">{stats.correct}/{stats.total}</span>
+                          </div>
+                          <div className="w-full bg-white/70 rounded-full h-1.5">
+                            <div className={`h-1.5 rounded-full ${barColor}`} style={{width: `${catPercent}%`}}></div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              
+              {/* Bouton d'action */}
+              <div className="flex flex-col items-center justify-center w-full">
+                <a href="/signup" className="w-full bg-slate-900 hover:bg-black text-white font-bold py-4 sm:py-5 px-6 sm:px-8 rounded-xl transition-all shadow-xl shadow-slate-900/20 flex flex-col sm:flex-row items-center justify-center gap-3 text-sm sm:text-base transform hover:-translate-y-1">
+                  Continuer à m'entrainer en m'inscrivant dès maintenant 
+                  <svg className="w-5 h-5 shrink-0 hidden sm:block" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                 </a>
               </div>
+              
             </div>
           </div>
         </main>

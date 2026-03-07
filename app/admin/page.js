@@ -16,6 +16,7 @@ export default function AdminPage() {
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!session) { window.location.href = '/auth'; return }
+      if (session.user.email !== 'pauldebruinier@gmail.com') { window.location.href = '/'; return }
       setUser(session.user)
       setLoading(false)
     })

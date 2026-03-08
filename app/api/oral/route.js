@@ -82,15 +82,20 @@ Adapte chaque question au contenu réel du CV. Sois précis en faisant référen
     }
 
     const data = await response.json()
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+    
+    // Gemini 2.5 avec thinking peut avoir plusieurs parts, on les combine
+    const allText = data.candidates?.[0]?.content?.parts
+      ?.map(p => p.text || '')
+      .join('\n') || ''
 
+    if (!allText) {
     if (!text) {
       console.error('Gemini empty response:', JSON.stringify(data))
       return NextResponse.json({ error: 'Réponse vide de Gemini. Réessayez.' }, { status: 500 })
     }
 
-    const cleaned = text.replace(/```json/g, '').replace(/```/g, '').trim()
-
+    const cleaned = allText.replace(/```json/g, '').replace(/```/g, '').trim()
+    
     try {
       // Extraire le JSON même s'il y a du texte autour
       const jsonMatch = cleaned.match(/\[[\s\S]*\]/)

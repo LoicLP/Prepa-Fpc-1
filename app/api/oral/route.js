@@ -89,7 +89,6 @@ Adapte chaque question au contenu réel du CV. Sois précis en faisant référen
       .join('\n') || ''
 
     if (!allText) {
-    if (!text) {
       console.error('Gemini empty response:', JSON.stringify(data))
       return NextResponse.json({ error: 'Réponse vide de Gemini. Réessayez.' }, { status: 500 })
     }

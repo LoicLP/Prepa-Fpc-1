@@ -81,8 +81,7 @@ export default function Dashboard() {
   function navigateTo(id) { setPage(id); setSidebarOpen(false) }
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex" style={{fontFamily: "'DM Sans', 'Inter', system-ui, sans-serif"}}>
-      <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <div className="min-h-screen bg-slate-100 text-slate-900 flex">
 
       {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
 
@@ -161,7 +160,7 @@ export default function Dashboard() {
 
               {/* ENTRAÎNEMENTS */}
               <h2 className="text-lg font-black text-slate-900 mb-4">Commencer à m'entraîner</h2>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
                 <a href="/qcm" className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-red-200 transition group block">
                   <div className="w-11 h-11 bg-red-50 text-red-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg>

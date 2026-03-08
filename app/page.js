@@ -57,7 +57,7 @@ export default function HomePage() {
 
   const navLinks = [
     { href: '/', label: 'Accueil', active: true },
-    { href: '/calculs-doses.html', label: 'Calculs de doses', active: false },
+    { href: '/calculs-doses', label: 'Calculs de doses', active: false },
     { href: '/blog', label: 'Blog', active: false },
     { href: '/tarifs', label: 'Tarifs', active: false }
   ]
@@ -384,7 +384,7 @@ export default function HomePage() {
             <ul className="space-y-3">
               <li><a href="/blog" className="hover:text-white transition">Dates concours FPC</a></li>
               <li><a href="/blog" className="hover:text-white transition">Dossier Passerelle AS/AP</a></li>
-              <li><a href="/calculs-doses.html" className="hover:text-white transition">Formules calculs de doses</a></li>
+              <li><a href="/calculs-doses" className="hover:text-white transition">Formules calculs de doses</a></li>
             </ul>
           </div>
           <div>

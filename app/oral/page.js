@@ -203,13 +203,13 @@ export default function OralPage() {
               `}</style>
               <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl shadow-emerald-200 mb-8" style={{animation: 'morph 4s ease-in-out infinite'}}></div>
               <h2 className="text-xl font-black text-slate-900 mb-2">Analyse de votre CV en cours...</h2>
-              <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA lit <strong className="text-slate-700">{fileName}</strong> et prépare vos questions personnalisées.</p>
+              <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA parcours votre <strong className="text-slate-700">{fileName}</strong> et prépare vos questions personnalisées.</p>
               <div className="w-full max-w-md space-y-3">
                 {[
                   { label: 'Analyse de votre profil'},
                   { label: 'Analyse de vos diplômes'},
                   { label: 'Analyse de votre expérience professionnelle'},
-                  { label: 'Analyse de vos centres d\'intérêts'}
+                  { label: 'Analyse de vos centres d'intérêts'}
                 ].map((ls, i) => (
                   <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i < loadingStep ? 'bg-green-50 border border-green-200' : i === loadingStep ? 'bg-emerald-50 border border-emerald-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
                     <span className="text-xl">{ls.icon}</span>

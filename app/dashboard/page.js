@@ -261,18 +261,210 @@ export default function Dashboard() {
           )}
 
           {/* ============ MON HISTORIQUE ============ */}
-          {page === 'historique' && (
+          {page === 'historique' && (() => {
+            const fakeHistory = [
+              { id: 1, type: 'QCM', label: 'QCM Mathématiques', score: '16/20', duration: '12 min', questions: 20, day: 10, time: '14h30' },
+              { id: 2, type: 'Oral', label: 'Oral — Analyse CV', score: null, duration: '25 min', questions: 10, day: 10, time: '11h00' },
+              { id: 3, type: 'QCM', label: 'QCM Calculs de doses', score: '13/20', duration: '15 min', questions: 20, day: 9, time: '18h45' },
+              { id: 4, type: 'Examen', label: 'Examen blanc écrit', score: '14/20', duration: '45 min', questions: 40, day: 9, time: '10h00' },
+              { id: 5, type: 'QCM', label: 'QCM Conversions', score: '18/20', duration: '8 min', questions: 20, day: 7, time: '16h20' },
+              { id: 6, type: 'QCM', label: 'QCM Pourcentages', score: '15/20', duration: '11 min', questions: 20, day: 5, time: '09h15' },
+              { id: 7, type: 'Oral', label: 'Oral — Analyse CV', score: null, duration: '20 min', questions: 10, day: 3, time: '14h00' },
+              { id: 8, type: 'QCM', label: 'QCM Équations', score: '12/20', duration: '14 min', questions: 20, day: 1, time: '17h30' },
+              { id: 9, type: 'QCM', label: 'QCM Calcul mental', score: '17/20', duration: '9 min', questions: 20, day: 15, time: '08h00' },
+              { id: 10, type: 'Examen', label: 'Examen blanc écrit', score: '11/20', duration: '50 min', questions: 40, day: 20, time: '14h00' },
+              { id: 11, type: 'Oral', label: 'Oral — Analyse CV', score: null, duration: '22 min', questions: 10, day: 22, time: '16h00' },
+              { id: 12, type: 'QCM', label: 'QCM Produit en croix', score: '19/20', duration: '7 min', questions: 20, day: 25, time: '11h30' },
+            ]
+
+            const calMonth = window.__calMonth ?? 2
+            const calYear = window.__calYear ?? 2026
+            const selectedDay = window.__calDay ?? null
+
+            const setCalMonth = (m) => { window.__calMonth = m; setPage('historique') }
+            const setCalYear = (y) => { window.__calYear = y; setPage('historique') }
+            const setSelectedDay = (d) => { window.__calDay = d; setPage('historique') }
+
+            const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
+            const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
+
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate()
+            const firstDayOfWeek = (new Date(calYear, calMonth, 1).getDay() + 6) % 7
+
+            const exercisesByDay = {}
+            fakeHistory.forEach(h => {
+              if (!exercisesByDay[h.day]) exercisesByDay[h.day] = []
+              exercisesByDay[h.day].push(h)
+            })
+
+            const getTypeColor = (type) => {
+              if (type === 'QCM') return 'red'
+              if (type === 'Oral') return 'emerald'
+              return 'blue'
+            }
+
+            const getTypesForDay = (day) => {
+              const items = exercisesByDay[day] || []
+              return [...new Set(items.map(i => i.type))]
+            }
+
+            const prevMonth = () => {
+              if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1) }
+              else setCalMonth(calMonth - 1)
+              window.__calDay = null
+            }
+            const nextMonth = () => {
+              if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1) }
+              else setCalMonth(calMonth + 1)
+              window.__calDay = null
+            }
+
+            const dayItems = selectedDay ? (exercisesByDay[selectedDay] || []) : []
+
+            return (
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Mon historique</h1>
-              <p className="text-slate-500 font-medium text-sm mb-8">Retrouvez vos entraînements passés.</p>
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
-                <div className="w-16 h-16 bg-slate-100 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4"><svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M12 7v5l3 3"/><circle cx="12" cy="12" r="10"/></svg></div>
-                <h3 className="font-black text-slate-900 text-lg mb-2">Aucun entraînement</h3>
-                <p className="text-slate-500 font-medium text-sm mb-6">Votre historique est vide. Lancez votre premier QCM !</p>
-                <a href="/qcm" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition text-sm">Commencer <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg></a>
+              <p className="text-slate-500 font-medium text-sm mb-6">Retrouvez vos entraînements passés.</p>
+
+              {/* Stats rapides */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+                  <p className="text-2xl font-black text-slate-900">{fakeHistory.length}</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase mt-1">Exercices</p>
+                </div>
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+                  <p className="text-2xl font-black text-red-600">14.8<span className="text-sm">/20</span></p>
+                  <p className="text-xs font-bold text-slate-400 uppercase mt-1">Moyenne</p>
+                </div>
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+                  <p className="text-2xl font-black text-slate-900">19<span className="text-sm">/20</span></p>
+                  <p className="text-xs font-bold text-slate-400 uppercase mt-1">Meilleur score</p>
+                </div>
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
+                  <p className="text-2xl font-black text-slate-900">3h38</p>
+                  <p className="text-xs font-bold text-slate-400 uppercase mt-1">Temps total</p>
+                </div>
+              </div>
+
+              <div className="flex flex-col lg:flex-row gap-6">
+                {/* Calendrier */}
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 lg:w-[420px] shrink-0">
+                  {/* Navigation mois */}
+                  <div className="flex items-center justify-between mb-6">
+                    <button onClick={prevMonth} className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition cursor-pointer">
+                      <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6"/></svg>
+                    </button>
+                    <h3 className="font-black text-slate-900">{monthNames[calMonth]} {calYear}</h3>
+                    <button onClick={nextMonth} className="w-8 h-8 rounded-lg bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition cursor-pointer">
+                      <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 18l6-6-6-6"/></svg>
+                    </button>
+                  </div>
+
+                  {/* Jours de la semaine */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {dayNames.map(d => (
+                      <div key={d} className="text-center text-[10px] font-black text-slate-400 uppercase tracking-wider py-1">{d}</div>
+                    ))}
+                  </div>
+
+                  {/* Grille des jours */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {Array.from({ length: firstDayOfWeek }).map((_, i) => (
+                      <div key={`empty-${i}`} className="aspect-square"></div>
+                    ))}
+                    {Array.from({ length: daysInMonth }).map((_, i) => {
+                      const day = i + 1
+                      const types = getTypesForDay(day)
+                      const hasExercises = types.length > 0
+                      const isSelected = selectedDay === day
+                      const isToday = day === 10 && calMonth === 2 && calYear === 2026
+
+                      return (
+                        <button
+                          key={day}
+                          onClick={() => setSelectedDay(isSelected ? null : day)}
+                          className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-sm font-bold transition cursor-pointer relative
+                            ${isSelected ? 'bg-red-600 text-white' : isToday ? 'bg-red-50 text-red-600 border border-red-200' : hasExercises ? 'bg-slate-50 hover:bg-slate-100 text-slate-900' : 'text-slate-400 hover:bg-slate-50'}`}
+                        >
+                          <span>{day}</span>
+                          {hasExercises && !isSelected && (
+                            <div className="flex gap-0.5">
+                              {types.map(t => (
+                                <div key={t} className={`w-1.5 h-1.5 rounded-full ${t === 'QCM' ? 'bg-red-500' : t === 'Oral' ? 'bg-emerald-500' : 'bg-blue-500'}`}></div>
+                              ))}
+                            </div>
+                          )}
+                          {hasExercises && isSelected && (
+                            <div className="flex gap-0.5">
+                              {types.map(t => (
+                                <div key={t} className="w-1.5 h-1.5 rounded-full bg-white/70"></div>
+                              ))}
+                            </div>
+                          )}
+                        </button>
+                      )
+                    })}
+                  </div>
+
+                  {/* Légende */}
+                  <div className="flex items-center gap-4 mt-5 pt-4 border-t border-slate-100">
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div><span className="text-[10px] font-bold text-slate-400">QCM</span></div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] font-bold text-slate-400">Oral</span></div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span className="text-[10px] font-bold text-slate-400">Examen</span></div>
+                  </div>
+                </div>
+
+                {/* Détail du jour sélectionné */}
+                <div className="flex-1">
+                  {selectedDay ? (
+                    <div>
+                      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">{selectedDay} {monthNames[calMonth]} {calYear}</h3>
+                      {dayItems.length > 0 ? (
+                        <div className="space-y-3">
+                          {dayItems.map(item => {
+                            const color = getTypeColor(item.type)
+                            return (
+                              <div key={item.id} className="bg-white rounded-xl border border-slate-200 shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color === 'red' ? 'bg-red-100 text-red-600' : color === 'emerald' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
+                                  {item.type === 'QCM' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>}
+                                  {item.type === 'Oral' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>}
+                                  {item.type === 'Examen' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                  <p className="font-bold text-sm text-slate-900 truncate">{item.label}</p>
+                                  <p className="text-xs text-slate-400 font-medium">{item.time} · {item.questions} questions · {item.duration}</p>
+                                </div>
+                                <div className="text-right shrink-0">
+                                  {item.score ? (
+                                    <span className={`text-sm font-black ${parseInt(item.score) >= 15 ? 'text-emerald-600' : parseInt(item.score) >= 10 ? 'text-amber-600' : 'text-red-600'}`}>{item.score}</span>
+                                  ) : (
+                                    <span className="text-xs font-bold text-slate-400 bg-slate-100 px-2 py-1 rounded-lg">Terminé</span>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ) : (
+                        <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
+                          <p className="text-slate-400 font-bold text-sm">Aucun exercice ce jour-là.</p>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center h-full flex flex-col items-center justify-center">
+                      <div className="w-14 h-14 bg-slate-100 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                      </div>
+                      <p className="font-bold text-slate-900 mb-1">Sélectionnez un jour</p>
+                      <p className="text-sm text-slate-400 font-medium">Cliquez sur un jour du calendrier pour voir vos exercices.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
-          )}
+            )
+          })()}
 
           {/* ============ MON COMPTE ============ */}
           {page === 'profil' && (

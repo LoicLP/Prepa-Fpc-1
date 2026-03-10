@@ -207,9 +207,9 @@ export default function OralPage() {
               <div className="w-full max-w-md space-y-3">
                 {[
                   { label: 'Analyse de votre profil'},
+                  { label: 'Analyse de vos centres d\'intérêts'},
                   { label: 'Analyse de vos diplômes'},
-                  { label: 'Analyse de votre expérience professionnelle'},
-                  { label: 'Analyse de vos centres d\'intérêts'}
+                  { label: 'Analyse de votre expérience professionnelle'}
                 ].map((ls, i) => (
                   <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i < loadingStep ? 'bg-green-50 border border-green-200' : i === loadingStep ? 'bg-emerald-50 border border-emerald-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
                     <span className="text-xl">{ls.icon}</span>

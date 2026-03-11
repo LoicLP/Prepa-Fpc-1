@@ -248,21 +248,79 @@ function DashboardContent() {
                 </a>
               </div>
 
-              {/* STATS RAPIDES */}
-              <h2 className="text-lg font-black text-slate-900 mb-4">Mon aperçu</h2>
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                {[
-                  { label: 'QCM complétés', value: stats.qcm, color: 'bg-red-50 text-red-600', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/></svg> },
-                  { label: 'Score moyen', value: stats.score, color: 'bg-green-50 text-green-600', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg> },
-                  { label: 'Calculs résolus', value: stats.calculs, color: 'bg-blue-50 text-blue-600', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
-                  { label: 'Rédactions', value: stats.redactions, color: 'bg-amber-50 text-amber-600', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg> }
-                ].map((s, i) => (
-                  <div key={i} className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                    <div className={`w-10 h-10 ${s.color} rounded-xl flex items-center justify-center mb-3`}>{s.icon}</div>
-                    <p className="text-2xl font-black text-slate-900">{s.value}</p>
-                    <p className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mt-1">{s.label}</p>
+              {/* STREAK + OBJECTIF SEMAINE */}
+              <div className="grid sm:grid-cols-2 gap-4 mb-10">
+                {/* Streak */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="flex items-center gap-4">
+                    <div className="text-3xl">🔥</div>
+                    <div>
+                      <p className="text-3xl font-black text-slate-900">0 <span className="text-sm font-bold text-slate-400">jour(s) d'affilée</span></p>
+                      <p className="text-xs font-bold text-orange-500 mt-1">Entraîne-toi aujourd'hui pour lancer ta série !</p>
+                    </div>
                   </div>
-                ))}
+                </div>
+
+                {/* Objectif semaine */}
+                <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+                  <div className="flex items-center justify-between mb-3">
+                    <p className="text-sm font-black text-slate-900">Objectif de la semaine</p>
+                    <span className="text-xs font-black text-slate-400">0/5 exercices</span>
+                  </div>
+                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3">
+                    <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{width: '0%'}}></div>
+                  </div>
+                  <div className="flex justify-between">
+                    {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day, i) => (
+                      <div key={i} className="flex flex-col items-center gap-1">
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black ${i < 0 ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-400'}`}>
+                          {i < 0 ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> : day}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* RACCOURCIS UTILES */}
+              <h2 className="text-lg font-black text-slate-900 mb-4">Raccourcis utiles</h2>
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+                <a href="/calculs-doses" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-red-200 transition group flex items-center gap-3">
+                  <div className="w-10 h-10 bg-red-50 text-red-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2Z"/><path d="M9 7h6"/><path d="M12 7v6"/><path d="M9 17h6"/></svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">Formules</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Calculs de doses</p>
+                  </div>
+                </a>
+                <a href="/blog" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-purple-200 transition group flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">Blog</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Articles & fiches</p>
+                  </div>
+                </a>
+                <a href="/oral" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-emerald-200 transition group flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">Oral</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Préparer l'entretien</p>
+                  </div>
+                </a>
+                <a href="/redaction" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-200 transition group flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                  </div>
+                  <div>
+                    <p className="font-bold text-slate-900 text-sm">Méthodologie</p>
+                    <p className="text-[10px] text-slate-400 font-medium">Rédaction & analyse</p>
+                  </div>
+                </a>
               </div>
 
               {/* CTA Premium */}
@@ -272,7 +330,7 @@ function DashboardContent() {
                   <h3 className="text-lg font-black text-white mb-1">Passez au niveau supérieur</h3>
                   <p className="text-slate-400 font-medium text-sm">QCM, calculs et examens blancs en illimité.</p>
                 </div>
-                <a href="/tarifs" className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-900/30 shrink-0 text-sm">Voir les offres</a>
+                <a href="/tarifs" className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-amber-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-200/50 shrink-0 text-sm">Voir les offres</a>
               </div>
             </div>
           )}

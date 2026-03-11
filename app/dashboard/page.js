@@ -36,6 +36,9 @@ function DashboardContent() {
   const [profileMsg, setProfileMsg] = useState('')
   const [profileSaving, setProfileSaving] = useState(false)
   const [historique, setHistorique] = useState([])
+  const [calMonth, setCalMonth] = useState(new Date().getMonth())
+  const [calYear, setCalYear] = useState(new Date().getFullYear())
+  const [selectedDay, setSelectedDay] = useState(null)
 
   async function fetchHistorique(userId) {
     const { data } = await supabase
@@ -437,14 +440,6 @@ function DashboardContent() {
 
           {/* ============ MON HISTORIQUE ============ */}
           {page === 'historique' && (() => {
-            const now = new Date()
-            const calMonth = window.__calMonth ?? now.getMonth()
-            const calYear = window.__calYear ?? now.getFullYear()
-            const selectedDay = window.__calDay ?? null
-
-            const setCalMonth = (m) => { window.__calMonth = m; setPage('historique') }
-            const setCalYear = (y) => { window.__calYear = y; setPage('historique') }
-            const setSelectedDay = (d) => { window.__calDay = d; setPage('historique') }
 
             const monthNames = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
             const dayNames = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim']
@@ -495,12 +490,12 @@ function DashboardContent() {
             const prevMonth = () => {
               if (calMonth === 0) { setCalMonth(11); setCalYear(calYear - 1) }
               else setCalMonth(calMonth - 1)
-              window.__calDay = null
+              setSelectedDay(null)
             }
             const nextMonth = () => {
               if (calMonth === 11) { setCalMonth(0); setCalYear(calYear + 1) }
               else setCalMonth(calMonth + 1)
-              window.__calDay = null
+              setSelectedDay(null)
             }
 
             const dayItems = selectedDay ? (exercisesByDay[selectedDay] || []) : []
@@ -592,9 +587,10 @@ function DashboardContent() {
                   </div>
 
                   {/* Légende */}
-                  <div className="flex items-center gap-4 mt-5 pt-4 border-t border-slate-100">
+                  <div className="flex items-center gap-3 flex-wrap mt-5 pt-4 border-t border-slate-100">
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-red-500"></div><span className="text-[10px] font-bold text-slate-400">Maths</span></div>
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-purple-500"></div><span className="text-[10px] font-bold text-slate-400">Rédaction</span></div>
+                    <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-blue-500"></div><span className="text-[10px] font-bold text-slate-400">Spécifique</span></div>
                     <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-emerald-500"></div><span className="text-[10px] font-bold text-slate-400">Oral</span></div>
                   </div>
                 </div>
@@ -614,11 +610,12 @@ function DashboardContent() {
                                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${color === 'red' ? 'bg-red-100 text-red-600' : color === 'purple' ? 'bg-purple-100 text-purple-600' : color === 'emerald' ? 'bg-emerald-100 text-emerald-600' : 'bg-blue-100 text-blue-600'}`}>
                                   {item.type === 'Maths' && <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>}
                                   {item.type === 'Rédaction' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>}
+                                  {item.type === 'Spécifique' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>}
                                   {item.type === 'Oral' && <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>}
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="font-bold text-sm text-slate-900 truncate">{item.label}</p>
-                                  <p className="text-xs text-slate-400 font-medium">{item.time} · {item.nb_questions} questions · {item.duration_minutes} min</p>
+                                  <p className="text-xs text-slate-400 font-medium">{item.time}{item.nb_questions ? ` · ${item.nb_questions} questions` : ''}{item.duration_minutes ? ` · ${item.duration_minutes} min` : ''}</p>
                                 </div>
                                 <div className="text-right shrink-0">
                                   {item.note != null ? (

@@ -606,6 +606,22 @@ function DashboardContent() {
                   {selectedDay ? (
                     <div>
                       <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">{selectedDay} {monthNames[calMonth]} {calYear}</h3>
+                      {(() => {
+                        const signupDate = new Date(user?.created_at)
+                        const isSignupDay = selectedDay === signupDate.getDate() && calMonth === signupDate.getMonth() && calYear === signupDate.getFullYear()
+                        return isSignupDay ? (
+                          <div className="bg-white rounded-xl border border-yellow-300 shadow-sm p-4 flex items-center gap-4 mb-3">
+                            <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 bg-yellow-100 text-yellow-600">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="font-bold text-sm text-slate-900">Inscription</p>
+                              <p className="text-xs text-slate-400 font-medium">Bienvenue sur Prépa FPC !</p>
+                            </div>
+                            <span className="text-sm font-black text-yellow-500">Jour 1</span>
+                          </div>
+                        ) : null
+                      })()}
                       {dayItems.length > 0 ? (
                         <div className="space-y-3">
                           {dayItems.map(item => {
@@ -635,10 +651,15 @@ function DashboardContent() {
                             )
                           })}
                         </div>
-                      ) : (
+                      ) : (() => {
+                        const sd = new Date(user?.created_at)
+                        const isSd = selectedDay === sd.getDate() && calMonth === sd.getMonth() && calYear === sd.getFullYear()
+                        return !isSd ? (
                         <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-8 text-center">
                           <p className="text-slate-400 font-bold text-sm">Aucun exercice ce jour-là.</p>
                         </div>
+                        ) : null
+                      })()
                       )}
                     </div>
                   ) : (

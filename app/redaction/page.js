@@ -248,20 +248,26 @@ export default function RedactionPage() {
 
           {/* ===== LOADING ===== */}
           {step === 'loading' && (
-            <div className="animate-fade-in flex items-center justify-center min-h-[calc(100vh-2.5rem)]">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-10 sm:p-14 text-center max-w-md w-full">
-                <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                  <div className="animate-spin w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full"></div>
-                </div>
-                <h2 className="text-xl font-black text-slate-900 mb-2">Génération du sujet...</h2>
-                <p className="text-slate-500 font-medium text-sm mb-8">L'IA prépare votre épreuve</p>
-                <div className="space-y-4 text-left">
-                  {['Choix du type d\'épreuve', 'Rédaction du sujet', 'Préparation du barème', 'Finalisation'].map((label, i) => (
-                    <div key={i} className={`flex items-center gap-3 transition-all duration-500 ${i <= loadingStep ? 'opacity-100' : 'opacity-30'}`}>
-                      <div className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 ${i < loadingStep ? 'bg-purple-100 text-purple-600' : i === loadingStep ? 'bg-purple-600 text-white' : 'bg-slate-100 text-slate-400'}`}>
-                        {i < loadingStep ? <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> : <span className="text-xs font-bold">{i + 1}</span>}
-                      </div>
-                      <span className="text-sm font-bold text-slate-700">{label}</span>
+            <div className="animate-fade-in min-h-[calc(100vh-2.5rem)] flex items-center justify-center">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-8">
+                <style>{`
+                  @keyframes morph { 0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; } 33% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; } 66% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; } }
+                `}</style>
+                <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-violet-500 shadow-xl shadow-purple-200 mb-8" style={{animation: 'morph 4s ease-in-out infinite'}}></div>
+                <h2 className="text-xl font-black text-slate-900 mb-2">Génération du sujet en cours...</h2>
+                <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA prépare votre épreuve de rédaction personnalisée.</p>
+                <div className="w-full max-w-md space-y-3">
+                  {[
+                    { label: 'Analyse des annales des 2 dernières années' },
+                    { label: 'Choix du sujet' },
+                    { label: 'Rédaction du sujet' },
+                    { label: 'Mise en forme de la page' }
+                  ].map((ls, i) => (
+                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i < loadingStep ? 'bg-green-50 border border-green-200' : i === loadingStep ? 'bg-purple-50 border border-purple-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
+                      <span className={`font-bold text-sm flex-grow ${i < loadingStep ? 'text-green-700' : i === loadingStep ? 'text-purple-700' : 'text-slate-400'}`}>{ls.label}</span>
+                      {i < loadingStep && <svg className="w-5 h-5 text-green-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
+                      {i === loadingStep && <div className="w-4 h-4 border-2 border-purple-600 border-t-transparent rounded-full animate-spin shrink-0"></div>}
+                      <span className="text-xs font-bold text-slate-400">{i + 1}/4</span>
                     </div>
                   ))}
                 </div>
@@ -278,17 +284,28 @@ export default function RedactionPage() {
                 <div className="border-b border-slate-200 px-6 py-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <span className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${sujet.type === 'analyse' ? 'bg-blue-100 text-blue-700' : sujet.type === 'dissertation' ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-700'}`}>
-                      {sujet.type === 'analyse' ? 'Analyse de texte' : sujet.type === 'dissertation' ? 'Dissertation' : 'Résumé & commentaire'}
+                      {sujet.type === 'analyse' ? 'Analyse de texte' : sujet.type === 'dissertation' ? 'Dissertation' : 'Questions'}
                     </span>
+                    {sujet.source === 'annale' && (
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-emerald-100 text-emerald-700">
+                        Annale {sujet.annee}
+                      </span>
+                    )}
                   </div>
-                  <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
-                    <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                      <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-purple-500'}`} style={{width: `${timePercent}%`}}></div>
+                  <div className="flex items-center gap-4">
+                    <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
+                      <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
+                        <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-purple-500'}`} style={{width: `${timePercent}%`}}></div>
+                      </div>
+                      <div className={`flex items-center gap-1.5 font-black text-lg tabular-nums ${isUrgent ? 'text-red-600' : 'text-slate-900'}`}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                      </div>
                     </div>
-                    <div className={`flex items-center gap-1.5 font-black text-lg tabular-nums ${isUrgent ? 'text-red-600' : 'text-slate-900'}`}>
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                      {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-                    </div>
+                    <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                      Quitter l'exercice
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </a>
                   </div>
                 </div>
 

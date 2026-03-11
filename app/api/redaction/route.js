@@ -1,6 +1,59 @@
 import { NextResponse } from 'next/server'
+import { readFileSync } from 'fs'
+import { join } from 'path'
 
 const apiKey = process.env.GEMINI_API_KEY
+
+// Charger le PDF des annales au démarrage
+let annalesBase64 = null
+try {
+  const pdfPath = join(process.cwd(), 'data', 'annales-redaction.pdf')
+  const pdfBuffer = readFileSync(pdfPath)
+  annalesBase64 = pdfBuffer.toString('base64')
+} catch (e) {
+  console.error('Impossible de charger le PDF des annales:', e.message)
+}
+
+async function callGeminiWithPdf(prompt) {
+  const parts = []
+
+  if (annalesBase64) {
+    parts.push({
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: annalesBase64
+      }
+    })
+  }
+
+  parts.push({ text: prompt })
+
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ parts }],
+        generationConfig: { temperature: 0.8, maxOutputTokens: 8000 }
+      })
+    }
+  )
+
+  if (!response.ok) {
+    const errorText = await response.text()
+    console.error('Gemini API error:', response.status, errorText)
+    throw new Error(`Erreur API Gemini (${response.status})`)
+  }
+
+  const data = await response.json()
+  const allText = data.candidates?.[0]?.content?.parts
+    ?.map(p => p.text || '')
+    .join('\n') || ''
+
+  if (!allText) throw new Error('Réponse vide de Gemini')
+  return allText.replace(/```json/g, '').replace(/```/g, '').trim()
+}
 
 async function callGemini(prompt) {
   const response = await fetch(
@@ -10,7 +63,7 @@ async function callGemini(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 8000 }
+        generationConfig: { temperature: 0.7, maxOutputTokens: 8000 }
       })
     }
   )
@@ -41,27 +94,36 @@ export async function POST(request) {
 
     // === GÉNÉRER UN SUJET ===
     if (action === 'generer') {
-      const prompt = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite.
+      const prompt = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité.
 
-Génère un sujet d'épreuve écrite original et réaliste, du niveau de ce concours. Le sujet doit être adapté à des aides-soignants ou auxiliaires de puériculture qui veulent devenir infirmiers.
+Le document PDF ci-joint contient des annales réelles du concours IFSI FPC des dernières années. Tu dois t'en servir comme base principale.
 
-Le sujet peut être de l'un de ces types (choisis-en un au hasard) :
-- Analyse de texte : un texte d'environ 200-300 mots sur un thème sanitaire ou social, suivi de 2-3 questions d'analyse et de réflexion personnelle
-- Dissertation/réflexion : un sujet de réflexion argumentée sur un thème lié à la santé, l'éthique soignante, le système de santé, la relation patient-soignant
-- Résumé et commentaire : un texte à résumer puis à commenter avec un avis personnel argumenté
+Tu as DEUX possibilités (choisis-en une au hasard, avec une probabilité de 50/50) :
 
-Thèmes possibles : éthique soignante, bientraitance, fin de vie, relation soignant-soigné, travail en équipe, secret professionnel, éducation thérapeutique, santé publique, vieillissement, handicap, droits des patients, burn-out des soignants, télémédecine, déserts médicaux.
+OPTION 1 — SUJET D'ANNALE :
+Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Mentionne l'année d'origine dans le titre (ex: "Annale 2024 — ..."). Reproduis fidèlement le texte source et les questions tels qu'ils apparaissent dans le document.
+
+OPTION 2 — SUJET ORIGINAL INSPIRÉ DES ANNALES :
+Crée un sujet original en t'inspirant des thèmes, du format et du niveau de difficulté des annales du PDF. Le sujet doit être réaliste et cohérent avec ce qui est demandé au concours.
+
+Dans les deux cas :
+- Le sujet s'adresse à des aides-soignants ou auxiliaires de puériculture qui veulent devenir infirmiers
+- Le format peut être : une analyse de texte avec questions, une dissertation/réflexion argumentée, ou une réponse à une ou plusieurs questions sur un thème sanitaire et social
+- Le candidat dispose de 30 MINUTES seulement, adapte donc la quantité de travail demandé en conséquence (pas plus de 2-3 questions, ou 1 sujet de dissertation court)
+- Si le sujet comporte un texte source, il doit faire entre 150 et 300 mots
 
 IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
 {
-  "type": "analyse" ou "dissertation" ou "resume",
-  "titre": "Titre court du sujet",
-  "texte": "Le texte source si analyse ou résumé (null si dissertation)",
+  "type": "analyse" ou "dissertation" ou "questions",
+  "titre": "Titre du sujet (précise 'Annale 2024' si c'est un sujet d'annale)",
+  "source": "annale" ou "original",
+  "annee": "2024 (si annale, sinon null)",
+  "texte": "Le texte source si analyse ou questions (null si dissertation)",
   "consigne": "La consigne complète et détaillée pour le candidat",
   "bareme": "Indication du barème (ex: argumentation 8pts, orthographe 4pts, etc.)"
 }`
 
-      const raw = await callGemini(prompt)
+      const raw = await callGeminiWithPdf(prompt)
       const jsonMatch = raw.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
@@ -76,11 +138,12 @@ IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
         return NextResponse.json({ error: 'Sujet et rédaction requis.' }, { status: 400 })
       }
 
-      const prompt = `Tu es un correcteur du concours IFSI FPC. Tu dois corriger la copie d'un candidat de manière détaillée et bienveillante.
+      const prompt = `Tu es un correcteur du concours IFSI FPC. Tu dois corriger la copie d'un candidat de manière détaillée et bienveillante. Le candidat disposait de 30 minutes.
 
 SUJET :
 Type : ${sujet.type}
 Titre : ${sujet.titre}
+${sujet.source === 'annale' ? `(Sujet d'annale ${sujet.annee})` : '(Sujet original)'}
 ${sujet.texte ? `Texte : ${sujet.texte}` : ''}
 Consigne : ${sujet.consigne}
 Barème : ${sujet.bareme}
@@ -94,6 +157,8 @@ Corrige cette copie en analysant :
 3. La qualité de l'expression écrite (syntaxe, vocabulaire, style)
 4. L'orthographe et la grammaire (liste les fautes trouvées)
 5. La connaissance du domaine sanitaire et social
+
+Sois juste mais bienveillant. Tiens compte du fait que le candidat n'avait que 30 minutes.
 
 IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
 {

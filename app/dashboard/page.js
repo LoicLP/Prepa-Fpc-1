@@ -17,6 +17,8 @@ export default function Dashboard() {
   const [page, setPage] = useState('dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [trialDays, setTrialDays] = useState(7)
+  const [showTip, setShowTip] = useState(false)
+  const [tipIndex, setTipIndex] = useState(0)
 
   const [newLastName, setNewLastName] = useState('')
   const [newFirstName, setNewFirstName] = useState('')
@@ -45,6 +47,25 @@ export default function Dashboard() {
     return () => subscription.unsubscribe()
   }, [])
 
+  const tips = [
+    'Pour convertir des mL en L, divisez par 1000.',
+    'Un produit en croix se vérifie toujours en multipliant en diagonale.',
+    'Relisez l\'énoncé deux fois avant de calculer.',
+    'Pour les pourcentages : multiplier par le % puis diviser par 100.',
+    '1 g = 1000 mg, à retenir par cœur !',
+    'Un débit en gouttes/min = volume (mL) × 20 / temps (min).',
+    'Prenez 5 minutes pour relire vos réponses avant de valider.',
+    'Entraînez-vous régulièrement : 20 min/jour valent mieux que 3h une fois.',
+  ]
+
+  useEffect(() => {
+    const interval = setInterval(() => setShowTip(prev => {
+      if (prev) setTipIndex(i => (i + 1) % tips.length)
+      return !prev
+    }), 10000)
+    return () => clearInterval(interval)
+  }, [])
+
   async function handleLogout() {
     await supabase.auth.signOut()
     window.location.href = '/'
@@ -67,6 +88,9 @@ export default function Dashboard() {
   }
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Utilisateur'
+  const hour = new Date().getHours()
+  const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
+  const subtitle = hour < 12 ? 'Une petite session de révision ce matin ?' : hour < 18 ? 'C\'est le moment idéal pour réviser !' : 'Une dernière session avant la fin de journée ?'
   const isPremium = false // TODO: brancher sur le statut premium réel
   const email = user?.email || ''
   const createdAt = new Date(user?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
@@ -143,8 +167,11 @@ export default function Dashboard() {
               {/* Header + Trial */}
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Bonjour {firstName} !</h1>
-                  <p className="text-slate-500 font-medium text-sm">Prêt(e) à réviser pour le concours ?</p>
+                  <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">{greeting} {firstName} !</h1>
+                  <div className="relative min-h-[20px]">
+                    <p className={`text-slate-500 font-medium text-sm transition-all duration-500 ${showTip ? 'opacity-0 absolute' : 'opacity-100'}`}>{subtitle}</p>
+                    <p className={`text-slate-500 font-medium text-sm transition-all duration-500 ${showTip ? 'opacity-100' : 'opacity-0 absolute'}`}>💡 {tips[tipIndex]}</p>
+                  </div>
                 </div>
                 {trialDays > 0 && (
                   <div className="flex items-center gap-3">
@@ -180,7 +207,7 @@ export default function Dashboard() {
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Entraînement spécifique</h3>
                   <p className="text-xs text-slate-500">Produit en croix, équations, calcul mental</p>
                 </a>
-                <a href="/blog" className="bg-white p-5 rounded-2xl border-2 border-purple-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center">
+                <a href="/redaction" className="bg-white p-5 rounded-2xl border-2 border-purple-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center">
                   <div className="w-11 h-11 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                   </div>

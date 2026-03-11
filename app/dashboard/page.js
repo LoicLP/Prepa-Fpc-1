@@ -521,7 +521,7 @@ function DashboardContent() {
                   <p className="text-xs font-bold text-slate-400 uppercase mt-1">Meilleur score</p>
                 </div>
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-                  <p className="text-2xl font-black text-slate-900">{totalH}h{String(totalM).padStart(2, '0')}</p>
+                  <p className="text-2xl font-black text-slate-900">{totalMinutes < 60 ? `${totalMinutes} min` : `${totalH}h${totalM > 0 ? String(totalM).padStart(2, '0') : ''}`}</p>
                   <p className="text-xs font-bold text-slate-400 uppercase mt-1">Temps total</p>
                 </div>
               </div>
@@ -561,13 +561,15 @@ function DashboardContent() {
                       const isToday = day === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear()
                       const dayOfWeek = (new Date(calYear, calMonth, day).getDay())
                       const isWeekend = dayOfWeek === 0 || dayOfWeek === 6
+                      const signupDate = new Date(user?.created_at)
+                      const isSignupDay = day === signupDate.getDate() && calMonth === signupDate.getMonth() && calYear === signupDate.getFullYear()
 
                       return (
                         <button
                           key={day}
                           onClick={() => setSelectedDay(isSelected ? null : day)}
                           className={`aspect-square rounded-xl flex flex-col items-center justify-center gap-0.5 text-sm font-bold transition cursor-pointer relative
-                            ${isSelected ? 'bg-red-600 text-white' : isToday ? 'bg-red-50 text-red-600 border border-red-200' : hasExercises ? 'bg-slate-50 hover:bg-slate-100 text-slate-900' : isWeekend ? 'bg-slate-100 text-slate-500 hover:bg-slate-200' : 'text-slate-400 hover:bg-slate-50'}`}
+                            ${isSelected ? 'bg-red-600 text-white' : isSignupDay ? 'bg-yellow-50 text-yellow-600 border border-yellow-300' : isToday ? 'bg-red-50 text-red-600 border border-red-200' : hasExercises ? 'bg-slate-50 hover:bg-slate-100 text-slate-900' : isWeekend ? 'bg-slate-100 text-slate-500 hover:bg-slate-200' : 'text-slate-400 hover:bg-slate-50'}`}
                         >
                           <span>{day}</span>
                           {hasExercises && !isSelected && (

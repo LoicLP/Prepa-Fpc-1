@@ -162,7 +162,7 @@ function DashboardContent() {
 
   // Moyenne générale (ramenée sur 10)
   const notesAll = historique.filter(h => h.note != null && h.note_max)
-  const moyenneGenerale = notesAll.length > 0 ? (notesAll.reduce((sum, h) => sum + (h.note / h.note_max) * 10, 0) / notesAll.length).toFixed(1) : null
+  const moyenneGenerale = notesAll.length > 0 ? (notesAll.reduce((sum, h) => sum + (h.note / h.note_max) * 20, 0) / notesAll.length).toFixed(1) : null
   const categories = [
     { name: 'Calculs de dose', color: 'bg-red-500', progress: 0 },
     { name: 'Pourcentages', color: 'bg-purple-500', progress: 0 },
@@ -266,7 +266,7 @@ function DashboardContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Entraînement spécifique</h3>
-                  <p className="text-xs text-slate-500 flex-1">Produit en croix, équations, calcul mental</p>
+                  <p className="text-xs text-slate-500 flex-1">Tous les types d'exercices de maths avec des explications pour réellement progresser</p>
                   <span className="text-[10px] mt-2">&nbsp;</span>
                 </a>
                 <a href="/maths" className="bg-white p-5 rounded-2xl border-2 border-red-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center relative">
@@ -275,7 +275,7 @@ function DashboardContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Entraînement mathématiques</h3>
-                  <p className="text-xs text-slate-500 flex-1">Calculs de doses, pourcentages, conversions</p>
+                  <p className="text-xs text-slate-500 flex-1">Conditions similaires à l'examen pour évaluer son niveau basé en partie sur les annales</p>
                   <span className="text-[10px] font-black text-red-600 mt-2">Note /10</span>
                 </a>
                 <a href="/redaction" className="bg-white p-5 rounded-2xl border-2 border-purple-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center relative">
@@ -284,7 +284,7 @@ function DashboardContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Entraînement rédactionnel</h3>
-                  <p className="text-xs text-slate-500 flex-1">Culture sanitaire, analyse de situation</p>
+                  <p className="text-xs text-slate-500 flex-1">Analyse de texte, dissertations, culture sanitaire basée en partie sur les annales</p>
                   <span className="text-[10px] font-black text-purple-600 mt-2">Note /10</span>
                 </a>
                 <a href="/qcm" className="bg-white p-5 rounded-2xl border-2 border-yellow-500 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center relative">
@@ -293,7 +293,7 @@ function DashboardContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg>
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Examen blanc</h3>
-                  <p className="text-xs text-slate-500 flex-1">Conditions réelles, 1h chronométrée</p>
+                  <p className="text-xs text-slate-500 flex-1">Conditions réelles, sans calculatrice, vous disposez d'un temps imparti d'1H</p>
                   <span className="text-[10px] font-black text-yellow-500 mt-2">Note /20</span>
                 </a>
                 <a href="/oral" className="bg-white p-5 rounded-2xl border-2 border-emerald-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center">
@@ -301,7 +301,7 @@ function DashboardContent() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Questions sur votre parcours</h3>
-                  <p className="text-xs text-slate-500 flex-1">Préparation à l'épreuve orale</p>
+                  <p className="text-xs text-slate-500 flex-1">Simulations de questions possibles sur votre parcours afin de passer l'examen oral dans les meilleures conditions</p>
                   <span className="text-[10px] mt-2">&nbsp;</span>
                 </a>
               </div>
@@ -324,19 +324,13 @@ function DashboardContent() {
                   </div>
                   <div>
                     <p className="text-2xl font-black text-slate-900">{streak} <span className="text-xs font-bold text-slate-400">jour(s) d'affilée</span></p>
-                    <p className="text-[10px] font-bold text-orange-500 mt-0.5">{streak === 0 ? 'Entraîne-toi pour lancer ta série !' : streak < 3 ? 'Bon début !' : streak < 7 ? 'Belle série !' : 'En feu !'}</p>
                   </div>
                 </div>
 
                 {/* Ma moyenne */}
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center gap-3">
-                  <div className="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
-                    <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-black text-slate-900">{moyenneGenerale || '—'}<span className="text-xs font-bold text-slate-400">/10</span></p>
-                    <p className="text-[10px] font-bold text-slate-400 mt-0.5">Ma moyenne générale</p>
-                  </div>
+                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
+                  <p className="text-sm font-black text-slate-900 mb-1">Ma moyenne générale</p>
+                  <p className="text-2xl font-black text-slate-900">{moyenneGenerale || '—'}<span className="text-xs font-bold text-slate-400">/20</span></p>
                 </div>
 
                 {/* Objectif semaine */}
@@ -408,7 +402,7 @@ function DashboardContent() {
                   <h3 className="text-lg font-black text-white mb-1">Passez au niveau supérieur</h3>
                   <p className="text-slate-400 font-medium text-sm">QCM, calculs et examens blancs en illimité.</p>
                 </div>
-                <a href="/tarifs" className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-amber-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-200/50 shrink-0 text-sm">Voir les offres</a>
+                <button onClick={() => setPage('abonnement')} className="bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-500 hover:to-yellow-600 text-amber-950 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-amber-200/50 shrink-0 text-sm cursor-pointer">Voir les offres</button>
               </div>
             </div>
           )}
@@ -752,7 +746,7 @@ function DashboardContent() {
                   </div>
                   <div className="flex-1">
                     <ul className="space-y-3 mb-8">
-                      {["Entrainement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
+                      {["Entraînement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-slate-900 font-bold text-sm">
                           <div className="bg-slate-200 p-0.5 rounded-md shrink-0"><svg className="w-3.5 h-3.5 text-slate-900" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
                           {item}
@@ -778,7 +772,7 @@ function DashboardContent() {
                   </div>
                   <div className="flex-1">
                     <ul className="space-y-3 mb-8">
-                      {["Entrainement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Résiliable à tout moment"].map((item, i) => (
+                      {["Entraînement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Résiliable à tout moment"].map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-slate-900 font-bold text-sm">
                           <div className="bg-red-100 p-0.5 rounded-md shrink-0"><svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
                           {item}
@@ -807,7 +801,7 @@ function DashboardContent() {
                   </div>
                   <div className="flex-1">
                     <ul className="space-y-3 mb-8">
-                      {["Entrainement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
+                      {["Entraînement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
                         <li key={i} className="flex items-center gap-3 text-slate-900 font-bold text-sm">
                           <div className="bg-red-100 p-0.5 rounded-md shrink-0"><svg className="w-3.5 h-3.5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
                           {item}

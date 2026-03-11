@@ -307,7 +307,18 @@ function DashboardContent() {
                 {/* Streak */}
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
                   <div className="flex items-center gap-4">
-                    <div className="text-3xl">🔥</div>
+                    <div className="w-10 h-10 relative shrink-0">
+                      <svg viewBox="0 0 32 40" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                          <clipPath id="dropClip">
+                            <path d="M16 2 C16 2 4 18 4 26 C4 33.5 9.5 38 16 38 C22.5 38 28 33.5 28 26 C28 18 16 2 16 2Z"/>
+                          </clipPath>
+                        </defs>
+                        <path d="M16 2 C16 2 4 18 4 26 C4 33.5 9.5 38 16 38 C22.5 38 28 33.5 28 26 C28 18 16 2 16 2Z" fill="#fee2e2" stroke="#fca5a5" strokeWidth="1.2"/>
+                        <rect clipPath="url(#dropClip)" x="0" y={38 - Math.min(36, Math.max(0, streak * 5))} width="32" height={Math.min(36, Math.max(0, streak * 5))} fill={streak === 0 ? '#fecaca' : streak < 3 ? '#f87171' : streak < 7 ? '#ef4444' : '#dc2626'}/>
+                        <ellipse cx="11" cy="24" rx="2.5" ry="3" fill="white" opacity="0.25"/>
+                      </svg>
+                    </div>
                     <div>
                       <p className="text-3xl font-black text-slate-900">{streak} <span className="text-sm font-bold text-slate-400">jour(s) d'affilée</span></p>
                       <p className="text-xs font-bold text-orange-500 mt-1">{streak === 0 ? 'Entraîne-toi aujourd\'hui pour lancer ta série !' : streak < 3 ? 'Bon début, continue comme ça !' : streak < 7 ? 'Belle série, ne lâche rien !' : 'Incroyable, tu es en feu !'}</p>

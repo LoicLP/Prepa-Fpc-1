@@ -79,6 +79,19 @@ export default function OralPage() {
 
   function handleAnswer(id, value) { setAnswers({ ...answers, [id]: value }) }
 
+  async function finishExercice() {
+    await supabase.from('historique').insert({
+      user_id: user.id,
+      type: 'Oral',
+      label: 'Questions sur votre parcours',
+      note: null,
+      note_max: null,
+      nb_questions: questions.length,
+      duration_minutes: null,
+    })
+    restart()
+  }
+
   function restart() {
     setStep('upload'); setQuestions([]); setCurrentQ(0); setAnswers({}); setShowTip(false); setFileName(''); setError(''); setLoadingStep(0)
   }
@@ -348,7 +361,7 @@ export default function OralPage() {
                         Question suivante <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
                       </button>
                     ) : (
-                      <button onClick={restart} className="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition">
+                      <button onClick={finishExercice} className="flex-grow bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition">
                         Terminer l'exercice <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
                       </button>
                     )}

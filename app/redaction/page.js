@@ -119,6 +119,17 @@ export default function RedactionPage() {
       const elapsed = Date.now() - startTime
       if (elapsed < 20000) await new Promise(r => setTimeout(r, 20000 - elapsed))
       setCorrection(data.correction)
+      // Sauvegarder dans l'historique
+      const durationUsed = Math.round((30 * 60 - timeLeft) / 60)
+      await supabase.from('historique').insert({
+        user_id: user.id,
+        type: 'Rédaction',
+        label: sujet.titre || 'Entraînement rédactionnel',
+        note: data.correction.note,
+        note_max: data.correction.noteMax || 20,
+        nb_questions: 1,
+        duration_minutes: durationUsed || 1,
+      })
       setStep('resultat')
     } catch (err) {
       setError('Erreur de connexion. Réessayez.')

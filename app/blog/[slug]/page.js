@@ -129,7 +129,18 @@ export default function ArticlePage() {
   </div>
 )}
 
-        <div className="prose prose-slate max-w-none [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 [&_h2]:mt-10 [&_h2]:mb-4 [&_p]:text-slate-600 [&_p]:font-medium [&_p]:leading-relaxed [&_p]:mb-6" dangerouslySetInnerHTML={{__html: article.content}}></div>
+        <div className={`prose prose-slate max-w-none
+          [&_h2]:text-2xl [&_h2]:font-black [&_h2]:text-slate-900 [&_h2]:mt-12 [&_h2]:mb-5 [&_h2]:pb-3 [&_h2]:border-b [&_h2]:border-slate-200
+          [&_h3]:text-lg [&_h3]:font-bold [&_h3]:text-slate-800 [&_h3]:mt-8 [&_h3]:mb-3
+          [&_p]:text-slate-600 [&_p]:font-medium [&_p]:leading-relaxed [&_p]:mb-5
+          [&_hr]:my-10 [&_hr]:border-slate-200
+          [&_ul]:my-6 [&_ul]:space-y-2 [&_ul]:list-none [&_ul]:pl-0
+          [&_li]:relative [&_li]:pl-7 [&_li]:text-slate-600 [&_li]:font-medium [&_li]:leading-relaxed [&_li]:before:content-['▸'] [&_li]:before:absolute [&_li]:before:left-0 [&_li]:before:text-red-400 [&_li]:before:font-bold
+          [&_blockquote]:border-l-4 [&_blockquote]:border-red-300 [&_blockquote]:bg-red-50/50 [&_blockquote]:rounded-r-xl [&_blockquote]:pl-6 [&_blockquote]:pr-6 [&_blockquote]:py-4 [&_blockquote]:my-6 [&_blockquote]:italic [&_blockquote]:text-slate-700 [&_blockquote_p]:mb-0 [&_blockquote_p]:text-slate-700
+          [&_mark]:bg-red-100 [&_mark]:text-inherit [&_mark]:px-1 [&_mark]:py-0.5 [&_mark]:rounded
+          [&_a]:text-red-600 [&_a]:font-bold [&_a]:underline [&_a]:decoration-red-200 [&_a]:underline-offset-2 hover:[&_a]:decoration-red-400 [&_a]:transition
+          [&_strong]:text-slate-800
+        `} dangerouslySetInnerHTML={{__html: article.content}}></div>
 
         {!user && (
       <div className="mt-12 bg-white rounded-3xl p-8 text-center border border-slate-200 shadow-sm">

@@ -1,2 +1,12 @@
 User-agent: *
-Disallow: /
+Allow: /
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /api/
+Disallow: /auth
+Disallow: /login
+Disallow: /signup
+Disallow: /forgot-password
+Disallow: /reset-password
+
+Sitemap: https://prepa-fpc.vercel.app/sitemap.xml

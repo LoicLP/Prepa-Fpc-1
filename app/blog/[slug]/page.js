@@ -66,8 +66,22 @@ export default function ArticlePage() {
 
   const colors = colorMap[article.category_color] || colorMap.blue
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    dateModified: article.date,
+    author: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://prepa-fpc.vercel.app' },
+    publisher: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://prepa-fpc.vercel.app' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://prepa-fpc.vercel.app/blog/${params.slug}` },
+    ...(article.image_url && { image: article.image_url }),
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-red-200 flex flex-col">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       {/* NAVIGATION */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">

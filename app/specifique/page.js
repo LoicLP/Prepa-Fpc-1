@@ -212,31 +212,33 @@ export default function SpecifiquePage() {
           {step === 'choix' && (
             <div className="animate-fade-in max-w-5xl mx-auto">
 
-              {/* Hero header */}
-              <div className="bg-slate-900 rounded-2xl p-8 sm:p-10 mb-8 relative overflow-hidden">
-                <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '20px 20px'}}></div>
-                <div className="relative">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-11 h-11 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              {/* Cadre principal */}
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden">
+
+                {/* Hero header */}
+                <div className="bg-slate-900 p-8 sm:p-10 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '20px 20px'}}></div>
+                  <div className="relative">
+                    <div className="flex items-center gap-3 mb-4">
+                      <div className="w-11 h-11 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+                      </div>
+                      <div>
+                        <h1 className="text-2xl font-black text-white">Entraînement spécifique</h1>
+                        <p className="text-slate-400 font-medium text-sm">Travaillez une famille d'exercices avec corrections détaillées par l'IA</p>
+                      </div>
                     </div>
-                    <div>
-                      <h1 className="text-2xl font-black text-white">Entraînement spécifique</h1>
-                      <p className="text-slate-400 font-medium text-sm">Travaillez une famille d'exercices avec corrections détaillées par l'IA</p>
+                    <div className="flex flex-wrap items-center gap-3 mt-5">
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>5-6 questions par session</span>
+                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Sans calculatrice</span>
+                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>Explications pas à pas</span>
                     </div>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-3 mt-5">
-                    <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>5-6 questions par session</span>
-                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                    <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Sans calculatrice</span>
-                    <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                    <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>Explications pas à pas</span>
                   </div>
                 </div>
-              </div>
 
-              {/* Cadre principal */}
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 sm:p-8">
+                <div className="p-6 sm:p-8">
 
                 {error && (
                   <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm px-5 py-3 rounded-xl mb-6 flex items-center gap-2">
@@ -272,6 +274,7 @@ export default function SpecifiquePage() {
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg>
                     Retour au dashboard
                   </a>
+                </div>
                 </div>
               </div>
             </div>

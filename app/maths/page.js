@@ -218,50 +218,39 @@ export default function MathsPage() {
 
           {/* ===== ACCUEIL ===== */}
           {step === 'accueil' && (
-            <div className="animate-fade-in">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col lg:flex-row overflow-hidden">
+            <div className="animate-fade-in max-w-5xl mx-auto">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden relative">
 
-                {/* Panneau gauche */}
-                <div className="lg:w-[380px] bg-slate-900 p-8 sm:p-10 flex flex-col text-white shrink-0">
-                  <div className="flex items-center gap-3 mb-8">
-                    <div className="w-10 h-10 bg-red-500/20 text-red-400 rounded-xl flex items-center justify-center">
-                      <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="4" y="18" fontSize="16" fontWeight="900" fill="currentColor" stroke="none">%</text></svg>
-                    </div>
-                    <h1 className="text-xl font-black">Entraînement mathématiques</h1>
-                  </div>
+                {/* Croix fermeture */}
+                <a href="/dashboard" className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
 
-                  <p className="text-slate-400 font-medium text-sm leading-relaxed mb-8">Entraînez-vous à l'épreuve de mathématiques du concours IFSI FPC. Des exercices variés vous seront proposés avec un chronomètre de 30 minutes, sans calculatrice.</p>
-
-                  <div className="space-y-8 mb-8">
-                    {[
-                      { label: 'Génération des exercices', sub: 'Opérations, pourcentages, conversions, équations', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg> },
-                      { label: 'Épreuve chronométrée', sub: '30 minutes, sans calculatrice', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg> },
-                      { label: 'Correction détaillée par l\'IA', sub: 'Méthode de résolution et note /10', icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg> }
-                    ].map((s, i) => (
-                      <div key={i} className="flex items-start gap-4">
-                        <div className="w-9 h-9 bg-red-500/20 text-red-400 rounded-lg flex items-center justify-center shrink-0">{s.icon}</div>
-                        <div>
-                          <h3 className="font-bold text-white text-sm">{s.label}</h3>
-                          <p className="text-slate-500 text-xs mt-0.5">{s.sub}</p>
-                        </div>
+                {/* Hero header */}
+                <div className="bg-slate-900 p-8 sm:p-10 relative overflow-hidden">
+                  <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '20px 20px'}}></div>
+                  <div className="relative">
+                    <div className="flex items-center gap-3 mb-4 pr-10">
+                      <div className="w-11 h-11 bg-red-500/20 text-red-400 rounded-xl flex items-center justify-center">
+                        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><text x="4" y="18" fontSize="16" fontWeight="900" fill="currentColor" stroke="none">%</text></svg>
                       </div>
-                    ))}
-                  </div>
-
-                  <div className="mt-auto space-y-3">
-                    <div className="flex items-center gap-2 text-slate-500 text-xs">
-                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/></svg>
-                      <span>Exercices basés sur les annales du concours IFSI</span>
+                      <div>
+                        <h1 className="text-2xl font-black text-white">Entraînement mathématiques</h1>
+                        <p className="text-slate-400 font-medium text-sm">Épreuve chronométrée avec correction détaillée par l'IA</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 text-slate-500 text-xs">
-                      <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
-                      <span>Sans calculatrice, comme au concours</span>
+                    <div className="flex flex-wrap items-center gap-3 mt-5">
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>30 minutes</span>
+                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Sans calculatrice</span>
+                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
+                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Note /10</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Panneau droit */}
-                <div className="flex-1 p-8 sm:p-10 flex flex-col items-center justify-center">
+                {/* Contenu */}
+                <div className="p-8 sm:p-10 flex flex-col items-center">
                   {error && (
                     <div className="w-full max-w-md bg-red-50 border border-red-200 text-red-700 font-bold text-sm px-5 py-3 rounded-xl mb-6 flex items-center gap-2">
                       <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
@@ -279,12 +268,6 @@ export default function MathsPage() {
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
                     Commencer l'épreuve
                   </button>
-
-                  <div className="flex items-center gap-6 mt-10 text-xs text-slate-400 font-medium">
-                    <span className="flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>30 min</span>
-                    <span className="flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Sans calculatrice</span>
-                    <span className="flex items-center gap-1.5"><svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>Note /10</span>
-                  </div>
                 </div>
               </div>
             </div>

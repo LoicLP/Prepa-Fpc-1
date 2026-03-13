@@ -231,9 +231,9 @@ export default function RedactionPage() {
                   <div className="space-y-4 mb-6">
                     {[
                       { icon: <Timer size={18} strokeWidth={2} />, title: 'Chronomètre de 30 minutes', text: 'Le compte à rebours démarre dès la génération du sujet.' },
-                      { icon: <PenLine size={18} strokeWidth={2} />, title: 'Rédaction libre', text: 'Analyse de texte, dissertation ou résumé — rédigez directement dans l\'éditeur intégré.' },
+                      { icon: <PenLine size={18} strokeWidth={2} />, title: 'Rédaction libre', text: 'Analyse de texte, dissertation ou résumé. Rédigez directement dans l\'éditeur intégré.' },
                       { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Sujet généré par notre IA', text: 'Un sujet original basé sur les annales du concours FPC est créé à chaque session.' },
-                      { icon: <ClipboardCheck size={18} strokeWidth={2} />, title: 'Correction détaillée', text: 'Orthographe, syntaxe, argumentation — chaque aspect est évalué avec des conseils personnalisés.' }
+                      { icon: <ClipboardCheck size={18} strokeWidth={2} />, title: 'Correction détaillée', text: 'Orthographe, syntaxe, argumentation. Chaque aspect est évalué avec des conseils personnalisés.' }
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3">
                         <div className="w-9 h-9 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center shrink-0">{item.icon}</div>

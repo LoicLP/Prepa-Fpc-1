@@ -250,7 +250,7 @@ export default function MathsPage() {
                     {[
                       { icon: <Timer size={18} strokeWidth={2} />, title: 'Chronomètre de 30 minutes', text: 'Le compte à rebours démarre dès la génération du sujet.' },
                       { icon: <Ban size={18} strokeWidth={2} />, title: 'Sans calculatrice', text: 'Comme au concours FPC, vous devez poser vos calculs à la main. Munissez-vous d\'un brouillon.' },
-                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Exercices générés par notre IA', text: 'Opérations décimales, pourcentages, conversions d\'unités et équations — le sujet est différent à chaque fois.' },
+                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Exercices générés par notre IA', text: 'Opérations décimales, pourcentages, conversions d\'unités et équations. Le sujet est différent à chaque fois.' },
                       { icon: <ClipboardCheck size={18} strokeWidth={2} />, title: 'Correction détaillée', text: 'Chaque réponse est corrigée avec la méthode de résolution complète pour progresser.' }
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3">

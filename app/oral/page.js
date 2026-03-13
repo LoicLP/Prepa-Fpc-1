@@ -214,7 +214,7 @@ export default function OralPage() {
                   <div className="space-y-4 mb-6">
                     {[
                       { icon: <Upload size={18} strokeWidth={2} />, title: 'Importez votre CV en PDF', text: 'Téléchargez votre CV au format PDF (10 Mo max). Il sera analysé pour générer des questions personnalisées.' },
-                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Analyse intelligente par l\'IA', text: 'Notre IA analyse votre parcours professionnel, vos formations et vos expériences.' },
+                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Analyse intelligente', text: 'Notre IA analyse votre parcours professionnel, vos formations et vos expériences.' },
                       { icon: <MessageCircleQuestion size={18} strokeWidth={2} />, title: '10 questions personnalisées', text: 'Des questions identiques à celles du jury : parcours, motivation, connaissance du métier IDE.' },
                       { icon: <Lightbulb size={18} strokeWidth={2} />, title: 'Conseils pour chaque question', text: 'Des pistes de réponse et conseils personnalisés pour préparer votre entretien.' }
                     ].map((item, i) => (

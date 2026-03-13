@@ -1,5 +1,6 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 const quizData = [
   { category: "Calcul de dose", question: "Vous devez préparer 1,5g de Clamoxyl. Vous disposez de flacons de 500mg à diluer dans 5ml. Combien de ml prélevez-vous ?", options: ["5 ml", "10 ml", "15 ml", "20 ml"], correct: 2, explanation: "Conversion : 1,5 g = 1500 mg<br/><br/>Si 500 mg → 5 ml<br/>Alors 1500 mg → <strong>x</strong> ml<br/><br/>Calcul : <strong>(1500 × 5) / 500 = 15 ml</strong><br/><br/><em>Astuce : 1500 est le triple de 500, donc 3 × 5 ml = 15 ml</em>" },
@@ -36,9 +37,26 @@ const catColors = {
 }
 
 export default function QuizPage() {
-  const [current, setCurrent] = useState(0)
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full"></div></div>}>
+      <QuizContent />
+    </Suspense>
+  )
+}
+
+function QuizContent() {
+  const searchParams = useSearchParams()
+  const startFrom = parseInt(searchParams.get('start')) || 0
+  const homeAnswer = searchParams.get('a') !== null ? parseInt(searchParams.get('a')) : null
+  const [current, setCurrent] = useState(startFrom)
   const [selected, setSelected] = useState(null)
-  const [answers, setAnswers] = useState(new Array(quizData.length).fill(null))
+  const [answers, setAnswers] = useState(() => {
+    const initial = new Array(quizData.length).fill(null)
+    if (startFrom > 0 && homeAnswer !== null) {
+      initial[0] = homeAnswer
+    }
+    return initial
+  })
   const [state, setState] = useState('questioning')
   const [showResults, setShowResults] = useState(false)
   const data = quizData[current]

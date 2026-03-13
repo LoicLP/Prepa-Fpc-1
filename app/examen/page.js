@@ -335,7 +335,7 @@ export default function ExamenPage() {
                 <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA génère les deux épreuves simultanément.</p>
                 <div className="w-full max-w-md space-y-3">
                   {[
-                    { label: 'Analyse des annales récentes' },
+                    { label: 'Analyse des annales' },
                     { label: 'Génération du sujet de mathématiques' },
                     { label: 'Génération du sujet de rédaction' },
                     { label: 'Calibrage de la difficulté' },

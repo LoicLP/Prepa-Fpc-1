@@ -286,7 +286,7 @@ export default function MathsPage() {
                 <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA prépare votre épreuve de mathématiques.</p>
                 <div className="w-full max-w-md space-y-3">
                   {[
-                    { label: 'Analyse des annales des 2 dernières années' },
+                    { label: 'Récupération des sujets des annales' },
                     { label: 'Sélection des exercices' },
                     { label: 'Calibrage de la difficulté' },
                     { label: 'Mise en forme des questions' }

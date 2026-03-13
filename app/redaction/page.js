@@ -268,8 +268,8 @@ export default function RedactionPage() {
                 <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA prépare votre épreuve de rédaction personnalisée.</p>
                 <div className="w-full max-w-md space-y-3">
                   {[
-                    { label: 'Analyse des annales des 2 dernières années' },
-                    { label: 'Choix du sujet' },
+                    { label: 'Récupération des sujets des annales' },
+                    { label: 'Sélection du sujet' },
                     { label: 'Rédaction du sujet' },
                     { label: 'Mise en forme de la page' }
                   ].map((ls, i) => (

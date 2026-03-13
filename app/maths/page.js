@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Home, TrendingUp, RotateCcw, UserRound, BadgeCheck, LogOut, Stethoscope } from 'lucide-react'
+import { Home, TrendingUp, RotateCcw, UserRound, BadgeCheck, LogOut, Stethoscope, Timer, CalculatorOff, Sparkles, ClipboardCheck } from 'lucide-react'
 
 const sidebarItems = [
   { id: 'dashboard', label: 'Accueil', href: '/dashboard', icon: Home },
@@ -248,13 +248,13 @@ export default function MathsPage() {
                 <div className="p-6">
                   <div className="space-y-4 mb-6">
                     {[
-                      { emoji: '⏱', title: 'Chronomètre de 30 minutes', text: 'Le compte à rebours démarre dès la génération du sujet. À la fin du temps, vos réponses sont envoyées automatiquement.' },
-                      { emoji: '🚫', title: 'Sans calculatrice', text: 'Comme au concours IFSI, vous devez poser vos calculs à la main. Munissez-vous d\'un brouillon.' },
-                      { emoji: '🎲', title: 'Exercices générés par l\'IA', text: 'Opérations décimales, pourcentages, conversions d\'unités et équations — le sujet est différent à chaque fois.' },
-                      { emoji: '✅', title: 'Correction détaillée et note /10', text: 'Chaque réponse est corrigée avec la méthode de résolution complète pour progresser.' }
+                      { icon: <Timer size={18} strokeWidth={2} />, title: 'Chronomètre de 30 minutes', text: 'Le compte à rebours démarre dès la génération du sujet. À la fin du temps, vos réponses sont envoyées automatiquement.' },
+                      { icon: <CalculatorOff size={18} strokeWidth={2} />, title: 'Sans calculatrice', text: 'Comme au concours IFSI, vous devez poser vos calculs à la main. Munissez-vous d\'un brouillon.' },
+                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Exercices générés par l\'IA', text: 'Opérations décimales, pourcentages, conversions d\'unités et équations — le sujet est différent à chaque fois.' },
+                      { icon: <ClipboardCheck size={18} strokeWidth={2} />, title: 'Correction détaillée et note /10', text: 'Chaque réponse est corrigée avec la méthode de résolution complète pour progresser.' }
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3">
-                        <span className="text-xl shrink-0 mt-0.5">{item.emoji}</span>
+                        <div className="w-9 h-9 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">{item.icon}</div>
                         <div>
                           <p className="text-sm font-black text-slate-800">{item.title}</p>
                           <p className="text-xs text-slate-500 leading-relaxed mt-0.5">{item.text}</p>

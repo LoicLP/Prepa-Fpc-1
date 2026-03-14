@@ -363,7 +363,7 @@ export default function MathsPage() {
                         <div className="flex items-center gap-3 mb-5">
                           <span className="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
                           <h3 className="font-black text-slate-900 text-base sm:text-lg flex-1">{ex.titre}</h3>
-                          <span className="text-sm font-black text-slate-400 shrink-0">/{ex.points}</span>
+                          <span className="text-base sm:text-lg font-black text-slate-900 shrink-0">/{ex.points}</span>
                         </div>
 
                         {ex.enonce && (
@@ -383,7 +383,7 @@ export default function MathsPage() {
                               <div className="ml-9 max-w-sm">
                                 <input
                                   type="text"
-                                  className="w-full bg-red-50/50 border-2 border-red-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 focus:bg-white transition placeholder:text-slate-400 placeholder:font-normal"
+                                  className="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition placeholder:text-slate-400 placeholder:font-normal"
                                   placeholder="Votre réponse..."
                                   value={reponses[q.id] || ''}
                                   onChange={(e) => updateReponse(q.id, e.target.value)}

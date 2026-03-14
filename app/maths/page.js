@@ -353,47 +353,40 @@ export default function MathsPage() {
 
                   <div className="space-y-8">
                     {sujet.exercices?.map((ex, exIdx) => (
-                      <div key={exIdx} className="rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
-                        <div className="bg-slate-900 px-6 py-4 flex items-center gap-3">
-                          <span className="w-8 h-8 bg-white/15 text-white rounded-lg flex items-center justify-center font-black text-sm">{ex.numero}</span>
-                          <h3 className="font-black text-white text-sm flex-1">{ex.titre}</h3>
-                          <span className="text-xs font-bold text-slate-400 uppercase">{ex.categorie} — {ex.points} pts</span>
+                      <div key={exIdx} className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
+                        <div className="flex items-center gap-3 mb-5">
+                          <span className="w-9 h-9 bg-red-600 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
+                          <div className="flex-1">
+                            <h3 className="font-black text-slate-900 text-sm">{ex.titre}</h3>
+                            <span className="text-xs font-bold text-slate-400">{ex.categorie} — {ex.points} pts</span>
+                          </div>
                         </div>
 
-                        <div className="bg-white p-6">
                         {ex.enonce && (
-                          <div className="bg-red-50/60 border border-red-200/60 rounded-xl p-4 mb-5 flex items-start gap-3">
-                            <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
-                              <svg className="w-4 h-4 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                            </div>
-                            <div>
-                              <p className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Énoncé</p>
-                              <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{ex.enonce}</p>
-                            </div>
+                          <div className="border-l-3 border-red-400 bg-slate-50 rounded-r-lg pl-4 pr-4 py-3 mb-6">
+                            <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{ex.enonce}</p>
                           </div>
                         )}
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                           {ex.questions?.map((q, qIdx) => (
-                            <div key={qIdx} className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-                              <div className="flex items-start gap-3 mb-3">
-                                <span className="w-6 h-6 bg-red-50 text-red-600 rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
-                                <p className="text-sm text-slate-800 font-medium leading-relaxed whitespace-pre-line">{q.question}</p>
-                                <span className="text-xs font-bold text-slate-400 shrink-0 ml-auto">{q.points} pt{q.points > 1 ? 's' : ''}</span>
+                            <div key={qIdx}>
+                              <div className="flex items-start gap-3 mb-2">
+                                <span className="w-6 h-6 bg-slate-900 text-white rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
+                                <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
+                                <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
-                              <div className="bg-amber-50/70 border-2 border-amber-300/70 rounded-xl p-3">
-                                <p className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1.5">Réponse</p>
+                              <div className="ml-9">
                                 <input
                                   type="text"
-                                  className="w-full bg-white border border-amber-200 rounded-lg px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition placeholder:text-slate-400 placeholder:font-normal"
-                                  placeholder="Saisissez votre réponse ici..."
+                                  className="w-full bg-red-50/50 border-2 border-red-200 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 focus:bg-white transition placeholder:text-slate-400 placeholder:font-normal"
+                                  placeholder="Votre réponse..."
                                   value={reponses[q.id] || ''}
                                   onChange={(e) => updateReponse(q.id, e.target.value)}
                                 />
                               </div>
                             </div>
                           ))}
-                        </div>
                         </div>
                       </div>
                     ))}

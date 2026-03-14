@@ -64,7 +64,7 @@ export default function ExamenPage() {
     if (step !== 'loading') return
     const interval = setInterval(() => {
       setLoadingStep(prev => prev < 4 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 
@@ -74,7 +74,7 @@ export default function ExamenPage() {
     setCorrectingStep(0)
     const interval = setInterval(() => {
       setCorrectingStep(prev => prev < 5 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 

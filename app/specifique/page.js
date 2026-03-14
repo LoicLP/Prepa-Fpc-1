@@ -84,7 +84,7 @@ export default function SpecifiquePage() {
     setCorrectingStep(0)
     const interval = setInterval(() => {
       setCorrectingStep(prev => prev < 3 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 

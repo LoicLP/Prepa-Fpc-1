@@ -51,7 +51,7 @@ export default function RedactionPage() {
     if (step !== 'loading') return
     const interval = setInterval(() => {
       setLoadingStep(prev => prev < 3 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 
@@ -61,7 +61,7 @@ export default function RedactionPage() {
     setCorrectingStep(0)
     const interval = setInterval(() => {
       setCorrectingStep(prev => prev < 3 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 

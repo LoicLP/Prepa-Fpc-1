@@ -55,7 +55,7 @@ export default function OralPage() {
     if (step !== 'loading') return
     const interval = setInterval(() => {
       setLoadingStep(prev => prev < 3 ? prev + 1 : prev)
-    }, 5000)
+    }, 3000)
     return () => clearInterval(interval)
   }, [step])
 

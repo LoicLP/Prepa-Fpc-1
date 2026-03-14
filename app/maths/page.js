@@ -197,8 +197,8 @@ export default function MathsPage() {
         .premium-scan { animation: premiumScan 5s ease-in-out infinite; }
         @keyframes pulse-urgent { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .pulse-urgent { animation: pulse-urgent 1s ease-in-out infinite; }
-        @keyframes hourglass-flip { 0% { transform: rotate(0deg); } 50% { transform: rotate(180deg); } 100% { transform: rotate(360deg); } }
-        .hourglass-anim { animation: hourglass-flip 3s ease-in-out infinite; }
+        @keyframes heartbeat-line { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
+        .heartbeat-anim { animation: heartbeat-line 1.5s linear infinite; }
         @keyframes morph { 0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; } 33% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; } 66% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; } }
       `}</style>
 
@@ -323,7 +323,7 @@ export default function MathsPage() {
                           <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-red-400'}`} style={{width: `${timePercent}%`}}></div>
                         </div>
                         <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
-                          <svg className="w-6 h-6 text-red-400 hourglass-anim" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"/></svg>
+                          <svg className="w-8 h-6 text-red-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
                           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                         </div>
                       </div>

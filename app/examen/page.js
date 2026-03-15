@@ -247,6 +247,21 @@ export default function ExamenPage() {
         @keyframes pulse-urgent { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .pulse-urgent { animation: pulse-urgent 1s ease-in-out infinite; }
         @keyframes morph { 0%, 100% { border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; } 33% { border-radius: 70% 30% 50% 50% / 30% 30% 70% 70%; } 66% { border-radius: 100% 60% 60% 100% / 100% 100% 60% 60%; } }
+        @keyframes heartbeat-line { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
+        .heartbeat-anim { animation: heartbeat-line 1.5s linear infinite; }
+        .gooey-loader { width: 180px; height: 180px; position: relative; filter: url('#goo'); animation: goo-spin 4s ease-in-out infinite alternate; margin: 0 auto; }
+        .goo-drop { position: absolute; top: 50%; left: 50%; background: #dc2626; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%, -50%); }
+        .goo-yin, .goo-yang { width: 70px; height: 70px; }
+        .goo-yin { animation: goo-move-yin 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite; }
+        .goo-yang { animation: goo-move-yang 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite reverse; }
+        @keyframes goo-spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes goo-morph { 0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; } 50% { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; } }
+        @keyframes goo-move-yin { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, calc(-50% - 50px)) scale(0.9); } }
+        @keyframes goo-move-yang { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, calc(-50% + 50px)) scale(0.9); } }
+        .loading-dot { display: inline-block; width: 4px; height: 4px; background-color: currentColor; border-radius: 50%; margin: 0 2px; animation: dot-blink 1.4s infinite; opacity: 0; }
+        .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes dot-blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
       `}</style>
 
       {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
@@ -362,78 +377,84 @@ export default function ExamenPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col">
 
                 {/* Barre du haut */}
-                <div className="border-b border-slate-200 px-6 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-yellow-100 text-yellow-700">
-                      Partie 1/2
-                    </span>
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-100 text-red-700">
-                      Mathématiques
-                    </span>
-                    {sujetMaths.source === 'annale' ? (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-100 text-red-700">
-                        Annale {sujetMaths.ville} {sujetMaths.annee}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-red-100 text-red-700">
-                        Sujet créé par nos soins
-                      </span>
-                    )}
-                    <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-slate-100 text-slate-600">
-                      Sans calculatrice
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
-                      <div className="w-32 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                        <div className="h-full rounded-full transition-all duration-1000 bg-red-500" style={{width: `${timePercent}%`}}></div>
+                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <h2 className="text-xl sm:text-2xl font-black text-white">{sujetMaths.titre}</h2>
+                    <div className="flex items-center gap-4 shrink-0 ml-4">
+                      <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
+                        <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
+                          <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-red-400'}`} style={{width: `${timePercent}%`}}></div>
+                        </div>
+                        <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
+                          <svg className="w-8 h-6 text-red-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
+                          {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
+                        </div>
                       </div>
-                      <div className={`flex items-center gap-1.5 font-black text-lg tabular-nums ${isUrgent ? 'text-red-600' : 'text-slate-900'}`}>
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                        {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
-                      </div>
+                      <a href="/dashboard" className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                        Quitter l'examen
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </a>
                     </div>
-                    <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
-                      Quitter l'examen
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </a>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-yellow-500/20 text-yellow-300">
+                        Partie 1/2
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                        Mathématiques
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                        Sans calculatrice
+                      </span>
+                      {sujetMaths.source === 'annale' ? (
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                          Annale {sujetMaths.ville} {sujetMaths.annee}
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                          Sujet créé par nos soins
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Note sur {sujetMaths.noteMax || 10} points — Durée : 30 minutes</p>
                   </div>
                 </div>
 
                 <div className="flex-1 p-6 sm:p-8 overflow-y-auto">
-                  <h2 className="text-lg font-black text-slate-900 mb-1">{sujetMaths.titre}</h2>
-                  <p className="text-xs text-slate-400 font-bold uppercase tracking-wider mb-6">Note sur {sujetMaths.noteMax || 10} points — Durée : 30 minutes — Sans calculatrice</p>
 
                   <div className="space-y-8">
                     {sujetMaths.exercices?.map((ex, exIdx) => (
-                      <div key={exIdx} className="bg-slate-50 border border-slate-200 rounded-2xl p-6">
-                        <div className="flex items-center gap-3 mb-4">
-                          <span className="w-8 h-8 bg-red-100 text-red-700 rounded-lg flex items-center justify-center font-black text-sm">{ex.numero}</span>
-                          <h3 className="font-black text-slate-900 text-sm flex-1">{ex.titre}</h3>
-                          <span className="text-xs font-bold text-slate-400 uppercase">{ex.categorie} — {ex.points} pts</span>
+                      <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
+                        <div className="flex items-center gap-3 mb-5">
+                          <span className="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
+                          <h3 className="font-black text-slate-900 text-base sm:text-lg flex-1">{ex.titre}</h3>
+                          <span className="text-base sm:text-lg font-black text-slate-900 shrink-0">/{ex.points}</span>
                         </div>
 
                         {ex.enonce && (
-                          <div className="bg-white border border-slate-200 rounded-xl p-4 mb-5">
+                          <div className="border-l-3 border-red-400 bg-slate-50 rounded-r-lg pl-4 pr-4 py-3 mb-6">
                             <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{ex.enonce}</p>
                           </div>
                         )}
 
-                        <div className="space-y-4">
+                        <div className="space-y-5">
                           {ex.questions?.map((q, qIdx) => (
-                            <div key={qIdx} className="bg-white border border-slate-200 rounded-xl p-4">
-                              <div className="flex items-start gap-3 mb-3">
-                                <span className="w-6 h-6 bg-red-50 text-red-600 rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
-                                <p className="text-sm text-slate-800 font-medium leading-relaxed whitespace-pre-line">{q.question}</p>
-                                <span className="text-xs font-bold text-slate-400 shrink-0 ml-auto">{q.points} pt{q.points > 1 ? 's' : ''}</span>
+                            <div key={qIdx}>
+                              <div className="flex items-start gap-3 mb-2">
+                                <span className="w-6 h-6 bg-slate-900 text-white rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
+                                <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
+                                <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
-                              <input
-                                type="text"
-                                className="w-full bg-slate-50 border border-slate-200 rounded-lg px-4 py-2.5 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition placeholder:text-slate-400"
-                                placeholder="Votre réponse..."
-                                value={reponses[q.id] || ''}
-                                onChange={(e) => updateReponse(q.id, e.target.value)}
-                              />
+                              <div className="ml-9 max-w-sm">
+                                <input
+                                  type="text"
+                                  className="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition placeholder:text-slate-400 placeholder:font-normal"
+                                  placeholder="Votre réponse..."
+                                  value={reponses[q.id] || ''}
+                                  onChange={(e) => updateReponse(q.id, e.target.value)}
+                                />
+                              </div>
                             </div>
                           ))}
                         </div>
@@ -443,8 +464,7 @@ export default function ExamenPage() {
 
                   {error && <p className="text-red-600 font-bold text-sm mt-4">{error}</p>}
 
-                  <div className="flex items-center justify-between mt-8 pb-4">
-                    <a href="/dashboard" className="text-slate-500 hover:text-slate-700 font-bold text-sm transition cursor-pointer">Abandonner l'examen</a>
+                  <div className="flex items-center justify-end mt-8 pb-4">
                     <button onClick={() => handleSubmitMaths(false)} className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-200/50 text-sm flex items-center gap-2 cursor-pointer">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
                       Passer à la rédaction
@@ -578,27 +598,29 @@ export default function ExamenPage() {
           {/* ===== CORRECTING ===== */}
           {step === 'correcting' && (
             <div className="animate-fade-in min-h-[calc(100vh-2.5rem)] flex items-center justify-center">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-8">
-                <div className="w-24 h-24 bg-gradient-to-br from-yellow-400 to-amber-500 shadow-xl shadow-yellow-200 mb-8" style={{animation: 'morph 4s ease-in-out infinite'}}></div>
-                <h2 className="text-xl font-black text-slate-900 mb-2">Correction des deux épreuves...</h2>
-                <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA analyse vos réponses et votre copie en détail.</p>
-                <div className="w-full max-w-md space-y-3">
-                  {[
-                    { label: 'Lecture de vos réponses mathématiques' },
-                    { label: 'Vérification des calculs' },
-                    { label: 'Analyse de votre rédaction' },
-                    { label: 'Vérification de l\'orthographe et de la syntaxe' },
-                    { label: 'Attribution des notes' },
-                    { label: 'Calcul de la note globale /20' }
-                  ].map((ls, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i <= correctingStep ? 'bg-yellow-50 border border-yellow-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
-                      <span className={`font-bold text-sm flex-grow ${i <= correctingStep ? 'text-yellow-700' : 'text-slate-400'}`}>{ls.label}</span>
-                      {i < correctingStep && <svg className="w-5 h-5 text-yellow-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
-                      {i === correctingStep && <div className="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin shrink-0"></div>}
-                      <span className="text-xs font-bold text-slate-400">{i + 1}/6</span>
-                    </div>
-                  ))}
+              <svg style={{width:0,height:0,position:'absolute'}}>
+                <defs>
+                  <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">
+                    <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur" />
+                    <feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="goo" />
+                    <feBlend in="SourceGraphic" in2="goo" />
+                  </filter>
+                </defs>
+              </svg>
+              <div className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-3xl shadow-xl max-w-sm w-full flex flex-col items-center justify-center py-14 px-8">
+                <div className="gooey-loader mb-8">
+                  <div className="goo-drop goo-yin"></div>
+                  <div className="goo-drop goo-yang"></div>
                 </div>
+                <h2 className="text-lg font-medium text-slate-800 tracking-wide mb-2">Correction des deux épreuves</h2>
+                <p className="text-sm text-slate-500 font-light flex items-center justify-center">
+                  Veuillez patienter un instant
+                  <span className="inline-flex ml-1 items-center">
+                    <span className="loading-dot"></span>
+                    <span className="loading-dot"></span>
+                    <span className="loading-dot"></span>
+                  </span>
+                </p>
               </div>
             </div>
           )}

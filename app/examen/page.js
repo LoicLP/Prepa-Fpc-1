@@ -383,10 +383,10 @@ export default function ExamenPage() {
                     <div className="flex items-center gap-4 shrink-0 ml-4">
                       <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
                         <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
-                          <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-red-400'}`} style={{width: `${timePercent}%`}}></div>
+                          <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-yellow-400'}`} style={{width: `${timePercent}%`}}></div>
                         </div>
                         <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
-                          <svg className="w-8 h-6 text-red-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
+                          <svg className="w-8 h-6 text-yellow-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
                           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                         </div>
                       </div>
@@ -401,10 +401,10 @@ export default function ExamenPage() {
                       <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-yellow-500/20 text-yellow-300">
                         Partie 1/2
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-yellow-300">
                         Mathématiques
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-yellow-300">
                         Sans calculatrice
                       </span>
                       {sujetMaths.source === 'annale' ? (
@@ -432,13 +432,13 @@ export default function ExamenPage() {
                     {sujetMaths.exercices?.map((ex, exIdx) => (
                       <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
                         <div className="flex items-center gap-3 mb-5">
-                          <span className="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
+                          <span className="w-9 h-9 bg-yellow-500 text-slate-900 rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
                           <h3 className="font-black text-slate-900 text-base sm:text-lg flex-1">{ex.titre}</h3>
                           <span className="text-base sm:text-lg font-black text-slate-900 shrink-0">/{ex.points}</span>
                         </div>
 
                         {ex.enonce && (
-                          <div className="border-l-3 border-red-400 bg-slate-50 rounded-r-lg pl-4 pr-4 py-3 mb-6">
+                          <div className="border-l-3 border-yellow-400 bg-slate-50 rounded-r-lg pl-4 pr-4 py-3 mb-6">
                             <p className="text-sm text-slate-700 leading-relaxed whitespace-pre-line">{ex.enonce}</p>
                           </div>
                         )}
@@ -447,7 +447,7 @@ export default function ExamenPage() {
                           {ex.questions?.map((q, qIdx) => (
                             <div key={qIdx}>
                               <div className="flex items-start gap-3 mb-2">
-                                <span className="w-6 h-6 bg-slate-900 text-white rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
+                                <span className="w-6 h-6 bg-yellow-500 text-slate-900 rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
                                 <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
                                 <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
@@ -470,7 +470,7 @@ export default function ExamenPage() {
                   {error && <p className="text-red-600 font-bold text-sm mt-4">{error}</p>}
 
                   <div className="flex items-center justify-end mt-8 pb-4">
-                    <button onClick={() => handleSubmitMaths(false)} className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-200/50 text-sm flex items-center gap-2 cursor-pointer">
+                    <button onClick={() => handleSubmitMaths(false)} className="bg-yellow-500 hover:bg-yellow-600 text-slate-900 font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-yellow-200/50 text-sm flex items-center gap-2 cursor-pointer">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
                       Passer à la rédaction
                     </button>

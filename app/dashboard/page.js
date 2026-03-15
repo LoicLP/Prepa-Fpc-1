@@ -340,10 +340,13 @@ function DashboardContent() {
                           <path d="M16 2 C16 2 4 18 4 26 C4 33.5 9.5 38 16 38 C22.5 38 28 33.5 28 26 C28 18 16 2 16 2Z"/>
                         </clipPath>
                       </defs>
-                      <path d="M16 2 C16 2 4 18 4 26 C4 33.5 9.5 38 16 38 C22.5 38 28 33.5 28 26 C28 18 16 2 16 2Z" fill="#fee2e2" stroke="#fca5a5" strokeWidth="1.2"/>
+                      <path d="M16 2 C16 2 4 18 4 26 C4 33.5 9.5 38 16 38 C22.5 38 28 33.5 28 26 C28 18 16 2 16 2Z" fill={streak >= 7 ? '#fef9c3' : '#fee2e2'} stroke={streak >= 7 ? '#facc15' : '#fca5a5'} strokeWidth="1.2"/>
                       <rect clipPath="url(#dropClip)" x="0" y={38 - Math.min(36, Math.max(0, streak * 5))} width="32" height={Math.min(36, Math.max(0, streak * 5))} fill={streak === 0 ? '#fecaca' : streak < 3 ? '#f87171' : streak < 7 ? '#ef4444' : '#dc2626'}/>
                       <ellipse cx="11" cy="24" rx="2.5" ry="3" fill="white" opacity="0.25"/>
                     </svg>
+                    {streak >= 7 && (
+                      <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-amber-400 text-slate-900 rounded-full flex items-center justify-center font-black text-[9px] shadow-sm border-2 border-white">{streak}</div>
+                    )}
                   </div>
                   <div>
                     <p className="text-2xl font-black text-slate-900">{streak} <span className="text-xs font-bold text-slate-400">jour(s) d'affilée</span></p>
@@ -364,33 +367,27 @@ function DashboardContent() {
                   </div>
                 </div>
 
-                {/* Objectif semaine */}
-                <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-sm font-black text-slate-900">Objectif de la semaine</p>
-                    <span className="text-xs font-black text-slate-400">{weekData.count}/5 exercices</span>
-                  </div>
-                  <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3">
-                    <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{width: `${weekProgress}%`}}></div>
-                  </div>
-                  <div className="flex justify-between">
-                    {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day, i) => (
-                      <div key={i} className="flex flex-col items-center gap-1">
-                        <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black ${weekData.daysWithExercise.has(i) ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-400'}`}>
-                          {weekData.daysWithExercise.has(i) ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> : day}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  {weekGoalReached && (
-                    <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
-                      <p className="text-sm font-bold text-emerald-700">Continue comme ça, c'est très bien !</p>
+                {/* Objectif semaine ou mois */}
+                {!weekGoalReached ? (
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-black text-slate-900">Objectif de la semaine</p>
+                      <span className="text-xs font-black text-slate-400">{weekData.count}/5 exercices</span>
                     </div>
-                  )}
-                </div>
-
-                {/* Objectif du mois */}
-                {weekGoalReached && (
+                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3">
+                      <div className="h-full bg-red-500 rounded-full transition-all duration-500" style={{width: `${weekProgress}%`}}></div>
+                    </div>
+                    <div className="flex justify-between">
+                      {['L', 'M', 'M', 'J', 'V', 'S', 'D'].map((day, i) => (
+                        <div key={i} className="flex flex-col items-center gap-1">
+                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black ${weekData.daysWithExercise.has(i) ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-400'}`}>
+                            {weekData.daysWithExercise.has(i) ? <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg> : day}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
                   <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
                     <div className="flex items-center justify-between mb-3">
                       <p className="text-sm font-black text-slate-900">Objectif du mois</p>
@@ -399,8 +396,11 @@ function DashboardContent() {
                     <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3">
                       <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{width: `${monthProgress}%`}}></div>
                     </div>
+                    <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+                      <p className="text-sm font-bold text-emerald-700">Continue comme ça, c'est très bien !</p>
+                    </div>
                     {monthData.count >= 20 && (
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                      <div className="mt-3 bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
                         <p className="text-sm font-bold text-amber-700">Objectif du mois atteint, bravo !</p>
                       </div>
                     )}

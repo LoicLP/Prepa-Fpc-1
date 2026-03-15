@@ -343,7 +343,7 @@ export default function RedactionPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{sujet.bareme}</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Durée : 30 minutes</p>
                   </div>
                 </div>
 
@@ -363,6 +363,11 @@ export default function RedactionPage() {
                         Consigne
                       </h3>
                       <p className="text-sm text-purple-800 leading-relaxed whitespace-pre-line">{sujet.consigne}</p>
+                      {sujet.bareme && (
+                        <div className="mt-4 pt-4 border-t border-purple-200">
+                          <p className="text-xs text-purple-700 font-semibold leading-relaxed whitespace-pre-line">{sujet.bareme}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 

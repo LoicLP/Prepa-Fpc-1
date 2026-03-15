@@ -555,7 +555,7 @@ export default function ExamenPage() {
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">{sujetRedaction.bareme}</p>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Durée : 30 minutes</p>
                   </div>
                 </div>
 
@@ -575,6 +575,11 @@ export default function ExamenPage() {
                         Consigne
                       </h3>
                       <p className="text-sm text-purple-800 leading-relaxed whitespace-pre-line">{sujetRedaction.consigne}</p>
+                      {sujetRedaction.bareme && (
+                        <div className="mt-4 pt-4 border-t border-purple-200">
+                          <p className="text-xs text-purple-700 font-semibold leading-relaxed whitespace-pre-line">{sujetRedaction.bareme}</p>
+                        </div>
+                      )}
                     </div>
                   </div>
 

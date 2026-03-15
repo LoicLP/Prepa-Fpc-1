@@ -193,6 +193,27 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
       const sujetData = JSON.parse(jsonMatch[0])
+      // Normaliser le sujet
+      sujetData.source = sujetData.source || (useAnnale ? 'annale' : 'original')
+      sujetData.titre = sujetData.titre || 'Épreuve de Mathématiques'
+      sujetData.duree = sujetData.duree || '30 minutes'
+      sujetData.calculatrice = false
+      sujetData.noteMax = 10
+      sujetData.annee = sujetData.annee || null
+      sujetData.ville = sujetData.ville || null
+      sujetData.exercices = (sujetData.exercices || []).map((ex, idx) => ({
+        numero: ex.numero || idx + 1,
+        titre: ex.titre || `Exercice ${idx + 1}`,
+        enonce: ex.enonce || '',
+        categorie: ex.categorie || 'operations',
+        points: ex.points || 0,
+        questions: (ex.questions || []).map((q, qIdx) => ({
+          id: q.id || `${idx + 1}${String.fromCharCode(97 + qIdx)}`,
+          question: q.question || '',
+          points: q.points || 0,
+          reponse: q.reponse || ''
+        }))
+      }))
       return NextResponse.json({ sujet: sujetData })
     }
 
@@ -220,6 +241,10 @@ Corrige chaque réponse en :
 2. Expliquant la méthode de résolution étape par étape de manière pédagogique.
 3. Attribuant les points avec justesse. Valorise les méthodes correctes même si le résultat final est faux en accordant des points partiels.
 4. Rédigeant un bilan constructif (points forts, points à améliorer, conseil).
+
+RÈGLE IMPORTANTE POUR "reponse_attendue" :
+- Si la réponse du candidat est CORRECTE : mets simplement le résultat final (ex: "15 ml").
+- Si la réponse du candidat est INCORRECTE ou PARTIELLE : mets le détail des calculs menant au résultat (ex: "1500 / 500 × 5 = 15 ml").
 
 FORMAT DE SORTIE :
 Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou après, en respectant scrupuleusement cette structure :
@@ -251,6 +276,23 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
       const correction = JSON.parse(jsonMatch[0])
+      // Normaliser la correction
+      correction.note = typeof correction.note === 'number' ? correction.note : 0
+      correction.noteMax = 10
+      correction.appreciation = correction.appreciation || ''
+      correction.points_forts = Array.isArray(correction.points_forts) ? correction.points_forts : []
+      correction.points_ameliorer = Array.isArray(correction.points_ameliorer) ? correction.points_ameliorer : []
+      correction.conseil = correction.conseil || ''
+      correction.corrections = (correction.corrections || []).map(c => ({
+        id: c.id || '',
+        question: c.question || '',
+        reponse_candidat: c.reponse_candidat || '',
+        reponse_attendue: c.reponse_attendue || '',
+        correct: c.correct === true || c.correct === 'true' ? true : c.correct === 'partiel' ? 'partiel' : false,
+        points_obtenus: typeof c.points_obtenus === 'number' ? c.points_obtenus : 0,
+        points_max: typeof c.points_max === 'number' ? c.points_max : 0,
+        explication: c.explication || ''
+      }))
       return NextResponse.json({ correction })
     }
 

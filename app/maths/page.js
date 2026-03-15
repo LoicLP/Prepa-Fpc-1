@@ -470,11 +470,18 @@ export default function MathsPage() {
             <div className="animate-fade-in max-w-4xl mx-auto">
 
               {/* Note */}
-              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6">
+              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6 relative">
+                <a href="/dashboard" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Votre note</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-red-500">{correction.note}</span>
+                  <span className="text-6xl font-black text-white">{correction.note}</span>
                   <span className="text-6xl font-black text-slate-400">/{correction.noteMax || 10}</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 mt-4 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <span className="text-sm font-bold">Temps : {Math.round((30 * 60 - timeLeft) / 60)} min</span>
                 </div>
               </div>
 

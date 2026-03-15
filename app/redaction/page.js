@@ -184,7 +184,7 @@ export default function RedactionPage() {
         @keyframes heartbeat-line { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
         .heartbeat-anim { animation: heartbeat-line 1.5s linear infinite; }
         .gooey-loader { width: 180px; height: 180px; position: relative; filter: url('#goo'); animation: goo-spin 4s ease-in-out infinite alternate; margin: 0 auto; }
-        .goo-drop { position: absolute; top: 50%; left: 50%; background: #dc2626; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%, -50%); }
+        .goo-drop { position: absolute; top: 50%; left: 50%; background: #7c3aed; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%, -50%); }
         .goo-yin, .goo-yang { width: 70px; height: 70px; }
         .goo-yin { animation: goo-move-yin 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite; }
         .goo-yang { animation: goo-move-yang 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite reverse; }
@@ -455,17 +455,26 @@ export default function RedactionPage() {
             <div className="animate-fade-in max-w-4xl mx-auto">
 
               {/* Note */}
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center mb-6">
+              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6 relative">
+                <a href="/dashboard" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Votre note</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-purple-600">{correction.note}</span>
-                  <span className="text-2xl font-black text-slate-300">/{correction.noteMax || 10}</span>
+                  <span className="text-6xl font-black text-white">{correction.note}</span>
+                  <span className="text-6xl font-black text-slate-400">/{correction.noteMax || 10}</span>
                 </div>
-                <p className="text-slate-600 font-medium text-sm mt-4 max-w-lg mx-auto">{correction.appreciation}</p>
+                <div className="flex items-center justify-center gap-2 mt-4 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <span className="text-sm font-bold">Temps : {Math.round((30 * 60 - timeLeft) / 60)} min</span>
+                </div>
+                {correction.appreciation && (
+                  <p className="text-slate-400 font-medium text-sm mt-4 max-w-lg mx-auto">{correction.appreciation}</p>
+                )}
               </div>
 
+              {/* Points forts + à améliorer */}
               <div className="grid sm:grid-cols-2 gap-6 mb-6">
-                {/* Points forts */}
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
                   <h3 className="font-black text-emerald-700 text-sm mb-4 flex items-center gap-2">
                     <div className="w-7 h-7 bg-emerald-100 rounded-lg flex items-center justify-center"><svg className="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg></div>
@@ -474,23 +483,22 @@ export default function RedactionPage() {
                   <ul className="space-y-2.5">
                     {correction.points_forts?.map((p, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                        <span className="text-emerald-500 mt-0.5 shrink-0">+</span>
+                        <span className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-md flex items-center justify-center font-black text-xs shrink-0 mt-0.5">+</span>
                         {p}
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* Points à améliorer */}
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-                  <h3 className="font-black text-amber-700 text-sm mb-4 flex items-center gap-2">
-                    <div className="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center"><svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
-                    Points à améliorer
+                  <h3 className="font-black text-red-600 text-sm mb-4 flex items-center gap-2">
+                    <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center"><svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+                    Points à améliorer !
                   </h3>
                   <ul className="space-y-2.5">
                     {correction.points_ameliorer?.map((p, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                        <span className="text-amber-500 mt-0.5 shrink-0">-</span>
+                        <span className="w-5 h-5 bg-red-100 text-red-600 rounded-md flex items-center justify-center font-black text-xs shrink-0 mt-0.5">-</span>
                         {p}
                       </li>
                     ))}
@@ -519,12 +527,12 @@ export default function RedactionPage() {
               )}
 
               {/* Conseil */}
-              <div className="bg-purple-50 border border-purple-200 rounded-2xl p-6 mb-6">
-                <h3 className="font-black text-purple-800 text-sm mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>
+              <div className="bg-slate-900 rounded-2xl p-6 mb-6">
+                <h3 className="font-black text-white text-sm mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>
                   Conseil pour progresser
                 </h3>
-                <p className="text-purple-700 text-sm leading-relaxed">{correction.conseil}</p>
+                <p className="text-slate-300 text-sm leading-relaxed">{correction.conseil}</p>
               </div>
 
               {/* Actions */}

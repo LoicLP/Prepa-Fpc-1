@@ -107,13 +107,14 @@ export async function POST(request) {
 Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comme base exclusive.
 
 MISSION :
-Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Reproduis fidèlement le texte source et les consignes.
+Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Reproduis fidèlement le texte source et les consignes. NE MODIFIE PAS le niveau de difficulté, ne rajoute pas de questions supplémentaires.
 
 RÈGLES IMPORTANTES :
-- Public cible : Aides-soignants (AS) ou auxiliaires de puériculture (AP) souhaitant devenir infirmiers (IDE).
-- Temps imparti : 30 MINUTES.
+- Public cible : Aides-soignants (AS), auxiliaires de puériculture (AP) ou personnes en reconversion professionnelle (tous horizons) souhaitant devenir infirmiers (IDE).
+- Temps imparti : 30 MINUTES MAXIMUM. Le candidat doit pouvoir tout faire en 30 minutes.
 - Format attendu : ${formatInstruction}
-- Texte source : Compris entre 150 et 300 mots.
+- Texte source : Compris entre 150 et 250 mots.
+- 2 questions MAXIMUM si c'est une analyse. Les questions doivent être SIMPLES et DIRECTES.
 - La note maximale du sujet est de 10 points (PAS sur 20).
 
 FORMAT DE SORTIE :
@@ -136,11 +137,20 @@ Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comm
 MISSION :
 Crée un sujet ORIGINAL et INÉDIT en t'inspirant fortement des thèmes et du style des annales du PDF. Le sujet doit être réaliste et pertinent pour le concours.
 
+ATTENTION — NIVEAU DE DIFFICULTÉ :
+- Le candidat est un AIDE-SOIGNANT, AUXILIAIRE DE PUÉRICULTURE ou une PERSONNE EN RECONVERSION (qui peut venir de n'importe quel métier sans lien avec la santé). Ce n'est PAS un étudiant en médecine ni un universitaire.
+- Le candidat n'a que 30 MINUTES pour tout faire (lire le texte + réfléchir + rédiger). C'est TRÈS COURT.
+- NE SURCHARGE PAS le sujet : 2 questions MAXIMUM si c'est une analyse, ou 1 sujet de dissertation COURT.
+- Les questions doivent être SIMPLES et DIRECTES, pas des questions à tiroirs ou à plusieurs sous-parties.
+- Le texte source doit être ACCESSIBLE, écrit dans un langage courant (pas de jargon médical complexe ni de vocabulaire universitaire).
+- Reste au MÊME NIVEAU DE DIFFICULTÉ que les annales du PDF. Ne complexifie JAMAIS au-delà de ce qui est dans les annales.
+- Le candidat doit pouvoir répondre en quelques paragraphes, pas rédiger une dissertation de 4 pages.
+
 RÈGLES IMPORTANTES :
-- Public cible : Aides-soignants (AS) ou auxiliaires de puériculture (AP) souhaitant devenir infirmiers (IDE). Le jury évalue l'analyse, l'argumentation et la capacité à se projeter dans le rôle de l'IDE.
-- Temps imparti : 30 MINUTES.
+- Public cible : Aides-soignants (AS), auxiliaires de puériculture (AP) ou personnes en reconversion professionnelle (tous horizons) souhaitant devenir infirmiers (IDE).
+- Temps imparti : 30 MINUTES MAXIMUM (adapte la charge de travail en conséquence).
 - Format attendu : ${formatInstruction}
-- Texte source : Rédige ou adapte un texte source pertinent, compris entre 150 et 300 mots.
+- Texte source : Rédige ou adapte un texte source SIMPLE et ACCESSIBLE, compris entre 150 et 250 mots.
 - La note maximale du sujet est de 10 points (PAS sur 20).
 
 FORMAT DE SORTIE :

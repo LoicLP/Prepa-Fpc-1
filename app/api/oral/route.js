@@ -35,7 +35,7 @@ export async function POST(request) {
                 {
                   text: `Tu es un membre du jury d'admission en IFSI (Institut de Formation en Soins Infirmiers) pour l'épreuve orale du concours FPC (Formation Professionnelle Continue).
 
-VOICI LE CV / PARCOURS DU CANDIDAT (actuellement Aide-Soignant(e) ou Auxiliaire de Puériculture) :
+VOICI LE CV / PARCOURS DU CANDIDAT (Aide-Soignant(e), Auxiliaire de Puériculture ou personne en reconversion professionnelle) :
 Le document PDF ci-joint contient le CV du candidat.
 
 MISSION :

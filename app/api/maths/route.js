@@ -145,7 +145,7 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
 Le document PDF ci-joint contient des annales réelles du concours IFSI FPC. Tu dois t'en servir comme modèle pour comprendre les thèmes, le format et le niveau de difficulté attendus.
 
 MISSION :
-Crée un sujet ORIGINAL INÉDIT en t'inspirant fidèlement des annales fournies. Le sujet doit être réaliste, cohérent avec ce qui est demandé au concours, et adapté au niveau d'un aide-soignant ou auxiliaire de puériculture.
+Crée un sujet ORIGINAL INÉDIT en t'inspirant fidèlement des annales fournies. Le sujet doit être réaliste, cohérent avec ce qui est demandé au concours, et adapté au niveau d'un aide-soignant, auxiliaire de puériculture ou personne en reconversion professionnelle.
 
 RÈGLES IMPORTANTES :
 - Le candidat dispose de 30 MINUTES, SANS CALCULATRICE.

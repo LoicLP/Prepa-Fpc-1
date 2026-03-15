@@ -94,43 +94,69 @@ export async function POST(request) {
 
     // === GÉNÉRER UN SUJET ===
     if (action === 'generer') {
+      // Choix côté serveur : 1/4 annale, 3/4 original
+      const useAnnale = Math.random() < 0.25
       // 2 fois sur 5 : forcer une dissertation
       const forceDissertation = Math.random() < 0.4
+      const formatInstruction = forceDissertation
+        ? 'OBLIGATOIREMENT UNE DISSERTATION COURTE (réflexion argumentée, pas de questions).'
+        : '2 à 3 questions d\'analyse ou une dissertation courte.'
 
-      const prompt = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité.
+      const promptAnnale = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité (rédaction/analyse).
 
-Le document PDF ci-joint contient des annales réelles du concours IFSI FPC des dernières années. Tu dois t'en servir comme base principale.
+Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comme base exclusive.
 
-Tu as DEUX possibilités (choisis-en une au hasard, avec une probabilité de 50/50) :
+MISSION :
+Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Reproduis fidèlement le texte source et les consignes.
 
-OPTION 1 — SUJET D'ANNALE :
-Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Mentionne l'année d'origine dans le titre (ex: "Annale 2024 — ..."). Reproduis fidèlement le texte source et les questions tels qu'ils apparaissent dans le document.
+RÈGLES IMPORTANTES :
+- Public cible : Aides-soignants (AS) ou auxiliaires de puériculture (AP) souhaitant devenir infirmiers (IDE).
+- Temps imparti : 30 MINUTES.
+- Format attendu : ${formatInstruction}
+- Texte source : Compris entre 150 et 300 mots.
+- La note maximale du sujet est de 10 points (PAS sur 20).
 
-OPTION 2 — SUJET ORIGINAL INSPIRÉ DES ANNALES :
-Crée un sujet original en t'inspirant des thèmes, du format et du niveau de difficulté des annales du PDF. Le sujet doit être réaliste et cohérent avec ce qui est demandé au concours.
+FORMAT DE SORTIE :
+Tu dois répondre UNIQUEMENT au format JSON strict en respectant cette structure :
 
-${forceDissertation ? `CONSIGNE OBLIGATOIRE : Pour cette génération, tu DOIS créer un sujet de type "dissertation" (réflexion argumentée). Pas d'analyse de texte ni de questions. Le candidat doit rédiger une argumentation structurée sur un thème sanitaire et social lié au métier d'infirmier.` : ''}
-
-Dans les deux cas :
-- Le sujet s'adresse à des aides-soignants ou auxiliaires de puériculture qui veulent devenir infirmiers
-- Le jury évalue : les qualités rédactionnelles, les aptitudes au questionnement, à l'analyse et à l'argumentation, ainsi que la capacité à se projeter dans le futur environnement professionnel
-- Le format peut être : une analyse de texte avec questions, une dissertation/réflexion argumentée, ou une réponse à une ou plusieurs questions sur un thème sanitaire et social
-- Le candidat dispose de 30 MINUTES seulement, adapte donc la quantité de travail demandé en conséquence (pas plus de 2-3 questions, ou 1 sujet de dissertation court)
-- Si le sujet comporte un texte source, il doit faire entre 150 et 300 mots
-- IMPORTANT : Le sujet est noté sur 10 points (PAS sur 20). Adapte le barème en conséquence pour que le total fasse 10 points.
-- Précise dans le barème qu'un retrait de 0,25 point par faute d'orthographe est appliqué
-
-IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
 {
-  "type": "analyse" ou "dissertation" ou "questions",
-  "titre": "Titre du sujet (précise 'Annale 2024' si c'est un sujet d'annale)",
-  "source": "annale" ou "original",
-  "annee": "2024 (si annale, sinon null)",
-  "texte": "Le texte source si analyse ou questions (null si dissertation)",
-  "consigne": "La consigne complète et détaillée pour le candidat",
-  "bareme": "Indication du barème (ex: argumentation 8pts, orthographe 4pts, etc.)"
+  "type": "dissertation ou questions",
+  "titre": "Titre du sujet (ex: Annale 2024 - Titre du texte)",
+  "source": "annale",
+  "annee": "Année d'origine",
+  "texte": "Le texte source intégral à analyser (150 à 300 mots)",
+  "consigne": "Les questions posées ou le sujet de la dissertation",
+  "bareme": "Explication brève de la répartition des 10 points"
 }`
 
+      const promptOriginal = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité (rédaction/analyse).
+
+Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comme modèle pour comprendre les thèmes (santé publique, éthique, rôle soignant), le format et le niveau attendus.
+
+MISSION :
+Crée un sujet ORIGINAL et INÉDIT en t'inspirant fortement des thèmes et du style des annales du PDF. Le sujet doit être réaliste et pertinent pour le concours.
+
+RÈGLES IMPORTANTES :
+- Public cible : Aides-soignants (AS) ou auxiliaires de puériculture (AP) souhaitant devenir infirmiers (IDE). Le jury évalue l'analyse, l'argumentation et la capacité à se projeter dans le rôle de l'IDE.
+- Temps imparti : 30 MINUTES.
+- Format attendu : ${formatInstruction}
+- Texte source : Rédige ou adapte un texte source pertinent, compris entre 150 et 300 mots.
+- La note maximale du sujet est de 10 points (PAS sur 20).
+
+FORMAT DE SORTIE :
+Tu dois répondre UNIQUEMENT au format JSON strict en respectant cette structure :
+
+{
+  "type": "dissertation ou questions",
+  "titre": "Titre du sujet original",
+  "source": "original",
+  "annee": null,
+  "texte": "Le texte source inédit à analyser (150 à 300 mots)",
+  "consigne": "Les questions posées ou le sujet de la dissertation",
+  "bareme": "Explication brève de la répartition des 10 points"
+}`
+
+      const prompt = useAnnale ? promptAnnale : promptOriginal
       const raw = await callGeminiWithPdf(prompt)
       const jsonMatch = raw.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
@@ -146,43 +172,41 @@ IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
         return NextResponse.json({ error: 'Sujet et rédaction requis.' }, { status: 400 })
       }
 
-      const prompt = `Tu es un correcteur du concours IFSI FPC. Tu dois corriger la copie d'un candidat de manière détaillée et bienveillante. Le candidat disposait de 30 minutes.
+      const prompt = `Tu es un correcteur du concours IFSI FPC pour l'épreuve écrite de sous-admissibilité.
+Tu dois corriger la copie d'un candidat (aide-soignant ou auxiliaire de puériculture) de manière détaillée, exigeante mais bienveillante. Le candidat disposait de 30 minutes.
 
-SUJET :
-Type : ${sujet.type}
-Titre : ${sujet.titre}
-${sujet.source === 'annale' ? `(Sujet d'annale ${sujet.annee})` : '(Sujet original)'}
-${sujet.texte ? `Texte : ${sujet.texte}` : ''}
-Consigne : ${sujet.consigne}
-Barème : ${sujet.bareme}
+VOICI LE SUJET (au format JSON) :
+${JSON.stringify(sujet, null, 2)}
 
-COPIE DU CANDIDAT :
+VOICI LA COPIE DU CANDIDAT :
 ${redaction}
 
-Le jury évalue : les qualités rédactionnelles, les aptitudes au questionnement, à l'analyse et à l'argumentation, ainsi que la capacité à se projeter dans le futur environnement professionnel.
+MISSION D'ÉVALUATION (sur 10 points) :
+Analyse la copie en te basant sur ces critères précis :
+1. Qualités rédactionnelles et structure (introduction, développement, conclusion).
+2. Pertinence du questionnement, de l'analyse et de l'argumentation face au texte.
+3. Capacité de projection dans le rôle et les responsabilités du futur métier d'infirmier (IDE).
 
-Corrige cette copie en analysant :
-1. Les qualités rédactionnelles (style, clarté, fluidité)
-2. Les aptitudes au questionnement, à l'analyse et à l'argumentation
-3. La capacité à se projeter dans le futur environnement professionnel d'infirmier(e)
-4. La structure et l'organisation (introduction, développement, conclusion)
-5. L'orthographe et la grammaire — IMPORTANT : applique un retrait de 0,25 point par faute d'orthographe. Liste TOUTES les fautes trouvées.
+MISSION ORTHOGRAPHE (Pénalité) :
+Repère TOUTES les fautes d'orthographe, de grammaire et de conjugaison.
+Règle stricte : Chaque faute entraîne un retrait de 0.25 point sur la note finale.
 
-Sois juste mais bienveillant. Tiens compte du fait que le candidat n'avait que 30 minutes.
+FORMAT DE SORTIE :
+Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou après, en respectant cette structure :
 
-IMPORTANT : La note DOIT être sur 10 points (noteMax = 10). Quel que soit le barème du sujet, ramène toujours la note finale sur 10.
-
-IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
 {
-  "note": 7,
-  "noteMax": 10,
-  "appreciation": "Appréciation générale en 2-3 phrases",
-  "points_forts": ["point fort 1", "point fort 2", "..."],
-  "points_ameliorer": ["point à améliorer 1", "point à améliorer 2", "..."],
+  "note_fond": 8.5,
+  "note_fond_max": 10,
   "fautes": [
-    { "original": "le mot ou passage fautif", "correction": "la correction", "type": "orthographe/grammaire/syntaxe/conjugaison" }
+    { "original": "mot avec erreur", "correction": "mot corrigé", "type": "orthographe/grammaire" }
   ],
-  "conseil": "Un conseil personnalisé pour progresser"
+  "penalite_orthographe": -0.5,
+  "note_finale": 8.0,
+  "noteMax": 10,
+  "appreciation": "Appréciation globale sur la réflexion et la rédaction",
+  "points_forts": ["Point fort 1", "Point fort 2"],
+  "points_ameliorer": ["Axe d'amélioration 1", "Axe d'amélioration 2"],
+  "conseil": "Un conseil pratique et encourageant pour progresser"
 }`
 
       const raw = await callGemini(prompt)
@@ -191,11 +215,15 @@ IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
       const correction = JSON.parse(jsonMatch[0])
-      // Forcer la note sur 10 si Gemini a noté sur autre chose
-      if (correction.noteMax && correction.noteMax !== 10) {
-        correction.note = Math.round((correction.note / correction.noteMax) * 10 * 10) / 10
-        correction.noteMax = 10
-      }
+      // Recalculer la note finale côté serveur pour être sûr
+      const nbFautes = correction.fautes?.length || 0
+      const penalite = nbFautes * 0.25
+      const noteFond = correction.note_fond ?? correction.note_finale ?? 10
+      correction.penalite_orthographe = -penalite
+      correction.note_finale = Math.max(0, Math.round((noteFond - penalite) * 10) / 10)
+      correction.noteMax = 10
+      // Compatibilité avec le front qui utilise correction.note
+      correction.note = correction.note_finale
       return NextResponse.json({ correction })
     }
 

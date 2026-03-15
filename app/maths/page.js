@@ -470,13 +470,12 @@ export default function MathsPage() {
             <div className="animate-fade-in max-w-4xl mx-auto">
 
               {/* Note */}
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center mb-6">
+              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6">
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Votre note</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-red-600">{correction.note}</span>
-                  <span className="text-2xl font-black text-slate-300">/{correction.noteMax || 10}</span>
+                  <span className="text-6xl font-black text-red-500">{correction.note}</span>
+                  <span className="text-6xl font-black text-slate-400">/{correction.noteMax || 10}</span>
                 </div>
-                <p className="text-slate-600 font-medium text-sm mt-4 max-w-lg mx-auto">{correction.appreciation}</p>
               </div>
 
               {/* Points forts + à améliorer */}

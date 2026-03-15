@@ -379,7 +379,7 @@ export default function MathsPage() {
                     {sujet.exercices?.map((ex, exIdx) => (
                       <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
                         <div className="flex items-center gap-3 mb-5">
-                          <span className="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
+                          <span className="w-9 h-9 bg-red-600 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
                           <h3 className="font-black text-slate-900 text-base sm:text-lg flex-1">{ex.titre}</h3>
                           <span className="text-base sm:text-lg font-black text-slate-900 shrink-0">/{ex.points}</span>
                         </div>

@@ -488,7 +488,7 @@ export default function MathsPage() {
                   <ul className="space-y-2.5">
                     {correction.points_forts?.map((p, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                        <span className="text-emerald-500 mt-0.5 shrink-0">+</span>
+                        <span className="w-5 h-5 bg-emerald-100 text-emerald-600 rounded-md flex items-center justify-center font-black text-xs shrink-0 mt-0.5">+</span>
                         {p}
                       </li>
                     ))}
@@ -496,14 +496,14 @@ export default function MathsPage() {
                 </div>
 
                 <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6">
-                  <h3 className="font-black text-amber-700 text-sm mb-4 flex items-center gap-2">
-                    <div className="w-7 h-7 bg-amber-100 rounded-lg flex items-center justify-center"><svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
-                    Points à améliorer
+                  <h3 className="font-black text-red-600 text-sm mb-4 flex items-center gap-2">
+                    <div className="w-7 h-7 bg-red-100 rounded-lg flex items-center justify-center"><svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>
+                    Points à améliorer !
                   </h3>
                   <ul className="space-y-2.5">
                     {correction.points_ameliorer?.map((p, i) => (
                       <li key={i} className="flex items-start gap-2 text-sm text-slate-700">
-                        <span className="text-amber-500 mt-0.5 shrink-0">-</span>
+                        <span className="w-5 h-5 bg-red-100 text-red-600 rounded-md flex items-center justify-center font-black text-xs shrink-0 mt-0.5">-</span>
                         {p}
                       </li>
                     ))}
@@ -546,12 +546,12 @@ export default function MathsPage() {
               </div>
 
               {/* Conseil */}
-              <div className="bg-red-50 border border-red-200 rounded-2xl p-6 mb-6">
-                <h3 className="font-black text-red-800 text-sm mb-2 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>
+              <div className="bg-slate-900 rounded-2xl p-6 mb-6">
+                <h3 className="font-black text-white text-sm mb-2 flex items-center gap-2">
+                  <svg className="w-5 h-5 text-red-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>
                   Conseil pour progresser
                 </h3>
-                <p className="text-red-700 text-sm leading-relaxed">{correction.conseil}</p>
+                <p className="text-slate-300 text-sm leading-relaxed">{correction.conseil}</p>
               </div>
 
               {/* Actions */}

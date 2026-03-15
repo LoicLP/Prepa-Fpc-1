@@ -33,36 +33,45 @@ export async function POST(request) {
                   }
                 },
                 {
-                  text: `Tu es un membre du jury d'admission en IFSI (Institut de Formation en Soins Infirmiers) pour l'épreuve orale du concours FPC (Formation Professionnelle Continue). Tu viens de recevoir le CV/parcours d'un candidat qui est actuellement Aide-Soignant(e) ou Auxiliaire de Puériculture.
+                  text: `Tu es un membre du jury d'admission en IFSI (Institut de Formation en Soins Infirmiers) pour l'épreuve orale du concours FPC (Formation Professionnelle Continue).
 
-Analyse attentivement ce document et génère exactement 7 questions personnalisées que le jury pourrait poser lors de l'entretien oral de 20 minutes. Les questions doivent couvrir ces 3 catégories :
+VOICI LE CV / PARCOURS DU CANDIDAT (actuellement Aide-Soignant(e) ou Auxiliaire de Puériculture) :
+Le document PDF ci-joint contient le CV du candidat.
+
+MISSION :
+Analyse attentivement ce document et génère EXACTEMENT 7 questions personnalisées que le jury posera lors de l'entretien oral de 20 minutes.
+Adapte chaque question au contenu réel du CV. Sois précis en faisant référence aux postes, formations ou expériences spécifiques du candidat pour éviter les questions trop génériques.
+
+RÉPARTITION OBLIGATOIRE DES QUESTIONS :
 
 CATÉGORIE 1 - PARCOURS PROFESSIONNEL (3 questions) :
-- Questions sur les expériences mentionnées dans le CV
-- Questions sur les compétences acquises
-- Questions sur les choix de carrière et les transitions
+- Questions sur les expériences mentionnées dans le CV.
+- Questions sur les compétences acquises.
+- Questions sur les choix de carrière et les transitions.
 
 CATÉGORIE 2 - MOTIVATION ET PROJET (2 questions) :
-- Pourquoi vouloir devenir infirmier/infirmière
-- Ce qui a déclenché cette envie de reconversion
-- Le projet professionnel à moyen/long terme
+- Pourquoi vouloir devenir infirmier/infirmière (IDE).
+- Ce qui a déclenché cette envie de reconversion.
+- Le projet professionnel à moyen/long terme.
 
 CATÉGORIE 3 - CONNAISSANCES DU MÉTIER IDE (2 questions) :
-- Questions sur le rôle propre de l'infirmier vs aide-soignant
-- Questions sur l'éthique, la responsabilité, le cadre légal
-- Questions sur les réalités du métier (gardes, charge émotionnelle, etc.)
+- Questions sur le rôle propre de l'infirmier vs l'aide-soignant / l'auxiliaire de puériculture.
+- Questions sur l'éthique, la responsabilité, le cadre légal.
+- Questions sur les réalités du métier (gardes, charge émotionnelle, travail en équipe, etc.).
 
-IMPORTANT : Réponds UNIQUEMENT en JSON valide, sans backticks, sans markdown, avec cette structure exacte :
-[
-  {
-    "id": 1,
-    "category": "Parcours professionnel",
-    "question": "La question ici",
-    "tips": "Un conseil court pour bien répondre à cette question"
-  }
-]
+FORMAT DE SORTIE :
+Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou après, en respectant cette structure. Pour le champ "tips", tu dois fournir les éléments de réponse pertinents que le jury s'attend à entendre.
 
-Adapte chaque question au contenu réel du CV. Sois précis en faisant référence aux postes, formations ou expériences du candidat.`
+{
+  "questions": [
+    {
+      "id": 1,
+      "category": "Parcours professionnel",
+      "question": "La question précise et personnalisée posée par le jury",
+      "tips": "Ce que le jury attend comme éléments de réponse (compétences à valoriser, pièges à éviter)"
+    }
+  ]
+}`
                 }
               ]
             }
@@ -97,13 +106,22 @@ Adapte chaque question au contenu réel du CV. Sois précis en faisant référen
     const cleaned = allText.replace(/```json/g, '').replace(/```/g, '').trim()
     
     try {
-      // Extraire le JSON même s'il y a du texte autour
-      const jsonMatch = cleaned.match(/\[[\s\S]*\]/)
-      if (!jsonMatch) {
-        console.error('No JSON array found in:', cleaned.substring(0, 500))
+      // Extraire le JSON (objet ou tableau)
+      const jsonObjMatch = cleaned.match(/\{[\s\S]*\}/)
+      const jsonArrMatch = cleaned.match(/\[[\s\S]*\]/)
+      if (!jsonObjMatch && !jsonArrMatch) {
+        console.error('No JSON found in:', cleaned.substring(0, 500))
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
-      const questions = JSON.parse(jsonMatch[0])
+      let questions
+      if (jsonObjMatch) {
+        const parsed = JSON.parse(jsonObjMatch[0])
+        questions = parsed.questions || parsed
+      } else {
+        questions = JSON.parse(jsonArrMatch[0])
+      }
+      // S'assurer que c'est un tableau
+      if (!Array.isArray(questions)) questions = Object.values(questions)
       return NextResponse.json({ questions })
     } catch (parseError) {
       console.error('JSON parse error:', parseError, 'Raw:', cleaned.substring(0, 500))

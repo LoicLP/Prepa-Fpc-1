@@ -251,7 +251,7 @@ export default function ExamenPage() {
         @keyframes heartbeat-line { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
         .heartbeat-anim { animation: heartbeat-line 1.5s linear infinite; }
         .gooey-loader { width: 180px; height: 180px; position: relative; filter: url('#goo'); animation: goo-spin 4s ease-in-out infinite alternate; margin: 0 auto; }
-        .goo-drop { position: absolute; top: 50%; left: 50%; background: #dc2626; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%, -50%); }
+        .goo-drop { position: absolute; top: 50%; left: 50%; background: #eab308; border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(-50%, -50%); }
         .goo-yin, .goo-yang { width: 70px; height: 70px; }
         .goo-yin { animation: goo-move-yin 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite; }
         .goo-yang { animation: goo-move-yang 2.5s ease-in-out infinite, goo-morph 3.5s ease-in-out infinite reverse; }
@@ -652,10 +652,10 @@ export default function ExamenPage() {
                     { label: 'Attribution des notes' },
                     { label: 'Calcul de la note globale /20' }
                   ].map((ls, i) => (
-                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i <= correctingStep ? 'bg-red-50 border border-red-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
-                      <span className={`font-bold text-sm flex-grow ${i <= correctingStep ? 'text-red-700' : 'text-slate-400'}`}>{ls.label}</span>
-                      {i < correctingStep && <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
-                      {i === correctingStep && <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin shrink-0"></div>}
+                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i <= correctingStep ? 'bg-yellow-50 border border-yellow-300' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
+                      <span className={`font-bold text-sm flex-grow ${i <= correctingStep ? 'text-yellow-700' : 'text-slate-400'}`}>{ls.label}</span>
+                      {i < correctingStep && <svg className="w-5 h-5 text-yellow-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
+                      {i === correctingStep && <div className="w-4 h-4 border-2 border-yellow-500 border-t-transparent rounded-full animate-spin shrink-0"></div>}
                       <span className="text-xs font-bold text-slate-400">{i + 1}/6</span>
                     </div>
                   ))}
@@ -669,21 +669,28 @@ export default function ExamenPage() {
             <div className="animate-fade-in max-w-4xl mx-auto">
 
               {/* Note globale */}
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-8 text-center mb-6">
+              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6 relative">
+                <a href="/dashboard" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </a>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Note globale — Examen blanc</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-yellow-500">{correctionMaths.note + correctionRedaction.note}</span>
-                  <span className="text-2xl font-black text-slate-300">/20</span>
+                  <span className="text-6xl font-black text-white">{correctionMaths.note + correctionRedaction.note}</span>
+                  <span className="text-6xl font-black text-slate-400">/20</span>
                 </div>
                 <div className="flex items-center justify-center gap-6 mt-4">
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-red-500 rounded-full"></span>
-                    <span className="text-sm font-bold text-slate-600">Maths : <span className="text-red-600">{correctionMaths.note}/{correctionMaths.noteMax || 10}</span></span>
+                    <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    <span className="text-sm font-bold text-slate-400">Maths : <span className="text-white">{correctionMaths.note}/{correctionMaths.noteMax || 10}</span></span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
-                    <span className="text-sm font-bold text-slate-600">Rédaction : <span className="text-yellow-600">{correctionRedaction.note}/{correctionRedaction.noteMax || 10}</span></span>
+                    <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
+                    <span className="text-sm font-bold text-slate-400">Rédaction : <span className="text-white">{correctionRedaction.note}/{correctionRedaction.noteMax || 10}</span></span>
                   </div>
+                </div>
+                <div className="flex items-center justify-center gap-2 mt-4 text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <span className="text-sm font-bold">Temps : {mathsTimeUsed + redactionTimeUsed} min</span>
                 </div>
               </div>
 

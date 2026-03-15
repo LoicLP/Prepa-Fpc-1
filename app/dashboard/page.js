@@ -507,10 +507,45 @@ function DashboardContent() {
             const pireNote = notesForStats.length > 0 ? parseFloat(Math.min(...notesForStats.map(h => (h.note / h.note_max) * 20)).toFixed(1)) : null
             const totalMin = historique.reduce((sum, h) => sum + (h.duration_minutes || 0), 0)
 
+            // Badges / Diplômes
+            const hasType = (type) => historique.some(h => h.type === type)
+            const has2020 = notesForStats.some(h => (h.note / h.note_max) * 20 >= 20)
+            const badges = [
+              { id: 'premier-pas', label: 'Premier pas', desc: '1er exercice terminé', icon: '🎯', unlocked: totalExos >= 1 },
+              { id: 'regulier', label: 'Régulier', desc: '3 jours d\'affilée', icon: '📅', unlocked: streak >= 3 },
+              { id: 'assidu', label: 'Assidu', desc: '5 jours d\'affilée', icon: '💪', unlocked: streak >= 5 },
+              { id: 'marathonien', label: 'Marathonien', desc: '7 jours d\'affilée', icon: '🏃', unlocked: streak >= 7 },
+              { id: 'studieux', label: 'Studieux', desc: '10 exercices terminés', icon: '📚', unlocked: totalExos >= 10 },
+              { id: 'infatigable', label: 'Infatigable', desc: '14 jours d\'affilée', icon: '🔥', unlocked: streak >= 14 },
+              { id: 'expert', label: 'Expert', desc: '50 exercices terminés', icon: '🎓', unlocked: totalExos >= 50 },
+              { id: 'perfectionniste', label: 'Perfectionniste', desc: 'Obtenir 20/20', icon: '⭐', unlocked: has2020 },
+              { id: 'polyvalent', label: 'Polyvalent', desc: 'Maths + Rédaction + Oral', icon: '🧩', unlocked: hasType('Maths') && hasType('Rédaction') && hasType('Oral') },
+              { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', icon: '🏆', unlocked: streak >= 30 },
+            ]
+
             return (
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Mes stats</h1>
               <p className="text-slate-500 font-medium text-sm mb-8">Suivez votre avancement dans chaque domaine.</p>
+
+              {/* Badges */}
+              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
+                <h3 className="font-black text-slate-900 text-sm mb-4">Vos diplômes</h3>
+                <div className="flex flex-wrap gap-3">
+                  {badges.map(b => (
+                    <div key={b.id} className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border transition-all ${b.unlocked ? 'bg-amber-50 border-amber-300 shadow-sm' : 'bg-slate-50 border-slate-200 opacity-40 grayscale'}`}>
+                      <span className="text-xl">{b.icon}</span>
+                      <div>
+                        <p className={`text-xs font-black ${b.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>{b.label}</p>
+                        <p className="text-[10px] text-slate-400 font-medium">{b.desc}</p>
+                      </div>
+                      {b.unlocked && (
+                        <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               {historique.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
@@ -522,18 +557,10 @@ function DashboardContent() {
               ) : (
                 <>
                   {/* Stats rapides */}
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                  <div className="grid grid-cols-2 gap-4 mb-8">
                     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
                       <p className="text-2xl font-black text-slate-900">{totalExos}</p>
                       <p className="text-xs font-bold text-slate-400 uppercase mt-1">Exercices</p>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-                      <p className="text-2xl font-black text-emerald-600">{meilleureNote || '—'}<span className="text-sm text-slate-400">/20</span></p>
-                      <p className="text-xs font-bold text-slate-400 uppercase mt-1">Meilleure note</p>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-                      <p className="text-2xl font-black text-red-500">{pireNote || '—'}<span className="text-sm text-slate-400">/20</span></p>
-                      <p className="text-xs font-bold text-slate-400 uppercase mt-1">Note la plus basse</p>
                     </div>
                     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
                       <p className="text-2xl font-black text-slate-900">{totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h${totalMin % 60 > 0 ? String(totalMin % 60).padStart(2, '0') : ''}`}</p>

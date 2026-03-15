@@ -154,11 +154,13 @@ export default function OralPage() {
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes premiumScan { 0%, 80% { opacity: 1; } 85% { opacity: 0.4; transform: scale(1.15); } 90% { opacity: 1; transform: scale(1); filter: brightness(1.5); } 95% { filter: brightness(1); } 100% { opacity: 1; } }
         .premium-scan { animation: premiumScan 5s ease-in-out infinite; }
+        @keyframes heartbeat-line { 0% { stroke-dashoffset: 200; } 100% { stroke-dashoffset: 0; } }
+        .heartbeat-anim { animation: heartbeat-line 1.5s linear infinite; }
       `}</style>
 
       {/* TOAST */}
       {uploadSuccess && (
-        <div className="fixed top-4 right-4 z-[100] bg-green-50 border border-green-200 text-green-700 font-bold text-sm px-5 py-3 rounded-xl shadow-lg animate-fade-in flex items-center gap-2">
+        <div className="fixed top-4 right-4 z-[100] bg-slate-900 text-white font-bold text-sm px-5 py-3 rounded-xl shadow-lg animate-fade-in flex items-center gap-2">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
           Fichier {fileName} uploadé avec succès !
         </div>
@@ -325,64 +327,71 @@ export default function OralPage() {
             const oralTimePercent = (timeLeft / (10 * 60)) * 100
             const oralUrgent = timeLeft < 2 * 60
             return (
-            <div className="relative animate-fade-in">
-              <div className="absolute top-0 right-0 flex items-center gap-3">
-                <div className={`flex items-center gap-2 ${oralUrgent ? 'animate-pulse' : ''}`}>
-                  <div className="w-24 h-2 bg-slate-100 rounded-full overflow-hidden hidden sm:block">
-                    <div className={`h-full rounded-full transition-all duration-1000 ${oralUrgent ? 'bg-red-500' : 'bg-emerald-500'}`} style={{width: `${oralTimePercent}%`}}></div>
-                  </div>
-                  <span className={`font-black text-sm tabular-nums ${oralUrgent ? 'text-red-600' : 'text-slate-700'}`}>
-                    {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}
-                  </span>
-                </div>
-                <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
-                  Quitter l'exercice
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </a>
-              </div>
-              <div className="max-w-3xl mx-auto">
-              {/* Wrapper coloré style QCM */}
-              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6 shadow-sm">
-                <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
-                  {/* Header */}
-                  <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-5 border-b border-slate-100 gap-2">
-                    <span className="text-slate-600 font-bold text-xs sm:text-sm tracking-wide">Question {currentQ + 1}/{questions.length}</span>
-                    <span className="bg-emerald-100 text-emerald-700 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg text-[10px] sm:text-xs font-bold tracking-wide uppercase">{q.category}</span>
-                    <div className="absolute bottom-0 left-0 w-full h-1 bg-slate-50">
-                      <div className="h-full bg-slate-900 transition-all duration-500" style={{width: `${progress}%`}}></div>
-                    </div>
-                  </div>
+            <div className="animate-fade-in">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col">
 
-                  {/* Question */}
-                  <div className="p-4 sm:p-6">
-                    <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-5 leading-relaxed">{q.question}</h2>
-
-                    {/* Zone réponse */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-bold text-slate-700 mb-2">Votre réponse</label>
-                      <textarea
-                        rows={5}
-                        value={answers[q.id] || ''}
-                        onChange={e => handleAnswer(q.id, e.target.value)}
-                        placeholder="Rédigez votre réponse ici comme si vous étiez face au jury..."
-                        className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-transparent outline-none font-medium text-sm resize-y"
-                      />
-                    </div>
-
-                    {/* Conseil */}
-                    <button onClick={() => setShowTip(!showTip)} className="flex items-center gap-2 text-sm font-bold bg-amber-400 hover:bg-amber-500 text-black px-4 py-2 rounded-xl transition cursor-pointer mb-2">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
-                      {showTip ? 'Masquer le conseil' : 'Voir le conseil'}
-                    </button>
-                    {showTip && (
-                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2 text-sm text-amber-800 font-medium animate-fade-in">
-                        <strong>Conseil :</strong> {q.tips}
+                {/* Header sombre */}
+                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
+                  <div className="flex items-start justify-between mb-4">
+                    <h2 className="text-xl sm:text-2xl font-black text-white">Préparation à l'oral</h2>
+                    <div className="flex items-center gap-4 shrink-0 ml-4">
+                      <div className={`flex items-center gap-3 ${oralUrgent ? 'animate-pulse' : ''}`}>
+                        <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
+                          <div className={`h-full rounded-full transition-all duration-1000 ${oralUrgent ? 'bg-red-500' : 'bg-emerald-400'}`} style={{width: `${oralTimePercent}%`}}></div>
+                        </div>
+                        <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${oralUrgent ? 'text-red-400' : 'text-white'}`}>
+                          <svg className="w-8 h-6 text-emerald-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
+                          {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}
+                        </div>
                       </div>
-                    )}
+                      <a href="/dashboard" className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                        Quitter l'exercice
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </a>
+                    </div>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
+                        Question {currentQ + 1}/{questions.length}
+                      </span>
+                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
+                        {q.category}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Durée : 10 minutes</p>
+                  </div>
+                  <div className="mt-3 w-full h-1 bg-white/10 rounded-full">
+                    <div className="h-full bg-emerald-400 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
+                  </div>
+                </div>
+
+                {/* Contenu */}
+                <div className="flex-1 p-6 sm:p-8">
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 mb-5 leading-relaxed">{q.question}</h2>
+
+                  <div className="mb-4">
+                    <textarea
+                      rows={5}
+                      value={answers[q.id] || ''}
+                      onChange={e => handleAnswer(q.id, e.target.value)}
+                      placeholder="Rédigez votre réponse ici comme si vous étiez face au jury..."
+                      className="w-full px-4 py-3 bg-slate-50 border-2 border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:border-emerald-400 outline-none font-medium text-sm resize-y transition"
+                    />
+                  </div>
+
+                  <button onClick={() => setShowTip(!showTip)} className="flex items-center gap-2 text-sm font-bold bg-amber-400 hover:bg-amber-500 text-black px-4 py-2 rounded-xl transition cursor-pointer mb-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
+                    {showTip ? 'Masquer le conseil' : 'Voir le conseil'}
+                  </button>
+                  {showTip && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2 text-sm text-amber-800 font-medium animate-fade-in">
+                      <strong>Conseil :</strong> {q.tips}
+                    </div>
+                  )}
 
                   {/* Actions */}
-                  <div className="p-4 sm:p-5 pt-0 flex gap-3">
+                  <div className="flex gap-3 mt-6">
                     {currentQ > 0 && (
                       <button onClick={() => { setCurrentQ(currentQ - 1); setShowTip(false) }} className="bg-slate-100 text-slate-700 font-bold py-3 px-4 sm:px-5 rounded-xl hover:bg-slate-200 flex items-center gap-2 text-sm transition">
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg>
@@ -399,17 +408,16 @@ export default function OralPage() {
                       </button>
                     )}
                   </div>
-                </div>
-              </div>
 
-              {/* Grille navigation */}
-              <div className="mt-6 flex flex-wrap gap-2 justify-center">
-                {questions.map((qq, i) => (
-                  <button key={qq.id} onClick={() => { setCurrentQ(i); setShowTip(false) }} className={`w-9 h-9 rounded-lg text-xs font-bold transition cursor-pointer ${i === currentQ ? 'bg-emerald-600 text-white' : answers[qq.id] ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300'}`}>
-                    {i + 1}
-                  </button>
-                ))}
-              </div>
+                  {/* Grille navigation */}
+                  <div className="mt-6 flex flex-wrap gap-2 justify-center">
+                    {questions.map((qq, i) => (
+                      <button key={qq.id} onClick={() => { setCurrentQ(i); setShowTip(false) }} className={`w-9 h-9 rounded-lg text-xs font-bold transition cursor-pointer ${i === currentQ ? 'bg-emerald-600 text-white' : answers[qq.id] ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300'}`}>
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           )})()}

@@ -423,6 +423,11 @@ export default function ExamenPage() {
 
                 <div className="flex-1 p-6 sm:p-8 overflow-y-auto">
 
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
+                    <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+                    <p className="text-sm text-amber-800 font-medium">Cette épreuve doit être réalisée <strong>sans calculatrice</strong>, conformément aux conditions du concours FPC. Munissez-vous d'un brouillon pour poser vos calculs.</p>
+                  </div>
+
                   <div className="space-y-8">
                     {sujetMaths.exercices?.map((ex, exIdx) => (
                       <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
@@ -607,20 +612,30 @@ export default function ExamenPage() {
                   </filter>
                 </defs>
               </svg>
-              <div className="bg-white/70 backdrop-blur-lg border border-white/50 rounded-3xl shadow-xl max-w-sm w-full flex flex-col items-center justify-center py-14 px-8">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-8">
                 <div className="gooey-loader mb-8">
                   <div className="goo-drop goo-yin"></div>
                   <div className="goo-drop goo-yang"></div>
                 </div>
-                <h2 className="text-lg font-medium text-slate-800 tracking-wide mb-2">Correction des deux épreuves</h2>
-                <p className="text-sm text-slate-500 font-light flex items-center justify-center">
-                  Veuillez patienter un instant
-                  <span className="inline-flex ml-1 items-center">
-                    <span className="loading-dot"></span>
-                    <span className="loading-dot"></span>
-                    <span className="loading-dot"></span>
-                  </span>
-                </p>
+                <h2 className="text-xl font-black text-slate-900 mb-2">Correction des deux épreuves...</h2>
+                <p className="text-slate-500 font-medium text-sm text-center mb-8">Notre IA analyse vos réponses et votre copie en détail.</p>
+                <div className="w-full max-w-md space-y-3">
+                  {[
+                    { label: 'Lecture de vos réponses mathématiques' },
+                    { label: 'Vérification des calculs' },
+                    { label: 'Analyse de votre rédaction' },
+                    { label: 'Vérification de l\'orthographe et de la syntaxe' },
+                    { label: 'Attribution des notes' },
+                    { label: 'Calcul de la note globale /20' }
+                  ].map((ls, i) => (
+                    <div key={i} className={`flex items-center gap-3 p-3 rounded-xl transition-all duration-500 ${i <= correctingStep ? 'bg-red-50 border border-red-200' : 'bg-slate-50 border border-slate-100 opacity-40'}`}>
+                      <span className={`font-bold text-sm flex-grow ${i <= correctingStep ? 'text-red-700' : 'text-slate-400'}`}>{ls.label}</span>
+                      {i < correctingStep && <svg className="w-5 h-5 text-red-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>}
+                      {i === correctingStep && <div className="w-4 h-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin shrink-0"></div>}
+                      <span className="text-xs font-bold text-slate-400">{i + 1}/6</span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           )}

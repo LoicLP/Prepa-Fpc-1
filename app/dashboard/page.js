@@ -162,10 +162,30 @@ function DashboardContent() {
   }
   const weekData = getWeekData()
   const weekProgress = Math.min(100, (weekData.count / 5) * 100)
+  const weekGoalReached = weekData.count >= 5
+
+  // Objectif mois : 20 exercices dans le mois
+  const getMonthData = () => {
+    const today = new Date()
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+    firstDay.setHours(0, 0, 0, 0)
+    const monthExercises = historique.filter(h => new Date(h.created_at) >= firstDay)
+    return { count: monthExercises.length }
+  }
+  const monthData = getMonthData()
+  const monthProgress = Math.min(100, (monthData.count / 20) * 100)
 
   // Moyenne générale (ramenée sur 10)
   const notesAll = historique.filter(h => h.note != null && h.note_max)
   const moyenneGenerale = notesAll.length > 0 ? parseFloat((notesAll.reduce((sum, h) => sum + (h.note / h.note_max) * 20, 0) / notesAll.length).toFixed(1)) : null
+  // Tendance : comparer moyenne avec et sans le dernier exercice
+  const moyenneTendance = (() => {
+    if (notesAll.length < 2) return null
+    const sorted = [...notesAll].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+    const withoutLast = sorted.slice(1)
+    const moyennePrecedente = withoutLast.reduce((sum, h) => sum + (h.note / h.note_max) * 20, 0) / withoutLast.length
+    return moyenneGenerale > moyennePrecedente ? 'up' : moyenneGenerale < moyennePrecedente ? 'down' : null
+  })()
   const categories = [
     { name: 'Calculs de dose', color: 'bg-red-500', progress: 0 },
     { name: 'Pourcentages', color: 'bg-purple-500', progress: 0 },
@@ -333,7 +353,15 @@ function DashboardContent() {
                 {/* Ma moyenne */}
                 <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-center">
                   <p className="text-sm font-black text-slate-900 mb-1">Ma moyenne générale</p>
-                  <p className="text-2xl font-black text-slate-900">{moyenneGenerale || '—'}<span className="text-xs font-bold text-slate-400">/20</span></p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-2xl font-black text-slate-900">{moyenneGenerale || '—'}<span className="text-xs font-bold text-slate-400">/20</span></p>
+                    {moyenneTendance === 'up' && (
+                      <svg className="w-5 h-5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 15l7-7 7 7"/></svg>
+                    )}
+                    {moyenneTendance === 'down' && (
+                      <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    )}
+                  </div>
                 </div>
 
                 {/* Objectif semaine */}
@@ -354,7 +382,30 @@ function DashboardContent() {
                       </div>
                     ))}
                   </div>
+                  {weekGoalReached && (
+                    <div className="mt-4 bg-emerald-50 border border-emerald-200 rounded-xl p-3 text-center">
+                      <p className="text-sm font-bold text-emerald-700">Continue comme ça, c'est très bien !</p>
+                    </div>
+                  )}
                 </div>
+
+                {/* Objectif du mois */}
+                {weekGoalReached && (
+                  <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-3">
+                      <p className="text-sm font-black text-slate-900">Objectif du mois</p>
+                      <span className="text-xs font-black text-slate-400">{monthData.count}/20 exercices</span>
+                    </div>
+                    <div className="w-full h-3 bg-slate-100 rounded-full overflow-hidden mb-3">
+                      <div className="h-full bg-amber-500 rounded-full transition-all duration-500" style={{width: `${monthProgress}%`}}></div>
+                    </div>
+                    {monthData.count >= 20 && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-center">
+                        <p className="text-sm font-bold text-amber-700">Objectif du mois atteint, bravo !</p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* RACCOURCIS UTILES */}

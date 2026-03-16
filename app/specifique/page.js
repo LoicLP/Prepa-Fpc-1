@@ -73,6 +73,7 @@ export default function SpecifiquePage() {
       const skipPopup = localStorage.getItem('specifique_skip_info') === 'true'
       if (!skipPopup) {
         setShowInfoPopup(true)
+        setStep(null)
       }
     })
   }, [])
@@ -231,8 +232,8 @@ export default function SpecifiquePage() {
                   <div className="space-y-4 mb-6">
                     {[
                       { icon: <Target size={18} strokeWidth={2} />, title: 'Choisissez votre famille', text: 'Opérations, pourcentages, conversions ou équations : travaillez vos points faibles.' },
-                      { icon: <BookOpen size={18} strokeWidth={2} />, title: '5-6 questions par session', text: 'Des exercices ciblés, sans calculatrice, pour progresser efficacement.' },
-                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Exercices générés par notre IA', text: 'Des exercices originaux basés sur les annales du concours FPC à chaque session.' },
+                      { icon: <BookOpen size={18} strokeWidth={2} />, title: '10-15 questions par session', text: 'Des exercices ciblés, sans calculatrice, pour progresser efficacement.' },
+                      { icon: <Sparkles size={18} strokeWidth={2} />, title: 'Exercices générés par notre IA', text: 'Des exercices spécifiques et ciblées pour progresser rapidement !' },
                       { icon: <ClipboardCheck size={18} strokeWidth={2} />, title: 'Correction détaillée', text: 'Chaque réponse est corrigée avec une explication pas à pas pour comprendre la méthode.' }
                     ].map((item, i) => (
                       <div key={i} className="flex items-start gap-3">
@@ -245,7 +246,7 @@ export default function SpecifiquePage() {
                     ))}
                   </div>
 
-                  <button onClick={() => { if (dontShowAgain) localStorage.setItem('specifique_skip_info', 'true'); setShowInfoPopup(false) }} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-200/50 text-sm flex items-center justify-center gap-2 cursor-pointer mb-4">
+                  <button onClick={() => { if (dontShowAgain) localStorage.setItem('specifique_skip_info', 'true'); setShowInfoPopup(false); setStep('choix') }} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-blue-200/50 text-sm flex items-center justify-center gap-2 cursor-pointer mb-4">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></svg>
                     C'est parti !
                   </button>
@@ -261,71 +262,34 @@ export default function SpecifiquePage() {
 
           {/* ===== CHOIX FAMILLE ===== */}
           {step === 'choix' && (
-            <div className="animate-fade-in max-w-5xl mx-auto">
+            <div className="animate-fade-in min-h-[calc(100vh-5rem)] flex flex-col items-center justify-center px-4">
 
-              {/* Cadre principal */}
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden relative">
+              <a href="/dashboard" className="absolute top-5 right-5 w-9 h-9 flex items-center justify-center rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition">
+                <svg className="w-4.5 h-4.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </a>
 
-                {/* Croix fermeture */}
-                <a href="/dashboard" className="absolute top-4 right-4 z-10 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                </a>
+              <p className="text-sm font-black text-slate-400 uppercase tracking-widest mb-8">Choisissez une famille</p>
 
-                {/* Hero header */}
-                <div className="bg-slate-900 p-8 sm:p-10 relative overflow-hidden">
-                  <div className="absolute inset-0 opacity-[0.04]" style={{backgroundImage: 'radial-gradient(circle at 1px 1px, white 1px, transparent 0)', backgroundSize: '20px 20px'}}></div>
-                  <div className="relative">
-                    <div className="flex items-center gap-3 mb-4 pr-10">
-                      <div className="w-11 h-11 bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center">
-                        <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm px-5 py-3 rounded-xl mb-6 flex items-center gap-2 max-w-2xl w-full">
+                  <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                  {error}
+                </div>
+              )}
+
+              <div className="grid sm:grid-cols-2 gap-5 max-w-2xl w-full">
+                {familles.map(f => {
+                  const fc = colorMap[f.color]
+                  return (
+                    <button key={f.id} onClick={() => startExercice(f)} className={`bg-white p-6 rounded-2xl border-2 ${fc.border} ${fc.hoverBorder} shadow-sm hover:shadow-md transition text-left cursor-pointer group`}>
+                      <div className={`w-12 h-12 ${fc.iconBg} ${fc.text} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                        {f.icon}
                       </div>
-                      <div>
-                        <h1 className="text-2xl font-black text-white">Entraînement spécifique</h1>
-                        <p className="text-slate-400 font-medium text-sm">Travaillez une famille d'exercices avec corrections détaillées par l'IA</p>
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center gap-3 mt-5">
-                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>5-6 questions par session</span>
-                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>Sans calculatrice</span>
-                      <span className="w-1 h-1 bg-slate-600 rounded-full"></span>
-                      <span className="flex items-center gap-1.5 text-xs text-slate-400 font-medium"><svg className="w-3.5 h-3.5 text-blue-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/></svg>Explications pas à pas</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="p-6 sm:p-8">
-
-                {error && (
-                  <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm px-5 py-3 rounded-xl mb-6 flex items-center gap-2">
-                    <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
-                    {error}
-                  </div>
-                )}
-
-                <p className="text-sm font-black text-slate-400 uppercase tracking-widest mb-5 text-center">Choisissez une famille</p>
-
-                <div className="grid sm:grid-cols-2 gap-5 max-w-2xl mx-auto">
-                  {familles.map(f => {
-                    const fc = colorMap[f.color]
-                    return (
-                      <button key={f.id} onClick={() => startExercice(f)} className={`bg-white p-5 rounded-2xl border-2 ${fc.border} ${fc.hoverBorder} shadow-sm hover:shadow-md transition text-left cursor-pointer group`}>
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className={`w-11 h-11 ${fc.iconBg} ${fc.text} rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                            {f.icon}
-                          </div>
-                          <h2 className="text-base font-black text-slate-900">{f.titre}</h2>
-                        </div>
-                        <p className="text-sm text-slate-500 leading-relaxed">{f.description}</p>
-                        <div className="mt-3 flex items-center gap-2">
-                          <span className={`text-xs font-black ${fc.text} ${fc.bg} px-3 py-1 rounded-full`}>5-6 questions</span>
-                        </div>
-                      </button>
-                    )
-                  })}
-                </div>
-
-                </div>
+                      <h2 className="text-base font-black text-slate-900 mb-1">{f.titre}</h2>
+                      <p className="text-sm text-slate-500 leading-relaxed">{f.description}</p>
+                    </button>
+                  )
+                })}
               </div>
             </div>
           )}

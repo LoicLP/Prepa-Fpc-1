@@ -523,29 +523,12 @@ function DashboardContent() {
               { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', icon: '🏆', unlocked: streak >= 30 },
             ]
 
+            const unlockedCount = badges.filter(b => b.unlocked).length
+
             return (
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-2">Mes stats</h1>
-              <p className="text-slate-500 font-medium text-sm mb-8">Suivez votre avancement dans chaque domaine.</p>
-
-              {/* Badges */}
-              <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-                <h3 className="font-black text-slate-900 text-sm mb-4">Vos diplômes</h3>
-                <div className="flex flex-wrap gap-3">
-                  {badges.map(b => (
-                    <div key={b.id} className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border transition-all ${b.unlocked ? 'bg-amber-50 border-amber-300 shadow-sm' : 'bg-slate-50 border-slate-200 opacity-40 grayscale'}`}>
-                      <span className="text-xl">{b.icon}</span>
-                      <div>
-                        <p className={`text-xs font-black ${b.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>{b.label}</p>
-                        <p className="text-[10px] text-slate-400 font-medium">{b.desc}</p>
-                      </div>
-                      {b.unlocked && (
-                        <svg className="w-4 h-4 text-amber-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Mes stats</h1>
+              <p className="text-slate-400 text-sm mb-8">Suivez votre progression et débloquez vos diplômes.</p>
 
               {historique.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
@@ -556,49 +539,81 @@ function DashboardContent() {
                 </div>
               ) : (
                 <>
-                  {/* Stats rapides */}
-                  <div className="grid grid-cols-2 gap-4 mb-8">
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-                      <p className="text-2xl font-black text-slate-900">{totalExos}</p>
-                      <p className="text-xs font-bold text-slate-400 uppercase mt-1">Exercices</p>
+                  {/* Stats rapides - 4 cartes */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center gap-4">
+                      <div className="w-11 h-11 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-slate-900 leading-none">{totalExos}</p>
+                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Exercices faits</p>
+                      </div>
                     </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-4 text-center">
-                      <p className="text-2xl font-black text-slate-900">{totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h${totalMin % 60 > 0 ? String(totalMin % 60).padStart(2, '0') : ''}`}</p>
-                      <p className="text-xs font-bold text-slate-400 uppercase mt-1">Temps total</p>
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center gap-4">
+                      <div className="w-11 h-11 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-slate-900 leading-none">{totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h${totalMin % 60 > 0 ? String(totalMin % 60).padStart(2, '0') : ''}`}</p>
+                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Temps total</p>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center gap-4">
+                      <div className="w-11 h-11 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-slate-900 leading-none">{meilleureNote != null ? meilleureNote : '—'}<span className="text-sm text-slate-400">/20</span></p>
+                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Meilleure note</p>
+                      </div>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-slate-200 p-5 flex items-center gap-4">
+                      <div className="w-11 h-11 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center shrink-0">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
+                      </div>
+                      <div>
+                        <p className="text-2xl font-black text-slate-900 leading-none">{streak}</p>
+                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Jours d'affilée</p>
+                      </div>
                     </div>
                   </div>
 
                   {/* Graphiques */}
-                  <div className="grid lg:grid-cols-2 gap-6 mb-8">
+                  <div className="grid lg:grid-cols-5 gap-6 mb-8">
                     {/* Barres : exercices par jour */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                      <h3 className="font-black text-slate-900 text-sm mb-4">Exercices par jour (14 derniers jours)</h3>
+                    <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 p-6">
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="font-bold text-slate-900 text-sm">Activité des 14 derniers jours</h3>
+                        <span className="text-xs text-slate-400 font-medium">{dailyData.reduce((s, d) => s + d.count, 0)} exercices</span>
+                      </div>
                       <Bar
                         data={{
                           labels: dailyData.map(d => d.label),
                           datasets: [{
                             label: 'Exercices',
                             data: dailyData.map(d => d.count),
-                            backgroundColor: '#ef4444',
-                            borderRadius: 6,
-                            maxBarThickness: 28
+                            backgroundColor: dailyData.map(d => d.count > 0 ? '#ef4444' : '#f1f5f9'),
+                            borderRadius: 8,
+                            maxBarThickness: 24,
+                            borderSkipped: false
                           }]
                         }}
                         options={{
                           responsive: true,
-                          plugins: { legend: { display: false } },
+                          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 } },
                           scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { weight: 'bold', size: 11 } }, grid: { color: '#f1f5f9' } },
-                            x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { weight: '600', size: 11 }, color: '#94a3b8' }, grid: { color: '#f8fafc', drawBorder: false }, border: { display: false } },
+                            x: { ticks: { font: { size: 10 }, color: '#94a3b8' }, grid: { display: false }, border: { display: false } }
                           }
                         }}
                       />
                     </div>
 
-                    {/* Camembert : répartition par type */}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                      <h3 className="font-black text-slate-900 text-sm mb-4">Répartition par type d'exercice</h3>
-                      <div className="max-w-[250px] mx-auto">
+                    {/* Doughnut : répartition par type */}
+                    <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
+                      <h3 className="font-bold text-slate-900 text-sm mb-5">Répartition</h3>
+                      <div className="max-w-[200px] mx-auto">
                         <Doughnut
                           data={{
                             labels: typeLabels,
@@ -606,25 +621,40 @@ function DashboardContent() {
                               data: typeValues,
                               backgroundColor: typeLabels.map(l => typeColors[l] || '#94a3b8'),
                               borderWidth: 0,
-                              spacing: 3
+                              spacing: 4
                             }]
                           }}
                           options={{
                             responsive: true,
                             plugins: {
-                              legend: { position: 'bottom', labels: { font: { size: 12, weight: 'bold' }, padding: 16, usePointStyle: true, pointStyle: 'circle' } }
+                              legend: { display: false },
+                              tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 }
                             },
-                            cutout: '65%'
+                            cutout: '70%'
                           }}
                         />
+                      </div>
+                      <div className="flex flex-col gap-2 mt-5">
+                        {typeLabels.map((label, i) => (
+                          <div key={label} className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: typeColors[label] || '#94a3b8' }}></div>
+                              <span className="text-xs font-semibold text-slate-600">{label}</span>
+                            </div>
+                            <span className="text-xs font-bold text-slate-900">{typeValues[i]}</span>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </div>
 
                   {/* Ligne : évolution de la moyenne */}
                   {moyenneEvolution.length >= 2 && (
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-                      <h3 className="font-black text-slate-900 text-sm mb-4">Évolution de la moyenne</h3>
+                    <div className="bg-white rounded-2xl border border-slate-200 p-6 mb-8">
+                      <div className="flex items-center justify-between mb-5">
+                        <h3 className="font-bold text-slate-900 text-sm">Évolution de la moyenne</h3>
+                        <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">{moyenneEvolution[moyenneEvolution.length - 1].moy}/20</span>
+                      </div>
                       <Line
                         data={{
                           labels: moyenneEvolution.map(d => d.label),
@@ -632,21 +662,29 @@ function DashboardContent() {
                             label: 'Moyenne /20',
                             data: moyenneEvolution.map(d => d.moy),
                             borderColor: '#ef4444',
-                            backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                            borderWidth: 3,
-                            pointBackgroundColor: '#ef4444',
+                            backgroundColor: (ctx) => {
+                              if (!ctx.chart.chartArea) return 'rgba(239, 68, 68, 0.05)'
+                              const gradient = ctx.chart.ctx.createLinearGradient(0, ctx.chart.chartArea.top, 0, ctx.chart.chartArea.bottom)
+                              gradient.addColorStop(0, 'rgba(239, 68, 68, 0.12)')
+                              gradient.addColorStop(1, 'rgba(239, 68, 68, 0)')
+                              return gradient
+                            },
+                            borderWidth: 2.5,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#ef4444',
+                            pointBorderWidth: 2,
                             pointRadius: 4,
                             pointHoverRadius: 6,
-                            tension: 0.3,
+                            tension: 0.4,
                             fill: true
                           }]
                         }}
                         options={{
                           responsive: true,
-                          plugins: { legend: { display: false } },
+                          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 } },
                           scales: {
-                            y: { min: 0, max: 20, ticks: { stepSize: 5, font: { weight: 'bold', size: 11 } }, grid: { color: '#f1f5f9' } },
-                            x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+                            y: { min: 0, max: 20, ticks: { stepSize: 5, font: { weight: '600', size: 11 }, color: '#94a3b8' }, grid: { color: '#f8fafc', drawBorder: false }, border: { display: false } },
+                            x: { ticks: { font: { size: 10 }, color: '#94a3b8' }, grid: { display: false }, border: { display: false } }
                           }
                         }}
                       />
@@ -654,6 +692,28 @@ function DashboardContent() {
                   )}
                 </>
               )}
+
+              {/* Diplômes */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-slate-900 text-sm">Diplômes</h3>
+                  <span className="text-xs text-slate-400 font-semibold">{unlockedCount}/{badges.length} débloqués</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                  {badges.map(b => (
+                    <div key={b.id} className={`relative rounded-2xl border p-4 text-center transition-all ${b.unlocked ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-50'}`}>
+                      {b.unlocked && (
+                        <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        </div>
+                      )}
+                      <span className="text-2xl block mb-2">{b.icon}</span>
+                      <p className={`text-xs font-bold leading-tight ${b.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>{b.label}</p>
+                      <p className="text-[10px] text-slate-400 mt-0.5">{b.desc}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           )})()}
 

@@ -265,17 +265,17 @@ export default function SpecifiquePage() {
               const fc = colorMap[f.color]
               const isLoading = loadingFamille === f.id
               return (
-                <button key={f.id} onClick={() => !loadingFamille && startExercice(f)} disabled={!!loadingFamille} className={`bg-white p-6 rounded-2xl border-2 ${fc.border} ${!loadingFamille ? fc.hoverBorder : ''} shadow-sm hover:shadow-md transition text-left group relative ${loadingFamille && !isLoading ? 'opacity-40 cursor-not-allowed' : isLoading ? 'cursor-wait' : 'cursor-pointer'}`}>
+                <button key={f.id} onClick={() => !loadingFamille && startExercice(f)} disabled={!!loadingFamille} className={`bg-slate-900 p-6 rounded-2xl shadow-sm hover:shadow-md hover:bg-black transition text-left group relative ${loadingFamille && !isLoading ? 'opacity-40 cursor-not-allowed' : isLoading ? 'cursor-wait' : 'cursor-pointer'}`}>
                   {isLoading && (
-                    <div className="absolute inset-0 bg-white/80 rounded-2xl flex items-center justify-center z-10">
+                    <div className="absolute inset-0 bg-slate-900/80 rounded-2xl flex items-center justify-center z-10">
                       <div className={`w-8 h-8 ${fc.text} border-t-transparent rounded-full animate-spin`} style={{borderWidth: '3px', borderStyle: 'solid', borderColor: 'currentColor', borderTopColor: 'transparent'}}></div>
                     </div>
                   )}
                   <div className={`w-12 h-12 ${fc.iconBg} ${fc.text} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     {f.icon}
                   </div>
-                  <h2 className="text-base font-black text-slate-900 mb-1">{f.titre}</h2>
-                  <p className="text-sm text-slate-500 leading-relaxed">{f.description}</p>
+                  <h2 className="text-base font-black text-white mb-1">{f.titre}</h2>
+                  <p className="text-sm text-slate-400 leading-relaxed">{f.description}</p>
                 </button>
               )
             })}

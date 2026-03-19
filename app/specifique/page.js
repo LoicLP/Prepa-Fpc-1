@@ -63,10 +63,10 @@ const familles = [
 ]
 
 const colorMap = {
-  blue: { bg: 'bg-blue-50', text: 'text-blue-600', border: 'border-blue-200', hoverBorder: 'hover:border-blue-400', iconBg: 'bg-blue-100', gradient: 'from-blue-500 to-blue-600', light: 'bg-blue-50', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100/60', progressBar: 'bg-blue-600', ring: 'focus:ring-blue-300 focus:border-blue-400' },
-  amber: { bg: 'bg-amber-50', text: 'text-amber-600', border: 'border-amber-200', hoverBorder: 'hover:border-amber-400', iconBg: 'bg-amber-100', gradient: 'from-amber-500 to-amber-600', light: 'bg-amber-50', badge: 'bg-amber-50 text-amber-600', wrapper: 'bg-amber-100/60', progressBar: 'bg-amber-500', ring: 'focus:ring-amber-300 focus:border-amber-400' },
-  emerald: { bg: 'bg-emerald-50', text: 'text-emerald-600', border: 'border-emerald-200', hoverBorder: 'hover:border-emerald-400', iconBg: 'bg-emerald-100', gradient: 'from-emerald-500 to-emerald-600', light: 'bg-emerald-50', badge: 'bg-emerald-50 text-emerald-600', wrapper: 'bg-emerald-100/60', progressBar: 'bg-emerald-500', ring: 'focus:ring-emerald-300 focus:border-emerald-400' },
-  purple: { bg: 'bg-purple-50', text: 'text-purple-600', border: 'border-purple-200', hoverBorder: 'hover:border-purple-400', iconBg: 'bg-purple-100', gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', badge: 'bg-purple-50 text-purple-600', wrapper: 'bg-purple-100/60', progressBar: 'bg-purple-500', ring: 'focus:ring-purple-300 focus:border-purple-400' }
+  operations: { text: 'text-sky-600', iconBg: 'bg-sky-100', gradient: 'from-sky-400 to-sky-600', badge: 'bg-sky-50 text-sky-600', wrapper: 'bg-sky-100/60', progressBar: 'bg-sky-500', ring: 'focus:ring-sky-300 focus:border-sky-400' },
+  conversions: { text: 'text-blue-600', iconBg: 'bg-blue-100', gradient: 'from-blue-500 to-blue-600', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100/60', progressBar: 'bg-blue-600', ring: 'focus:ring-blue-300 focus:border-blue-400' },
+  pourcentages: { text: 'text-purple-600', iconBg: 'bg-purple-100', gradient: 'from-purple-500 to-purple-600', badge: 'bg-purple-50 text-purple-600', wrapper: 'bg-purple-100/60', progressBar: 'bg-purple-600', ring: 'focus:ring-purple-300 focus:border-purple-400' },
+  equations: { text: 'text-fuchsia-600', iconBg: 'bg-fuchsia-100', gradient: 'from-fuchsia-500 to-fuchsia-600', badge: 'bg-fuchsia-50 text-fuchsia-600', wrapper: 'bg-fuchsia-100/60', progressBar: 'bg-fuchsia-500', ring: 'focus:ring-fuchsia-300 focus:border-fuchsia-400' }
 }
 
 export default function SpecifiquePage() {
@@ -178,9 +178,17 @@ export default function SpecifiquePage() {
 
   function validateCurrent() {
     if (!data) return
-    const userAnswer = (reponses[data.id] || '').trim().toLowerCase().replace(/\s/g, '').replace(',', '.')
-    const expected = String(data.reponse).trim().toLowerCase().replace(/\s/g, '').replace(',', '.')
-    const isCorrect = userAnswer === expected
+    // Extraire uniquement la partie numérique des réponses
+    const normalize = (val) => {
+      let s = String(val).trim().replace(/,/g, '.').replace(/\s/g, '')
+      // Extraire le premier nombre (entier ou décimal, potentiellement négatif)
+      const match = s.match(/-?\d+\.?\d*/)
+      return match ? parseFloat(match[0]) : NaN
+    }
+    const userNum = normalize(reponses[data.id] || '')
+    const expectedNum = normalize(data.reponse)
+    // Comparaison numérique avec tolérance pour les arrondis
+    const isCorrect = !isNaN(userNum) && !isNaN(expectedNum) && Math.abs(userNum - expectedNum) < 0.01
     setValidated(prev => ({ ...prev, [data.id]: { correct: isCorrect, reponse_attendue: data.reponse, explication: data.explication || '' } }))
   }
 
@@ -221,7 +229,7 @@ export default function SpecifiquePage() {
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || ''
   const isPremium = false
-  const c = selectedFamille ? colorMap[selectedFamille.color] : colorMap.blue
+  const c = selectedFamille ? colorMap[selectedFamille.id] : colorMap.operations
   const data = sujet?.questions?.[current]
   const progress = sujet ? ((current + 1) / sujet.questions.length) * 100 : 0
   const answeredCount = sujet ? sujet.questions.filter(q => reponses[q.id]?.trim()).length : 0
@@ -446,13 +454,15 @@ export default function SpecifiquePage() {
 
       {/* ===== ÉPREUVE ===== */}
       {step === 'epreuve' && sujet && data && selectedFamille && (
-        <div className="flex-grow w-full max-w-3xl mx-auto py-4 sm:py-6">
-          <div className="w-full max-w-2xl mx-auto relative mt-2 sm:mt-4">
-            <a href="/dashboard" className="absolute -top-2 -right-2 sm:-top-3 sm:-right-3 z-20 w-9 h-9 sm:w-10 sm:h-10 bg-slate-900 hover:bg-black text-white rounded-full flex items-center justify-center transition shadow-lg">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto`}>
+          <div className="flex items-center justify-end p-4">
+            <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg">
+              Quitter l&apos;exercice
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
-
-            <div className={`${c.wrapper} rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6 shadow-sm`}>
+          </div>
+          <div className="w-full max-w-2xl mx-auto px-4 pb-8">
+            <div className="rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6">
               <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
                 {/* Header */}
                 <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-5 border-b border-slate-100 gap-2">
@@ -534,7 +544,7 @@ export default function SpecifiquePage() {
             {/* Navigation rapide */}
             <div className="flex flex-wrap justify-center gap-2 mt-5">
               {sujet.questions.map((q, i) => (
-                <button key={i} onClick={() => setCurrent(i)} className={`w-8 h-8 rounded-lg font-bold text-xs transition cursor-pointer ${i === current ? 'bg-slate-900 text-white' : reponses[q.id]?.trim() ? `${c.iconBg} ${c.text}` : 'bg-white border border-slate-200 text-slate-400 hover:bg-slate-50'}`}>
+                <button key={i} onClick={() => setCurrent(i)} className={`w-8 h-8 rounded-lg font-bold text-xs transition cursor-pointer ${i === current ? 'bg-slate-900 text-white' : validated[q.id] ? (validated[q.id].correct ? 'bg-green-500 text-white' : 'bg-red-500 text-white') : reponses[q.id]?.trim() ? `${c.iconBg} ${c.text}` : 'bg-white border border-slate-200 text-slate-400 hover:bg-slate-50'}`}>
                   {i + 1}
                 </button>
               ))}

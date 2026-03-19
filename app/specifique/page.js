@@ -14,8 +14,8 @@ const sidebarItems = [
 const familles = [
   {
     id: 'operations',
-    titre: 'Opérations décimales',
-    description: 'Additions, soustractions, multiplications et divisions de nombres décimaux sans calculatrice.',
+    titre: 'Produit en croix',
+    description: 'Règle de trois, proportionnalité, calculs de doses et problèmes concrets.',
     icon: Sigma,
     color: 'blue',
     textColor: 'text-blue-600',

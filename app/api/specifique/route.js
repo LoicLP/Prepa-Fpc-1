@@ -27,7 +27,7 @@ async function callGeminiWithPdf(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 16000 }
+        generationConfig: { temperature: 0.8, topP: 0.95, maxOutputTokens: 4096, responseMimeType: 'application/json' }
       })
     }
   )
@@ -52,7 +52,7 @@ async function callGemini(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 16000 }
+        generationConfig: { temperature: 0.7, topP: 0.95, maxOutputTokens: 4096, responseMimeType: 'application/json' }
       })
     }
   )
@@ -84,228 +84,140 @@ IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure exacte :
 }`
 
 const famillePrompts = {
-  operations: `Tu es un professeur de mathématiques spécialisé dans la préparation au concours FPC d'entrée en IFSI (concours infirmier pour la reconversion professionnelle).
+  operations: `Tu es un générateur d'exercices de mathématiques pour le concours FPC (Formation Professionnelle Continue) d'entrée en IFSI. Tu génères exactement 10 questions sur le thème du PRODUIT EN CROIX, de la RÈGLE DE TROIS et de la PROPORTIONNALITÉ.
 
 Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi en.
 
-# CONTEXTE CONCOURS FPC
-L'épreuve de maths dure 30 minutes, notée sur /10, calculatrice INTERDITE. Les candidats n'ont souvent pas fait de maths depuis 5 à 15 ans. Les sujets réels (ex : Marseille 2024) comportent : 658,63 ÷ 12,7 / 952,48 − 399,25 / 67,90 × 3,58.
+## Niveau attendu
+Niveau classe de 3ème / brevet des collèges. Les candidats sont des adultes en reconversion professionnelle. L'épreuve dure 30 minutes pour ~10 questions (toutes catégories confondues), donc chaque question doit être résoluble en 2-3 minutes max.
 
-Génère un entraînement de 10 questions UNIQUEMENT sur les opérations (additions, soustractions, multiplications, divisions).
+## Types de questions à couvrir (varier parmi ces sous-types)
+1. **Proportionnalité directe simple** : "200g de farine pour 10 crêpes. Combien pour 20 crêpes ?"
+2. **Calcul de doses médicamenteuses** : "Un patient de 70 kg doit recevoir 0,5 mg/kg. Quelle dose totale ?" — C'est LE type de question emblématique du concours FPC.
+3. **Débit de perfusion** : "Une perfusion de 1 litre à 60 mL/h. Combien de temps durera-t-elle ?"
+4. **Préparation de solutions** : "Préparer 200 mL d'une solution de glucose à 5%. Combien de grammes de glucose ?"
+5. **Mise à l'échelle / approvisionnement** : "5 infirmiers utilisent 20 boîtes de gants/semaine. Avec 7 infirmiers, combien de boîtes ?"
+6. **Provisions / besoins quotidiens** : "Paulette boit 1 500 mL d'eau/jour. Combien de litres pour le mois de janvier (31 jours) ?"
+7. **Recette / cuisine** : "Pour 4 personnes il faut 300g de pâtes. Combien pour 7 personnes ?"
+8. **Surface et matériaux** : "1 carton de parquet couvre 2 m². Pour une pièce de 48 m², combien de cartons ? Prix total à 30€/m² ?"
+9. **Tableau de proportionnalité** : "Vérifier si un tableau est proportionnel et trouver le coefficient"
+10. **Contre-exemple de proportionnalité** : "À 5 ans un garçon mesure 1,10m, à 10 ans 1,40m. La taille est-elle proportionnelle à l'âge ?"
 
-# CATÉGORIES À COUVRIR (varier obligatoirement)
+## Contextes à utiliser (varier à chaque génération)
+Privilégie les contextes médicaux et infirmiers : calculs de doses (mg/kg, mL/h), préparation de solutions, approvisionnement de service hospitalier, consommation de matériel médical, alimentation de patients (kcal, mL d'eau). Alterne avec des contextes quotidiens : courses, bricolage, cuisine, voyages. Utilise des prénoms français courants.
 
-## 1. ADDITIONS
-- **Facile** : 2 entiers de 3-4 chiffres (ex : 2 847 + 1 395)
-- **Moyen** : 2 décimaux avec 2-3 décimales (ex : 347,85 + 1 294,67)
-- **Difficile** : 3 nombres décimaux ou décimales différentes (ex : 45,78 + 1 203,9 + 387,06)
-
-## 2. SOUSTRACTIONS
-- **Facile** : 2 entiers (ex : 5 012 − 2 847)
-- **Moyen** : 2 décimaux (ex : 952,48 − 399,25)
-- **Difficile** : emprunts multiples sur zéros ou décimales différentes (ex : 1 000,00 − 387,65 / 84,3 − 27,856)
-
-## 3. MULTIPLICATIONS
-- **Facile** : nombre 3-4 chiffres × 1 chiffre (ex : 847 × 6)
-- **Moyen** : décimal × décimal simple (ex : 67,90 × 3,58 / 245,5 × 2,4)
-- **Difficile** : deux décimaux avec plusieurs chiffres (ex : 34,75 × 12,6)
-
-## 4. DIVISIONS
-- **Facile** : entier ÷ entier simple (ex : 846 ÷ 6)
-- **Moyen** : décimal ÷ entier ou entier ÷ décimal (ex : 658,63 ÷ 12,7 / 892,50 ÷ 15)
-- **Difficile** : décimal ÷ décimal (ex : 75,36 ÷ 3,14 / 1 243,8 ÷ 0,6)
-
-## 5. ENCHAÎNEMENTS (DIFFICILE)
-2-3 opérations avec priorités (ex : (45,3 + 12,7) × 3,5 / 1 200 − (350 × 2,5))
-
-# DEUX MODES (alterner, environ 60% posé / 40% contexte)
-- **"pose"** : opération brute (ex : "Calculez : 952,48 − 399,25")
-- **"contexte"** : problème concret nécessitant l'opération (milieu hospitalier, courses, budget, recettes)
-
-# RÈGLES
-- SANS CALCULATRICE : faisable à la main en 2-4 min max, résultats exacts ou 2 décimales max
-- NOMBRES RÉALISTES du concours FPC (entre 10 et 10 000, 0 à 3 décimales)
-- PROGRESSION : environ 3 faciles, 4-5 moyens, 3 difficiles
-- RÉPONSES : un nombre (entier ou décimal avec max 2 décimales)
+## Contraintes
+- Exactement 10 questions, numérotées de 1 à 10
+- Difficulté progressive : questions 1-3 faciles, 4-7 moyennes, 8-10 plus complexes
+- Au moins 3 questions en contexte médical/infirmier (doses, perfusions, solutions)
+- Au moins 1 question de type "contre-exemple" (non-proportionnalité)
+- Les nombres doivent rester raisonnables
+- Chaque question a UNE SEULE bonne réponse numérique (pas de QCM)
+- Les réponses doivent tomber sur des nombres "propres" (arrondir à 2 décimales max si nécessaire)
+- Ne JAMAIS inclure la réponse dans l'énoncé
 
 ${JSON_FORMAT.replace('NOM_FAMILLE', 'operations')}`,
 
-  pourcentages: `Tu es un professeur de mathématiques spécialisé dans la préparation au concours FPC d'entrée en IFSI (concours infirmier pour la reconversion professionnelle).
+  pourcentages: `Tu es un générateur d'exercices de mathématiques pour le concours FPC (Formation Professionnelle Continue) d'entrée en IFSI. Tu génères exactement 10 questions sur le thème des POURCENTAGES.
 
 Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi en.
 
-Génère un entraînement de 10 questions UNIQUEMENT sur les pourcentages et la proportionnalité.
+## Niveau attendu
+Niveau classe de 3ème / brevet des collèges. Les candidats sont des adultes en reconversion professionnelle. L'épreuve dure 30 minutes pour ~10 questions (toutes catégories confondues), donc chaque question doit être résoluble en 2-3 minutes max.
 
-# CATÉGORIES À COUVRIR (varier obligatoirement)
+## Types de questions à couvrir (varier parmi ces sous-types)
+1. **Calculer un pourcentage simple** : "X personnes sur Y font Z. Quel pourcentage ?" (ex : 4 infirmières sur 7 prennent un café, quel %)
+2. **Appliquer un pourcentage** : "Il y a 70 millions d'habitants dont 13% de gauchers. Combien de gauchers ?"
+3. **Augmentation en pourcentage** : "Un loyer de 1 200€ augmente de 7%. Quel est le nouveau prix ?"
+4. **Diminution en pourcentage** : "Un article à 85€ est soldé à -30%. Quel est le prix soldé ?"
+5. **Retrouver la valeur initiale** : "Après une augmentation de 30%, la production est de 558 330 unités. Quelle était la production initiale ?"
+6. **Pourcentages successifs** : "Un prix augmente de 10% puis diminue de 10%. Retrouve-t-on le prix initial ?"
+7. **Contexte santé/médical** : "40% des cancers sont liés aux habitudes de vie. Sur 350 000 cas, combien sont évitables ?"
+8. **Calcul de TVA** : "Un appareil coûte 150€ HT. Avec une TVA à 20%, quel est le prix TTC ?"
+9. **Taux d'intérêt** : "Un placement de 1 000€ à 2% par an rapporte combien la 1ère année ?"
+10. **Pourcentage d'une fraction** : "Convertir 3/8 en pourcentage"
 
-1. **Pourcentage simple** (FACILE) — Calculer X% d'un nombre.
-   Ex : "Un service hospitalier de 80 lits a un taux d'occupation de 75%. Combien de lits sont occupés ?"
+## Contextes à utiliser (varier à chaque génération)
+Utilise des contextes réalistes et variés : hôpital, pharmacie, service infirmier, vie quotidienne (courses, loyer, vacances), données de santé publique (obésité, alcool, tabac), production industrielle, population française. Utilise des prénoms français courants.
 
-2. **Trouver le taux** (FACILE) — On donne la partie et le total, trouver le %.
-   Ex : "Sur 250 patients admis aux urgences, 45 avaient plus de 75 ans. Quel pourcentage cela représente-t-il ?"
-
-3. **Augmentation en %** (MOYEN) — Calculer une valeur après augmentation de X%.
-   Ex : "Le loyer d'un appartement est de 650€. Il augmente de 3,5%. Quel est le nouveau loyer ?"
-
-4. **Diminution / Remise en %** (MOYEN) — Calculer une valeur après diminution de X%.
-   Ex : "Un article à 89€ bénéficie d'une remise de 15%. Quel est le prix après remise ?"
-
-5. **Retrouver la valeur initiale** (DIFFICILE) — On connaît la valeur finale et le taux, retrouver la valeur de départ.
-   Ex : "Après une augmentation de 20%, une production atteint 2 700 unités. Quelle était la production initiale ?"
-
-6. **Pourcentages enchaînés** (DIFFICILE) — Deux augmentations/diminutions successives.
-   Ex : "Un prix augmente de 10% puis diminue de 10%. Le prix final est-il identique au prix initial ?"
-
-7. **Contexte médical / calcul de doses** (MOYEN à DIFFICILE) — Pourcentages appliqués au milieu médical.
-   Ex : "Un médicament est dosé à 5%. Combien de mg de principe actif dans un flacon de 200 mL ?", "Le taux de mortalité d'une pathologie est de 2,3% sur 15 000 cas. Combien de décès ?"
-
-# RÈGLES
-
-- VARIER les contextes : milieu hospitalier, vie quotidienne (courses, loyer, salaire), santé publique, annales réelles
-- PROGRESSION : environ 3 faciles, 4-5 moyens, 3 difficiles
-- NOMBRES RÉALISTES du concours FPC : pas toujours des nombres ronds. Ex : 847 patients, 3,5%, 1 253€
-- SANS CALCULATRICE : calculs faisables à la main en 2-3 min max, pas de décimaux infinis
-- RÉPONSES : un nombre (entier ou max 2 décimales)
+## Contraintes
+- Exactement 10 questions, numérotées de 1 à 10
+- Difficulté progressive : questions 1-3 faciles, 4-7 moyennes, 8-10 plus complexes
+- Les nombres doivent rester raisonnables (pas de calculs à 6 chiffres)
+- Chaque question a UNE SEULE bonne réponse numérique (pas de QCM)
+- Les réponses doivent tomber sur des nombres "propres" (pas de décimales infinies, arrondir à 2 décimales max si nécessaire)
+- Ne JAMAIS inclure la réponse dans l'énoncé
 
 ${JSON_FORMAT.replace('NOM_FAMILLE', 'pourcentages')}`,
 
-  conversions: `Tu es un professeur de mathématiques spécialisé dans la préparation au concours FPC d'entrée en IFSI (concours infirmier pour la reconversion professionnelle).
+  conversions: `Tu es un générateur d'exercices de mathématiques pour le concours FPC (Formation Professionnelle Continue) d'entrée en IFSI. Tu génères exactement 10 questions sur le thème des CONVERSIONS D'UNITÉS et des OPÉRATIONS DE BASE (multiplications, divisions, fractions).
 
 Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi en.
 
-# CONTEXTE CONCOURS FPC
-Au concours de Marseille 2024 : 1 h 25 = ? min / 1 735 kg = ? g / 269 cm³ = ? mL / 106 L = ? hL.
-Les candidats perdent souvent des points par inattention ou oubli du tableau de conversion.
+## Niveau attendu
+Niveau classe de 3ème / brevet des collèges. Les candidats sont des adultes en reconversion professionnelle. L'épreuve dure 30 minutes pour ~10 questions (toutes catégories confondues), donc chaque question doit être résoluble en 2-3 minutes max. Les divisions représentent environ 60% de l'épreuve de maths au concours FPC.
 
-Génère un entraînement de 10 questions UNIQUEMENT sur les conversions d'unités.
+## Types de questions à couvrir (varier parmi ces sous-types)
+1. **Conversion de masses** : "Convertir 2 500 microgrammes en milligrammes" (µg → mg, mg → g, g → kg)
+2. **Conversion de volumes** : "Convertir 1,75 L en mL" (L → mL → cL)
+3. **Conversion de longueurs** : "Convertir 256,77 m en décamètres"
+4. **Conversion de surfaces** : "Convertir 48 m² en cm²"
+5. **Conversion de durées** : "21h + 430 min = ? (exprimer en jours, heures, minutes)"
+6. **Addition de fractions** : "(8/3) + (29/6) = ?"
+7. **Simplification de fractions** : "Simplifier 45/6"
+8. **Conversion fraction ↔ pourcentage** : "Convertir 1/4 en pourcentage" ou "50% = quelle fraction ?"
+9. **Calcul d'IMC** : "Un patient pèse 85 kg et mesure 1,72 m. Calculez son IMC (poids/taille²)"
+10. **Opérations avec décimaux** : Multiplications et divisions de nombres décimaux dans un contexte concret
 
-# CATÉGORIES À COUVRIR (varier obligatoirement)
+## Contextes à utiliser (varier à chaque génération)
+Contextes médicaux : prescriptions en µg/mg/g, volumes de perfusion en mL/L, poids de patients, IMC, durées d'administration de traitements. Contextes quotidiens : distances, surfaces de pièces, durées de trajet, recettes. Les conversions médicales (µg ↔ mg ↔ g) sont les plus fréquentes au concours. Utilise des prénoms français courants.
 
-## 1. MASSES (très fréquent)
-Tableau : t | q | kg | hg | dag | g | dg | cg | mg (chaque colonne = ×10)
-- **Facile** : 3 250 g = ? kg / 1 735 kg = ? g / 500 mg = ? g
-- **Moyen** : 2,45 kg = ? mg / 0,075 g = ? mg / 1 250 000 mg = ? kg
-- **Difficile** : 0,003 kg = ? mg / 45 µg = ? mg / 2,5 t = ? g
-Pièges : oublier que 1 kg = 1 000 g (pas 100), confusion mg/µg
-
-## 2. VOLUMES ET CAPACITÉS (très fréquent)
-Capacités : hL | daL | L | dL | cL | mL (chaque colonne = ×10)
-Volumes : m³ | dm³ | cm³ | mm³ (chaque colonne = ×1000, car unités cubiques !)
-Équivalence fondamentale : 1 L = 1 dm³ = 1 000 mL = 1 000 cm³ / 1 mL = 1 cm³
-- **Facile** : 106 L = ? hL / 269 cm³ = ? mL / 750 mL = ? L
-- **Moyen** : 0,5 hL = ? cL / 1,2 dm³ = ? mL / 0,35 L = ? cm³
-- **Difficile** : 0,025 m³ = ? L / 750 000 mm³ = ? dm³
-Pièges : oublier que m³→dm³→cm³ = ×1000 (pas ×10), ne pas connaître 1L = 1dm³
-
-## 3. LONGUEURS
-Tableau : km | hm | dam | m | dm | cm | mm
-- **Facile** : 3,5 km = ? m / 250 cm = ? m
-- **Moyen** : 0,045 km = ? cm / 1,25 m = ? mm
-- **Difficile** : 0,0032 km = ? mm / 45 678 cm = ? km
-Pièges : confondre dm (décimètre) et dam (décamètre)
-
-## 4. DURÉES (très fréquent, système NON décimal !)
-1 h = 60 min / 1 min = 60 s / 1 h = 3 600 s
-PAS de tableau de conversion, on utilise ×60 ou ÷60.
-- **Facile** : 1 h 25 = ? min / 180 s = ? min / 2 h 30 = ? min
-- **Moyen** : 225 min = ? h ? min / 2,5 h = ? h ? min / durées de gardes
-- **Difficile** : 5 000 s = ? h ? min ? s / 3h20 + 2h50 = ? / 8h10 − 5h45 = ?
-Pièges : croire que 1,5 h = 1h50 (FAUX → 1h30) / croire que 1h25 = 1,25h (FAUX)
-
-## 5. SURFACES (moins fréquent)
-Tableau : km² | hm² | dam² | m² | dm² | cm² | mm² (chaque colonne = ×100, car unités carrées !)
-- **Facile** : 48 m² = ? cm² / 5 m² = ? dm²
-- **Moyen** : 2,5 m² = ? cm² / 350 000 cm² = ? m²
-- **Difficile** : 0,004 km² = ? m²
-Pièges : oublier que surfaces = ×100 par colonne (pas ×10)
-
-## 6. CONVERSIONS MIXTES / CONTEXTUALISÉES (DIFFICILE)
-Problèmes combinant conversion + calcul dans un contexte médical :
-- "Un patient doit boire 1,5 L/jour. Combien de verres de 25 cL ?"
-- "Une perfusion de 500 mL en 4h. Débit en mL/min ?"
-- "Prescription de 0,75 g, comprimés de 500 mg. Combien de comprimés ?"
-
-# DEUX MODES (alterner, 60% direct / 40% contexte)
-- **"direct"** : conversion brute (ex : "Convertir 1 735 kg en grammes")
-- **"contexte"** : problème médical/quotidien nécessitant une conversion
-
-# RÈGLES
-- SANS CALCULATRICE : faisable de tête ou avec tableau sur brouillon, résultats exacts
-- NOMBRES RÉALISTES du concours FPC
-- PROGRESSION : environ 3 faciles, 4-5 moyens, 3 difficiles
-- RÉPONSES : un nombre exact, préciser l'unité attendue
-- CONTEXTES MÉDICAUX à privilégier : doses (mg, g, mL), perfusions, poids patients, durées de soins/gardes
+## Contraintes
+- Exactement 10 questions, numérotées de 1 à 10
+- Difficulté progressive : questions 1-3 faciles, 4-7 moyennes, 8-10 plus complexes
+- Au moins 2 questions de conversion de masses (µg, mg, g, kg) — très fréquent au concours
+- Au moins 1 question de fractions
+- Au moins 1 question de conversion de durées
+- Au moins 1 question d'IMC ou contexte médical direct
+- Les nombres doivent rester raisonnables
+- Chaque question a UNE SEULE bonne réponse numérique (pas de QCM)
+- Les réponses doivent tomber sur des nombres "propres" (arrondir à 2 décimales max si nécessaire)
+- Ne JAMAIS inclure la réponse dans l'énoncé
 
 ${JSON_FORMAT.replace('NOM_FAMILLE', 'conversions')}`,
 
-  equations: `Tu es un professeur de mathématiques spécialisé dans la préparation au concours FPC d'entrée en IFSI (concours infirmier pour la reconversion professionnelle).
+  equations: `Tu es un générateur d'exercices de mathématiques pour le concours FPC (Formation Professionnelle Continue) d'entrée en IFSI. Tu génères exactement 10 questions sur le thème des ÉQUATIONS SIMPLES et des PROBLÈMES À RÉSOUDRE (mise en équation de situations concrètes).
 
 Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi en.
 
-# CONTEXTE CONCOURS FPC
-Au concours FPC 2025, ces problèmes sont tombés :
-- "Pierre et Paul sont frères. En additionnant leurs âges, on obtient l'âge de leur père. L'aîné Pierre a 4 ans de plus que son frère. Pierre est né quand son père avait son âge."
-- "Paulette boit 1 500 mL d'eau/jour. Les packs = 6 bouteilles de 50 cL. Combien de packs pour janvier ?"
-- "Une entreprise fabrique 2 700 gâteaux/semaine. Combien après une hausse de 20% ?" (Réunion 2024)
-Ces problèmes testent la compréhension d'énoncé, l'extraction de données, la mise en équation et la résolution.
+## Niveau attendu
+Niveau classe de 3ème / brevet des collèges. Les candidats sont des adultes en reconversion professionnelle. L'épreuve dure 30 minutes pour ~10 questions (toutes catégories confondues), donc chaque question doit être résoluble en 2-3 minutes max. Les équations au concours FPC ne dépassent JAMAIS le 1er degré (pas de x², pas de systèmes complexes).
 
-Génère un entraînement de 10 questions sur les équations et problèmes.
+## Types de questions à couvrir (varier parmi ces sous-types)
+1. **Problème d'âges** : "Pierre et Paul sont frères. En additionnant leurs âges, on obtient l'âge de leur père. Pierre a 4 ans de plus que Paul. Pierre est né quand son père avait son âge actuel. Quel est l'âge du père ?" — C'est un grand classique du concours FPC.
+2. **Problème de moyenne** : "Trois femmes ont un âge moyen de 40 ans. L'aînée a 50 ans. Quel est l'âge moyen des deux autres ?"
+3. **Problème de production / stock** : "Une usine produit X unités au 1er semestre et Y au 2ème. Le total représente 30% d'augmentation par rapport à l'année précédente. Quelle était la production précédente ?"
+4. **Problème de placement / intérêts** : "Un placement rapporte 400€ la 1ère année et 416€ la 2ème année (intérêts composés). Quelle est la somme initiale et le taux ?"
+5. **Problème de vitesse et rencontre** : "Deux voitures partent en sens inverse à des vitesses différentes. Quand se rencontrent-elles ?"
+6. **Problème de répartition** : "Un héritage de X € est partagé entre 3 enfants. L'aîné reçoit le double du cadet, qui reçoit 500€ de plus que le benjamin."
+7. **Problème de prix / achat** : "Marie achète 3 cahiers et 2 stylos pour 11,50€. Un cahier coûte 2,50€. Quel est le prix d'un stylo ?"
+8. **Problème de remplissage / vidange** : "Un robinet remplit une baignoire en 10 min. Un autre la vide en 15 min. Si les deux fonctionnent ensemble, en combien de temps la baignoire est-elle pleine ?"
+9. **Problème de distance / temps** : "Un trajet de 150 km est effectué en 2 parties : 90 km à 60 km/h et le reste à 80 km/h. Quelle est la durée totale ?"
+10. **Raisonnement logique** : Questions de type vrai/faux avec justification mathématique (ex : "Un article soldé de 20% puis re-soldé de 20% a-t-il baissé de 40% au total ?")
 
-# CATÉGORIES À COUVRIR (varier obligatoirement, toucher au moins 4 catégories)
+## Contextes à utiliser (varier à chaque génération)
+Mélanger contextes du quotidien (achats, voyages, partages, placements) et contextes professionnels/médicaux (planning d'infirmiers, répartition de patients, stocks de matériel). Utilise des prénoms français courants. Les problèmes doivent raconter une petite histoire concrète.
 
-## 1. ÉQUATIONS SIMPLES (FACILE à MOYEN)
-- **Facile** : x + 35 = 82 / 3x = 147 / x − 18 = 45
-- **Moyen** : 2x + 15 = 63 / x/5 + 12 = 30 / 4x − 8 = 52
-- **Difficile** : 3x + 7 = 2x + 25 / (x + 4) × 3 = 51 / 2(x − 5) + 3x = 40
-Pièges : oublier de faire la même opération des deux côtés, se tromper de signe, oublier de distribuer les parenthèses
-
-## 2. PROBLÈMES D'ÂGES (classique concours FPC)
-- **Moyen** : "Marie a 3 fois l'âge de sa fille. Somme = 48 ans. Âge de chacune ?"
-- **Moyen** : "Un père a 38 ans, son fils 10. Dans combien d'années le père aura le double de l'âge du fils ?"
-- **Difficile** : type concours 2025 avec "est né quand son père avait son âge"
-Pièges : ne pas savoir traduire "est né quand X avait son âge" (= âge du père = 2× âge de Pierre)
-
-## 3. PROPORTIONNALITÉ ET PRODUIT EN CROIX (FACILE à MOYEN)
-- **Facile** : "200g de farine → 10 crêpes. Combien pour 25 crêpes ?"
-- **Moyen** : "Médicament 15 mg/kg, patient 72 kg. Quelle dose ?" / "1500 mL/jour, packs de 6×50cL, combien pour janvier ?"
-- **Difficile** : dilutions, trajets avec conversion temps
-Pièges : inverser le produit en croix, oublier les conversions d'unités
-
-## 4. PROBLÈMES À PLUSIEURS ÉTAPES (MOYEN à DIFFICILE)
-- **Moyen** : "28 lits, taux 75%, coût 350€/jour/patient. Coût total ?"
-- **Difficile** : "Loyer 1200€, augmentation 7%, prix pour 2 semaines en février ?" (Douai 2024)
-- **Difficile** : commande avec remise sur total
-Pièges : vouloir tout calculer d'un coup, oublier une étape
-
-## 5. RÉPARTITION ET PARTAGE (MOYEN)
-- "3 infirmières se partagent 24 patients : l'une en prend 2× plus, la 3ème autant que la 2ème"
-- "Budget 500€ réparti : 40% médicaments, 35% matériel, reste divers"
-- "180 patients répartis proportionnellement aux lits (45 et 30)"
-Pièges : ne pas poser x = la part de base
-
-## 6. VITESSE, DISTANCE, TEMPS (MOYEN à DIFFICILE)
-- **Moyen** : "84 km en 1h10. Vitesse moyenne ?" / "60 km/h, 45 km, combien de temps ?"
-- **Difficile** : "Aller 30 km à 40 km/h, retour à 60 km/h. Vitesse moyenne ?"
-Pièges : croire que V moyenne = (V1+V2)/2 (FAUX), oublier de convertir min→h
-
-## 7. CALCULS DE DOSES ET DÉBITS (MOYEN à DIFFICILE, spécifique médical)
-- **Moyen** : "15 mg/kg, patient 72 kg" / "Flacon 200 mL à 5%, combien de mg ?"
-- **Difficile** : "Perfusion 500 mL en 4h, perfuseur 20 gtt/mL → débit en gtt/min ?"
-- **Difficile** : "1,2 g/jour en 3 prises, comprimés de 400 mg → combien par prise ?"
-Formule débit : Débit(gtt/min) = Volume(mL) × gtt/mL ÷ Temps(min)
-Pièges : confondre g/mg, oublier que 5% = 5g pour 100mL
-
-## 8. BUDGET ET ACHATS (FACILE à MOYEN)
-- **Facile** : "7 livres à 14,50€, paye 15,35€ par carte. Combien par chèque ?"
-- **Moyen** : "12 boîtes à 8,75€ + 5 boîtes à 12,40€ + livraison 15€. Total ?"
-Pièges : oublier les frais annexes, mal calculer une remise
-
-# RÈGLES
-- SANS CALCULATRICE : résultats exacts ou max 2 décimales, nombres qui "tombent juste"
-- ÉNONCÉS COMPLETS : toutes les données nécessaires fournies
-- 80% contextualisés (hôpital, vie quotidienne, professionnel, santé publique)
-- PROGRESSION : environ 3 faciles, 4-5 moyens, 3 difficiles
-- RÉPONSES : un nombre (entier ou décimal max 2 chiffres)
+## Contraintes
+- Exactement 10 questions, numérotées de 1 à 10
+- Difficulté progressive : questions 1-4 faciles (équation directe), 5-7 moyennes (mise en équation), 8-10 plus complexes (raisonnement multi-étapes)
+- Au moins 1 problème d'âges (classique du concours)
+- Au moins 1 problème de moyenne
+- Au moins 1 problème de vitesse ou de durée
+- Les équations restent du 1er degré uniquement (ax + b = c ou ax + b = cx + d)
+- Les nombres doivent rester raisonnables et les solutions être des nombres entiers ou des décimaux simples
+- Chaque question a UNE SEULE bonne réponse numérique (pas de QCM)
+- Ne JAMAIS inclure la réponse dans l'énoncé
 
 ${JSON_FORMAT.replace('NOM_FAMILLE', 'equations')}`
 }
@@ -340,7 +252,7 @@ export async function POST(request) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             contents: [{ parts }],
-            generationConfig: { temperature: 0.8, maxOutputTokens: 16000 }
+            generationConfig: { temperature: 0.8, topP: 0.95, maxOutputTokens: 4096 }
           })
         }
       )
@@ -424,12 +336,25 @@ export async function POST(request) {
 
       const questionsFormatted = exercices.map((q, i) => `Question ${q.id} : "${q.question}" (Réponse attendue : ${q.reponse}) → Réponse du candidat : "${reponses[q.id] || '(vide)'}"`).join('\n')
 
-      const prompt = `Tu es un professeur de mathématiques bienveillant. Tu corriges les réponses d'un candidat au concours IFSI FPC.
+      const prompt = `Tu es un professeur de mathématiques bienveillant et pédagogue. Tu corriges les réponses d'un candidat au concours IFSI FPC.
 
 QUESTIONS ET RÉPONSES :
 ${questionsFormatted}
 
-Pour CHAQUE question, indique si la réponse est correcte ou incorrecte, et donne une explication détaillée en HTML (utilise <br/>, <strong>, <em>) de la méthode de résolution étape par étape. Sois pédagogue.
+Pour CHAQUE question, tu DOIS fournir :
+1. Si la réponse est correcte ou non
+2. La réponse attendue
+3. Une explication COMPLÈTE et DÉTAILLÉE du calcul, étape par étape, comme si tu posais le calcul au tableau. L'élève doit comprendre COMMENT arriver au résultat.
+
+FORMAT DE L'EXPLICATION (en HTML) :
+- Commence par rappeler la méthode/formule utilisée en gras
+- Montre CHAQUE étape intermédiaire du calcul (pose l'opération, les retenues, les conversions...)
+- Utilise <br/> pour les sauts de ligne, <strong> pour les résultats importants, <em> pour les astuces
+- Termine par le résultat final en gras
+- Si l'élève s'est trompé, explique où est l'erreur et comment l'éviter
+
+Exemple d'explication attendue :
+"<strong>Méthode : division décimale</strong><br/>On pose 658,63 ÷ 12,7<br/>On multiplie les deux par 10 : 6586,3 ÷ 127<br/>127 × 5 = 635 → on écrit 5, reste 6586,3 - 6350 = 236,3<br/>127 × 1 = 127 → reste 236,3 - 127 = 109,3<br/>...<br/><strong>Résultat : 51,86</strong>"
 
 IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
 {
@@ -443,7 +368,7 @@ IMPORTANT : Réponds UNIQUEMENT en JSON valide avec cette structure :
       "reponse_candidat": "Ce que le candidat a répondu",
       "reponse_attendue": "La bonne réponse",
       "correct": true,
-      "explication": "Explication détaillée en HTML avec <br/>, <strong>, <em>"
+      "explication": "Explication DÉTAILLÉE étape par étape en HTML"
     }
   ]
 }

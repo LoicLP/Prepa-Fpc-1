@@ -84,6 +84,7 @@ export default function SpecifiquePage() {
   const [error, setError] = useState('')
   const [loadingFamille, setLoadingFamille] = useState(null)
   const [correction, setCorrection] = useState(null)
+  const [streamingDone, setStreamingDone] = useState(false)
 
   // Question par question
   const [current, setCurrent] = useState(0)
@@ -106,6 +107,10 @@ export default function SpecifiquePage() {
     setSelectedFamille(famille)
     setLoadingFamille(famille.id)
     setError('')
+    setSujet({ questions: [] })
+    setReponses({})
+    setCurrent(0)
+    setStreamingDone(false)
 
     try {
       const res = await fetch('/api/specifique', {
@@ -113,21 +118,60 @@ export default function SpecifiquePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action: 'generer', famille: famille.id })
       })
-      const data = await res.json()
-      if (!res.ok || data.error) { setError(data.error || 'Erreur lors de la génération.'); setLoadingFamille(null); return }
-      setSujet(data.sujet)
-      setReponses({})
-      setCurrent(0)
+
+      if (!res.ok) {
+        const data = await res.json()
+        setError(data.error || 'Erreur lors de la génération.')
+        setLoadingFamille(null)
+        setSujet(null)
+        return
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buffer = ''
+      let firstQuestion = true
+
+      while (true) {
+        const { done, value } = await reader.read()
+        if (done) break
+        buffer += decoder.decode(value, { stream: true })
+
+        const lines = buffer.split('\n\n')
+        buffer = lines.pop() || ''
+
+        for (const line of lines) {
+          if (!line.startsWith('data: ')) continue
+          try {
+            const event = JSON.parse(line.slice(6))
+            if (event.type === 'question') {
+              setSujet(prev => ({ ...prev, questions: [...(prev?.questions || []), event.question] }))
+              if (firstQuestion) {
+                setStep('epreuve')
+                setLoadingFamille(null)
+                firstQuestion = false
+              }
+            } else if (event.type === 'done') {
+              setStreamingDone(true)
+            } else if (event.type === 'error') {
+              setError(event.error)
+              setLoadingFamille(null)
+              if (firstQuestion) setSujet(null)
+            }
+          } catch (e) { /* parsing partiel */ }
+        }
+      }
+
       setLoadingFamille(null)
-      setStep('epreuve')
     } catch (err) {
       setError('Erreur de connexion. Réessayez.')
       setLoadingFamille(null)
+      setSujet(null)
     }
   }
 
   function goNext() {
-    if (current < sujet.questions.length - 1) setCurrent(current + 1)
+    if (sujet && current < sujet.questions.length - 1) setCurrent(current + 1)
   }
 
   function goPrev() {
@@ -443,6 +487,11 @@ export default function SpecifiquePage() {
                     <button onClick={goNext} className="flex-grow bg-slate-900 text-white font-bold py-3 px-4 rounded-xl transition-colors hover:bg-black flex items-center justify-center gap-2 text-sm sm:text-base shadow-md cursor-pointer">
                       Question suivante <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
                     </button>
+                  ) : !streamingDone ? (
+                    <div className="flex-grow flex items-center justify-center gap-2 py-3 text-slate-400 text-sm font-bold">
+                      <div className="w-4 h-4 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+                      Chargement des questions...
+                    </div>
                   ) : (
                     <button onClick={handleSubmitAll} className={`flex-grow bg-gradient-to-r ${c.gradient} text-white font-bold py-3 px-4 rounded-xl transition shadow-lg flex items-center justify-center gap-2 text-sm sm:text-base cursor-pointer`}>
                       Soumettre ({answeredCount}/{sujet.questions.length})

@@ -91,7 +91,7 @@ Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi 
 # CONTEXTE CONCOURS FPC
 L'épreuve de maths dure 30 minutes, notée sur /10, calculatrice INTERDITE. Les candidats n'ont souvent pas fait de maths depuis 5 à 15 ans. Les sujets réels (ex : Marseille 2024) comportent : 658,63 ÷ 12,7 / 952,48 − 399,25 / 67,90 × 3,58.
 
-Génère un entraînement de 10 à 15 questions UNIQUEMENT sur les opérations (additions, soustractions, multiplications, divisions).
+Génère un entraînement de 10 questions UNIQUEMENT sur les opérations (additions, soustractions, multiplications, divisions).
 
 # CATÉGORIES À COUVRIR (varier obligatoirement)
 
@@ -134,7 +134,7 @@ ${JSON_FORMAT.replace('NOM_FAMILLE', 'operations')}`,
 
 Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi en.
 
-Génère un entraînement de 10 à 15 questions UNIQUEMENT sur les pourcentages et la proportionnalité.
+Génère un entraînement de 10 questions UNIQUEMENT sur les pourcentages et la proportionnalité.
 
 # CATÉGORIES À COUVRIR (varier obligatoirement)
 
@@ -177,7 +177,7 @@ Le document PDF ci-joint contient des annales réelles du concours. Inspire-toi 
 Au concours de Marseille 2024 : 1 h 25 = ? min / 1 735 kg = ? g / 269 cm³ = ? mL / 106 L = ? hL.
 Les candidats perdent souvent des points par inattention ou oubli du tableau de conversion.
 
-Génère un entraînement de 10 à 15 questions UNIQUEMENT sur les conversions d'unités.
+Génère un entraînement de 10 questions UNIQUEMENT sur les conversions d'unités.
 
 # CATÉGORIES À COUVRIR (varier obligatoirement)
 
@@ -249,7 +249,7 @@ Au concours FPC 2025, ces problèmes sont tombés :
 - "Une entreprise fabrique 2 700 gâteaux/semaine. Combien après une hausse de 20% ?" (Réunion 2024)
 Ces problèmes testent la compréhension d'énoncé, l'extraction de données, la mise en équation et la résolution.
 
-Génère un entraînement de 10 à 15 questions sur les équations et problèmes.
+Génère un entraînement de 10 questions sur les équations et problèmes.
 
 # CATÉGORIES À COUVRIR (varier obligatoirement, toucher au moins 4 catégories)
 
@@ -326,13 +326,92 @@ export async function POST(request) {
 
       const prompt = famillePrompts[famille]
 
-      const raw = await callGeminiWithPdf(prompt)
-      const jsonMatch = raw.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) {
-        return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
+      // Streaming : envoyer les questions au fur et à mesure
+      const parts = []
+      if (annalesBase64) {
+        parts.push({ inlineData: { mimeType: 'application/pdf', data: annalesBase64 } })
       }
-      const sujetData = JSON.parse(jsonMatch[0])
-      return NextResponse.json({ sujet: sujetData })
+      parts.push({ text: prompt })
+
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:streamGenerateContent?alt=sse&key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts }],
+            generationConfig: { temperature: 0.8, maxOutputTokens: 16000 }
+          })
+        }
+      )
+
+      if (!geminiRes.ok) {
+        const errorText = await geminiRes.text()
+        console.error('Gemini API error:', geminiRes.status, errorText)
+        return NextResponse.json({ error: `Erreur API Gemini (${geminiRes.status})` }, { status: 500 })
+      }
+
+      // Lire le stream SSE et renvoyer en streaming
+      const encoder = new TextEncoder()
+      const reader = geminiRes.body.getReader()
+      const decoder = new TextDecoder()
+
+      const stream = new ReadableStream({
+        async start(controller) {
+          let fullText = ''
+          let sentQuestions = 0
+
+          try {
+            while (true) {
+              const { done, value } = await reader.read()
+              if (done) break
+
+              const chunk = decoder.decode(value, { stream: true })
+              const lines = chunk.split('\n')
+
+              for (const line of lines) {
+                if (!line.startsWith('data: ')) continue
+                const jsonStr = line.slice(6).trim()
+                if (jsonStr === '[DONE]' || !jsonStr) continue
+
+                try {
+                  const parsed = JSON.parse(jsonStr)
+                  const text = parsed.candidates?.[0]?.content?.parts?.[0]?.text || ''
+                  fullText += text
+
+                  // Essayer d'extraire les questions complètes au fur et à mesure
+                  const cleaned = fullText.replace(/```json/g, '').replace(/```/g, '').trim()
+                  const questionRegex = /\{\s*"id"\s*:\s*(\d+)\s*,\s*"question"\s*:\s*"([^"]*(?:\\.[^"]*)*)"\s*,\s*"reponse"\s*:\s*"([^"]*(?:\\.[^"]*)*)"\s*\}/g
+                  let match
+                  let count = 0
+                  while ((match = questionRegex.exec(cleaned)) !== null) {
+                    count++
+                    if (count > sentQuestions) {
+                      const q = { id: parseInt(match[1]), question: match[2].replace(/\\"/g, '"'), reponse: match[3].replace(/\\"/g, '"') }
+                      controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'question', question: q })}\n\n`))
+                      sentQuestions = count
+                    }
+                  }
+                } catch (e) { /* chunk JSON partiel, on continue */ }
+              }
+            }
+
+            // Envoyer le signal de fin
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'done' })}\n\n`))
+          } catch (err) {
+            controller.enqueue(encoder.encode(`data: ${JSON.stringify({ type: 'error', error: err.message })}\n\n`))
+          }
+          controller.close()
+        }
+      })
+
+      return new Response(stream, {
+        headers: {
+          'Content-Type': 'text/event-stream',
+          'Cache-Control': 'no-cache',
+          'Connection': 'keep-alive'
+        }
+      })
     }
 
     if (action === 'corriger') {

@@ -294,7 +294,7 @@ function DashboardContent() {
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Entraînement spécifique</h3>
                   <p className="text-xs text-slate-500 flex-1">Tous les types d'exercices de maths avec des explications pour réellement progresser</p>
-                  <span className="text-[10px] mt-2">&nbsp;</span>
+                  <span className="text-[10px] mt-2 text-blue-600 font-bold">Ne compte pas dans la moyenne</span>
                 </a>
                 <a href="/maths" className="bg-white p-5 rounded-2xl border-2 border-red-600 shadow-sm hover:shadow-md transition group flex flex-col items-center text-center relative">
                   <span className="absolute top-2 right-2 text-[9px] font-black text-red-600 bg-red-50 px-1.5 py-0.5 rounded-md">30 min</span>
@@ -329,7 +329,7 @@ function DashboardContent() {
                   </div>
                   <h3 className="font-bold text-slate-900 text-sm mb-1">Questions sur votre parcours</h3>
                   <p className="text-xs text-slate-500 flex-1">Simulations de questions possibles sur votre parcours afin de passer l'examen oral dans les meilleures conditions</p>
-                  <span className="text-[10px] mt-2">&nbsp;</span>
+                  <span className="text-[10px] mt-2 text-emerald-600 font-bold">Pas de note</span>
                 </a>
               </div>
 

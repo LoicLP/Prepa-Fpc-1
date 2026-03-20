@@ -1,58 +1,23 @@
 import { NextResponse } from 'next/server'
-import { readFileSync } from 'fs'
-import { join } from 'path'
+import { BASE_REDACTION, FORMAT_SORTIE_REDACTION } from '@/lib/prompts/base-redaction'
+import { SYSTEM_CLASSIQUE, PROMPT_CLASSIQUE } from '@/lib/prompts/format-classique'
+import { SYSTEM_MINI_TEXTE, PROMPT_MINI_TEXTE } from '@/lib/prompts/format-mini-texte'
+import { SYSTEM_DISSERTATIF, PROMPT_DISSERTATIF } from '@/lib/prompts/format-dissertatif'
 
 const apiKey = process.env.GEMINI_API_KEY
 
-// Charger le PDF des annales au démarrage
-let annalesBase64 = null
-try {
-  const pdfPath = join(process.cwd(), 'data', 'annales-redaction.pdf')
-  const pdfBuffer = readFileSync(pdfPath)
-  annalesBase64 = pdfBuffer.toString('base64')
-} catch (e) {
-  console.error('Impossible de charger le PDF des annales:', e.message)
+const FORMATS = {
+  classique: { system: SYSTEM_CLASSIQUE, prompt: PROMPT_CLASSIQUE },
+  mini_texte: { system: SYSTEM_MINI_TEXTE, prompt: PROMPT_MINI_TEXTE },
+  dissertatif: { system: SYSTEM_DISSERTATIF, prompt: PROMPT_DISSERTATIF }
 }
 
-async function callGeminiWithPdf(prompt) {
-  const parts = []
-
-  if (annalesBase64) {
-    parts.push({
-      inlineData: {
-        mimeType: 'application/pdf',
-        data: annalesBase64
-      }
-    })
-  }
-
-  parts.push({ text: prompt })
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts }],
-        generationConfig: { temperature: 0.8, maxOutputTokens: 8000, responseMimeType: "application/json" }
-      })
-    }
-  )
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error('Gemini API error:', response.status, errorText)
-    throw new Error(`Erreur API Gemini (${response.status})`)
-  }
-
-  const data = await response.json()
-  const allText = data.candidates?.[0]?.content?.parts
-    ?.map(p => p.text || '')
-    .join('\n') || ''
-
-  if (!allText) throw new Error('Réponse vide de Gemini')
-  return allText.replace(/```json/g, '').replace(/```/g, '').trim()
+// Choix aléatoire pondéré du format (60% classique, 25% mini-texte, 15% dissertatif)
+function pickRandomFormat() {
+  const r = Math.random()
+  if (r < 0.60) return 'classique'
+  if (r < 0.85) return 'mini_texte'
+  return 'dissertatif'
 }
 
 async function callGemini(prompt) {
@@ -63,7 +28,7 @@ async function callGemini(prompt) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, maxOutputTokens: 8000, responseMimeType: "application/json" }
+        generationConfig: { temperature: 0.7, topP: 0.95, maxOutputTokens: 8000, responseMimeType: 'application/json' }
       })
     }
   )
@@ -75,10 +40,7 @@ async function callGemini(prompt) {
   }
 
   const data = await response.json()
-  const allText = data.candidates?.[0]?.content?.parts
-    ?.map(p => p.text || '')
-    .join('\n') || ''
-
+  const allText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || ''
   if (!allText) throw new Error('Réponse vide de Gemini')
   return allText.replace(/```json/g, '').replace(/```/g, '').trim()
 }
@@ -94,85 +56,63 @@ export async function POST(request) {
 
     // === GÉNÉRER UN SUJET ===
     if (action === 'generer') {
-      // Choix côté serveur : 1/4 annale, 3/4 original
-      const useAnnale = Math.random() < 0.25
-      // 2 fois sur 5 : forcer une dissertation
-      const forceDissertation = Math.random() < 0.4
-      const formatInstruction = forceDissertation
-        ? 'OBLIGATOIREMENT UNE DISSERTATION COURTE (réflexion argumentée, pas de questions).'
-        : '2 à 3 questions d\'analyse ou une dissertation courte.'
+      const formatKey = pickRandomFormat()
+      const config = FORMATS[formatKey]
 
-      const promptAnnale = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité (rédaction/analyse).
+      const systemInstruction = BASE_REDACTION + '\n\n' + config.system
+      const userPrompt = config.prompt + '\n\n' + FORMAT_SORTIE_REDACTION
 
-Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comme base exclusive.
+      const geminiResponse = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemInstruction }] },
+            contents: [{ parts: [{ text: userPrompt }] }],
+            generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 8000, responseMimeType: 'application/json' }
+          })
+        }
+      )
 
-MISSION :
-Reprends un sujet tel quel ou très proche d'un sujet présent dans les annales du PDF. Reproduis fidèlement le texte source et les consignes. NE MODIFIE PAS le niveau de difficulté, ne rajoute pas de questions supplémentaires.
-
-RÈGLES IMPORTANTES :
-- Public cible : Aides-soignants (AS), auxiliaires de puériculture (AP) ou personnes en reconversion professionnelle (tous horizons) souhaitant devenir infirmiers (IDE).
-- Temps imparti : 30 MINUTES MAXIMUM. Le candidat doit pouvoir tout faire en 30 minutes.
-- Format attendu : ${formatInstruction}
-- Texte source : Compris entre 150 et 250 mots.
-- 2 questions MAXIMUM si c'est une analyse. Les questions doivent être SIMPLES et DIRECTES.
-- La note maximale du sujet est de 10 points (PAS sur 20).
-
-FORMAT DE SORTIE :
-Tu dois répondre UNIQUEMENT au format JSON strict en respectant cette structure :
-
-{
-  "type": "dissertation ou questions",
-  "titre": "Titre du sujet (ex: Annale 2024 - Titre du texte)",
-  "source": "annale",
-  "annee": "Année d'origine",
-  "texte": "Le texte source intégral à analyser (150 à 300 mots)",
-  "consigne": "Les questions posées ou le sujet de la dissertation",
-  "bareme": "Explication brève de la répartition des 10 points"
-}`
-
-      const promptOriginal = `Tu es un examinateur du concours IFSI FPC (Formation Professionnelle Continue) pour l'épreuve écrite de sous-admissibilité (rédaction/analyse).
-
-Le document PDF ci-joint contient des annales réelles. Tu dois t'en servir comme modèle pour comprendre les thèmes (santé publique, éthique, rôle soignant), le format et le niveau attendus.
-
-MISSION :
-Crée un sujet ORIGINAL et INÉDIT en t'inspirant fortement des thèmes et du style des annales du PDF. Le sujet doit être réaliste et pertinent pour le concours.
-
-ATTENTION — NIVEAU DE DIFFICULTÉ :
-- Le candidat est un AIDE-SOIGNANT, AUXILIAIRE DE PUÉRICULTURE ou une PERSONNE EN RECONVERSION (qui peut venir de n'importe quel métier sans lien avec la santé). Ce n'est PAS un étudiant en médecine ni un universitaire.
-- Le candidat n'a que 30 MINUTES pour tout faire (lire le texte + réfléchir + rédiger). C'est TRÈS COURT.
-- NE SURCHARGE PAS le sujet : 2 questions MAXIMUM si c'est une analyse, ou 1 sujet de dissertation COURT.
-- Les questions doivent être SIMPLES et DIRECTES, pas des questions à tiroirs ou à plusieurs sous-parties.
-- Le texte source doit être ACCESSIBLE, écrit dans un langage courant (pas de jargon médical complexe ni de vocabulaire universitaire).
-- Reste au MÊME NIVEAU DE DIFFICULTÉ que les annales du PDF. Ne complexifie JAMAIS au-delà de ce qui est dans les annales.
-- Le candidat doit pouvoir répondre en quelques paragraphes, pas rédiger une dissertation de 4 pages.
-
-RÈGLES IMPORTANTES :
-- Public cible : Aides-soignants (AS), auxiliaires de puériculture (AP) ou personnes en reconversion professionnelle (tous horizons) souhaitant devenir infirmiers (IDE).
-- Temps imparti : 30 MINUTES MAXIMUM (adapte la charge de travail en conséquence).
-- Format attendu : ${formatInstruction}
-- Texte source : Rédige ou adapte un texte source SIMPLE et ACCESSIBLE, compris entre 150 et 250 mots.
-- La note maximale du sujet est de 10 points (PAS sur 20).
-
-FORMAT DE SORTIE :
-Tu dois répondre UNIQUEMENT au format JSON strict en respectant cette structure :
-
-{
-  "type": "dissertation ou questions",
-  "titre": "Titre du sujet original",
-  "source": "original",
-  "annee": null,
-  "texte": "Le texte source inédit à analyser (150 à 300 mots)",
-  "consigne": "Les questions posées ou le sujet de la dissertation",
-  "bareme": "Explication brève de la répartition des 10 points"
-}`
-
-      const prompt = useAnnale ? promptAnnale : promptOriginal
-      const raw = await callGeminiWithPdf(prompt)
-      const jsonMatch = raw.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) {
-        return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
+      if (!geminiResponse.ok) {
+        const errorText = await geminiResponse.text()
+        console.error('Gemini error:', errorText)
+        return NextResponse.json({ error: 'Erreur Gemini' }, { status: 500 })
       }
-      const sujetData = JSON.parse(jsonMatch[0])
+
+      const geminiData = await geminiResponse.json()
+      const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
+      if (!text) return NextResponse.json({ error: 'Réponse Gemini vide' }, { status: 500 })
+
+      let raw
+      try {
+        raw = JSON.parse(text)
+      } catch {
+        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
+        raw = JSON.parse(cleaned)
+      }
+
+      // Mapper vers le format attendu par le front existant
+      const consigne = raw.questions
+        ? raw.questions.map((q, i) => `**Question ${q.numero || i + 1}** : ${q.consigne}`).join('\n\n')
+        : ''
+      const bareme = raw.questions
+        ? raw.questions.map(q => `Q${q.numero || ''} : ${q.bareme_indicatif || ''}`).join(' | ')
+        : ''
+
+      const sujetData = {
+        type: formatKey === 'dissertatif' ? 'dissertation' : 'questions',
+        titre: raw.theme || 'Sujet de rédaction',
+        source: 'original',
+        annee: null,
+        texte: raw.texte || '',
+        consigne,
+        bareme: bareme + (raw.conseil_methodologique ? '\n\nConseil : ' + raw.conseil_methodologique : ''),
+        _questions: raw.questions,
+        _source_fictive: raw.source_fictive
+      }
+
       return NextResponse.json({ sujet: sujetData })
     }
 
@@ -225,14 +165,12 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
       const correction = JSON.parse(jsonMatch[0])
-      // Recalculer la note finale côté serveur pour être sûr
       const nbFautes = correction.fautes?.length || 0
       const penalite = nbFautes * 0.25
       const noteFond = correction.note_fond ?? correction.note_finale ?? 10
       correction.penalite_orthographe = -penalite
       correction.note_finale = Math.max(0, Math.round((noteFond - penalite) * 10) / 10)
       correction.noteMax = 10
-      // Compatibilité avec le front qui utilise correction.note
       correction.note = correction.note_finale
       return NextResponse.json({ correction })
     }

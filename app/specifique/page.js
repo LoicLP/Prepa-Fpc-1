@@ -63,10 +63,10 @@ const familles = [
 ]
 
 const colorMap = {
-  operations: { text: 'text-sky-600', iconBg: 'bg-sky-100', gradient: 'from-sky-400 to-sky-600', badge: 'bg-sky-50 text-sky-600', wrapper: 'bg-sky-100/60', progressBar: 'bg-sky-500', ring: 'focus:ring-sky-300 focus:border-sky-400' },
-  conversions: { text: 'text-blue-600', iconBg: 'bg-blue-100', gradient: 'from-blue-500 to-blue-600', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100/60', progressBar: 'bg-blue-600', ring: 'focus:ring-blue-300 focus:border-blue-400' },
-  pourcentages: { text: 'text-purple-600', iconBg: 'bg-purple-100', gradient: 'from-purple-500 to-purple-600', badge: 'bg-purple-50 text-purple-600', wrapper: 'bg-purple-100/60', progressBar: 'bg-purple-600', ring: 'focus:ring-purple-300 focus:border-purple-400' },
-  equations: { text: 'text-fuchsia-600', iconBg: 'bg-fuchsia-100', gradient: 'from-fuchsia-500 to-fuchsia-600', badge: 'bg-fuchsia-50 text-fuchsia-600', wrapper: 'bg-fuchsia-100/60', progressBar: 'bg-fuchsia-500', ring: 'focus:ring-fuchsia-300 focus:border-fuchsia-400' }
+  operations: { text: 'text-sky-500', iconBg: 'bg-sky-100', gradient: 'from-[#7DD3FC] to-[#38BDF8]', badge: 'bg-sky-50 text-sky-600', wrapper: 'bg-sky-100/60', progressBar: 'bg-sky-400', ring: 'focus:ring-sky-300 focus:border-sky-400', dropColor: '#38BDF8' },
+  conversions: { text: 'text-blue-500', iconBg: 'bg-blue-100', gradient: 'from-[#38BDF8] to-[#3B82F6]', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100/60', progressBar: 'bg-blue-500', ring: 'focus:ring-blue-300 focus:border-blue-400', dropColor: '#3B82F6' },
+  pourcentages: { text: 'text-indigo-500', iconBg: 'bg-indigo-100', gradient: 'from-[#3B82F6] to-[#6366F1]', badge: 'bg-indigo-50 text-indigo-600', wrapper: 'bg-indigo-100/60', progressBar: 'bg-indigo-500', ring: 'focus:ring-indigo-300 focus:border-indigo-400', dropColor: '#6366F1' },
+  equations: { text: 'text-indigo-600', iconBg: 'bg-indigo-100', gradient: 'from-[#6366F1] to-[#4F46E5]', badge: 'bg-indigo-50 text-indigo-700', wrapper: 'bg-indigo-100/60', progressBar: 'bg-indigo-600', ring: 'focus:ring-indigo-300 focus:border-indigo-500', dropColor: '#4F46E5' }
 }
 
 export default function SpecifiquePage() {
@@ -290,10 +290,10 @@ export default function SpecifiquePage() {
       {/* ===== CHOIX FAMILLE (Constellation) ===== */}
       {step === 'choix' && (() => {
         const constellationData = [
-          { ...familles[0], top: '22%', left: '-8%', colorTheme: 'text-white border-sky-400 bg-sky-500', glowTheme: 'shadow-[0_0_60px_rgba(14,165,233,0.7)]', lineColor: '#0ea5e9', tooltipClass: 'top-full mt-6 left-1/2 -translate-x-1/2', labelColor: 'text-sky-700' },
-          { ...familles[2], top: '82%', left: '30%', colorTheme: 'text-white border-blue-400 bg-blue-600', glowTheme: 'shadow-[0_0_60px_rgba(59,130,246,0.7)]', lineColor: '#3b82f6', tooltipClass: 'right-full mr-10 top-0 -translate-y-full', labelColor: 'text-blue-700' },
-          { ...familles[1], top: '34%', left: '58%', colorTheme: 'text-white border-purple-400 bg-purple-600', glowTheme: 'shadow-[0_0_60px_rgba(147,51,234,0.7)]', lineColor: '#9333ea', tooltipClass: 'bottom-0 left-full ml-10 -translate-y-full', labelColor: 'text-purple-700' },
-          { ...familles[3], top: '72%', left: '97%', colorTheme: 'text-white border-fuchsia-400 bg-fuchsia-600', glowTheme: 'shadow-[0_0_60px_rgba(192,38,211,0.7)]', lineColor: '#c026d3', tooltipClass: 'bottom-full mb-12 left-1/2 -translate-x-1/2', labelColor: 'text-fuchsia-700' }
+          { ...familles[0], top: '22%', left: '-8%', colorTheme: 'text-white border-sky-300 bg-gradient-to-br from-[#7DD3FC] to-[#38BDF8]', glowTheme: 'shadow-[0_0_60px_rgba(56,189,248,0.7)]', lineColor: '#38BDF8', tooltipClass: 'top-full mt-6 left-1/2 -translate-x-1/2', labelColor: 'text-sky-600' },
+          { ...familles[2], top: '82%', left: '30%', colorTheme: 'text-white border-sky-400 bg-gradient-to-br from-[#38BDF8] to-[#3B82F6]', glowTheme: 'shadow-[0_0_60px_rgba(59,130,246,0.7)]', lineColor: '#3B82F6', tooltipClass: 'right-full mr-10 top-0 -translate-y-full', labelColor: 'text-blue-600' },
+          { ...familles[1], top: '34%', left: '58%', colorTheme: 'text-white border-blue-400 bg-gradient-to-br from-[#3B82F6] to-[#6366F1]', glowTheme: 'shadow-[0_0_60px_rgba(99,102,241,0.7)]', lineColor: '#6366F1', tooltipClass: 'bottom-0 left-full ml-10 -translate-y-full', labelColor: 'text-indigo-600' },
+          { ...familles[3], top: '72%', left: '97%', colorTheme: 'text-white border-indigo-400 bg-gradient-to-br from-[#6366F1] to-[#4F46E5]', glowTheme: 'shadow-[0_0_60px_rgba(79,70,229,0.7)]', lineColor: '#4F46E5', tooltipClass: 'bottom-full mb-12 left-1/2 -translate-x-1/2', labelColor: 'text-indigo-700' }
         ]
         const edges = [
           { source: 0, target: 1 },
@@ -417,8 +417,7 @@ export default function SpecifiquePage() {
 
       {/* ===== LOADING ===== */}
       {step === 'loading' && selectedFamille && (() => {
-        const dropColors = { operations: '#0ea5e9', conversions: '#3b82f6', pourcentages: '#9333ea', equations: '#c026d3' }
-        const fillColor = dropColors[selectedFamille.id] || '#3b82f6'
+        const fillColor = colorMap[selectedFamille.id]?.dropColor || '#3b82f6'
         return (
         <div className="fixed inset-0 z-40 lg:pl-[90px] flex items-center justify-center bg-slate-100/90 backdrop-blur-sm">
           <style>{`
@@ -445,7 +444,7 @@ export default function SpecifiquePage() {
             </div>
             <div className="text-center">
               <p className="text-slate-700 font-black text-base">Génération des exercices...</p>
-              <p className="text-slate-400 font-medium text-sm mt-1">Encore quelques secondes</p>
+              <p className="text-slate-400 font-medium text-sm mt-1" style={{animation: 'fadeIn 0.5s ease-out 8s forwards', opacity: 0}}>Encore quelques secondes</p>
             </div>
           </div>
         </div>

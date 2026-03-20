@@ -452,15 +452,16 @@ export default function SpecifiquePage() {
 
       {/* ===== ÉPREUVE ===== */}
       {step === 'epreuve' && sujet && data && selectedFamille && (
-        <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto`}>
-          <div className="relative flex items-center justify-center p-4">
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto flex flex-col`}>
+          <div className="relative flex items-center justify-center p-4 shrink-0">
             <h1 className="text-lg sm:text-xl font-black text-slate-800 tracking-tight text-center" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
             <a href="/dashboard" className="absolute right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
               Quitter l&apos;exercice
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
-          <div className="w-full max-w-2xl mx-auto px-4 pb-8">
+          <div className="flex-1 flex items-center justify-center px-4 pb-8">
+            <div className="w-full max-w-2xl">
             <div className="rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6">
               <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
                 {/* Header */}
@@ -548,6 +549,7 @@ export default function SpecifiquePage() {
                 </button>
               ))}
             </div>
+          </div>
           </div>
         </div>
       )}

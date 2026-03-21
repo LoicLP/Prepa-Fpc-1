@@ -428,7 +428,7 @@ export default function OralPage() {
                   {/* Grille navigation */}
                   <div className="mt-4 flex flex-wrap gap-2 justify-center">
                     {questions.map((qq, i) => (
-                      <button key={qq.id} onClick={() => { setCurrentQ(i); setShowTip(false) }} className={`w-9 h-9 rounded-lg text-xs font-bold transition cursor-pointer ${i === currentQ ? 'bg-emerald-600 text-white' : answers[qq.id] ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-300'}`}>
+                      <button key={qq.id} onClick={() => { setCurrentQ(i); setShowTip(false) }} className={`w-9 h-9 rounded-lg text-xs font-bold transition cursor-pointer bg-slate-900 text-white ${i === currentQ ? 'ring-2 ring-offset-2 ring-slate-900' : answers[qq.id] ? 'opacity-100' : 'opacity-40 hover:opacity-60'}`}>
                         {i + 1}
                       </button>
                     ))}

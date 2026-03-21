@@ -33,7 +33,7 @@ export default function OralPage() {
   const [loadingStep, setLoadingStep] = useState(0)
   const [showInfoPopup, setShowInfoPopup] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
-  const [timeLeft, setTimeLeft] = useState(10 * 60)
+  const [elapsed, setElapsed] = useState(0)
   const [timerActive, setTimerActive] = useState(false)
   const timerRef = useRef(null)
   const [isRecording, setIsRecording] = useState(false)
@@ -61,18 +61,11 @@ export default function OralPage() {
     return () => clearInterval(interval)
   }, [step])
 
-  // Timer 10 min
+  // Chronomètre (temps écoulé)
   useEffect(() => {
     if (!timerActive) return
     timerRef.current = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev <= 1) {
-          clearInterval(timerRef.current)
-          setTimerActive(false)
-          return 0
-        }
-        return prev - 1
-      })
+      setElapsed(prev => prev + 1)
     }, 1000)
     return () => clearInterval(timerRef.current)
   }, [timerActive])
@@ -109,7 +102,7 @@ export default function OralPage() {
       const elapsed = Date.now() - startTime
       if (elapsed < 12000) await new Promise(r => setTimeout(r, 12000 - elapsed))
       setQuestions(data.questions)
-      setTimeLeft(10 * 60)
+      setElapsed(0)
       setTimerActive(true)
       setStep('questions')
     } catch (err) {
@@ -154,7 +147,7 @@ export default function OralPage() {
   async function finishExercice() {
     setTimerActive(false)
     if (timerRef.current) clearInterval(timerRef.current)
-    const durationUsed = Math.round((10 * 60 - timeLeft) / 60)
+    const durationUsed = Math.round(elapsed / 60)
     await supabase.from('historique').insert({
       user_id: user.id,
       type: 'Oral',
@@ -168,7 +161,7 @@ export default function OralPage() {
   }
 
   function restart() {
-    setStep('upload'); setQuestions([]); setCurrentQ(0); setAnswers({}); setShowTip(false); setFileName(''); setError(''); setLoadingStep(0); setTimeLeft(10 * 60); setTimerActive(false)
+    setStep('upload'); setQuestions([]); setCurrentQ(0); setAnswers({}); setShowTip(false); setFileName(''); setError(''); setLoadingStep(0); setElapsed(0); setTimerActive(false)
   }
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || ''
@@ -355,10 +348,8 @@ export default function OralPage() {
           {/* ===== QUESTIONS ===== */}
           
          {step === 'questions' && q && (() => {
-            const oralMinutes = Math.floor(timeLeft / 60)
-            const oralSeconds = timeLeft % 60
-            const oralTimePercent = (timeLeft / (10 * 60)) * 100
-            const oralUrgent = timeLeft < 2 * 60
+            const oralMinutes = Math.floor(elapsed / 60)
+            const oralSeconds = elapsed % 60
             return (
             <div className="animate-fade-in min-h-[calc(100vh-6rem)] flex items-center justify-center">
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col w-full max-w-4xl">
@@ -368,14 +359,9 @@ export default function OralPage() {
                   <div className="flex items-start justify-between mb-4">
                     <h2 className="text-xl sm:text-2xl font-black text-white">Préparation à l'oral</h2>
                     <div className="flex items-center gap-4 shrink-0 ml-4">
-                      <div className={`flex items-center gap-3 ${oralUrgent ? 'animate-pulse' : ''}`}>
-                        <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
-                          <div className={`h-full rounded-full transition-all duration-1000 ${oralUrgent ? 'bg-red-500' : 'bg-emerald-400'}`} style={{width: `${oralTimePercent}%`}}></div>
-                        </div>
-                        <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${oralUrgent ? 'text-red-400' : 'text-white'}`}>
-                          <svg className="w-8 h-6 text-emerald-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
-                          {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}
-                        </div>
+                      <div className="flex items-center gap-2 font-black text-lg tabular-nums text-white">
+                        <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                        {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}
                       </div>
                       <a href="/dashboard" className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
                         Quitter l'exercice
@@ -392,7 +378,6 @@ export default function OralPage() {
                         {q.category}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Durée : 10 minutes</p>
                   </div>
                   <div className="mt-3 w-full h-1 bg-white/10 rounded-full">
                     <div className="h-full bg-emerald-400 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
@@ -420,15 +405,6 @@ export default function OralPage() {
                     </button>
                   </div>
 
-                  <button onClick={() => setShowTip(!showTip)} className="flex items-center gap-2 text-sm font-bold bg-amber-400 hover:bg-amber-500 text-black px-4 py-2 rounded-xl transition cursor-pointer mb-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9 18h6"/><path d="M10 22h4"/><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1h-6a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7z"/></svg>
-                    {showTip ? 'Masquer le conseil' : 'Voir le conseil'}
-                  </button>
-                  {showTip && (
-                    <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-2 text-sm text-amber-800 font-medium animate-fade-in">
-                      <strong>Conseil :</strong> {q.tips}
-                    </div>
-                  )}
 
                   {/* Actions */}
                   <div className="flex justify-between mt-4">

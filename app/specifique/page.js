@@ -303,9 +303,9 @@ export default function SpecifiquePage() {
         return (
         <div className="animate-fade-in h-[calc(100vh-4rem)] flex items-center justify-center relative overflow-hidden" style={{fontFamily: "'Nunito', sans-serif"}}>
 
-          <a href="/dashboard" className="absolute top-4 right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 z-30 shadow-lg">
-            Quitter l&apos;exercice
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+          <a href="/dashboard" className="absolute top-4 right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm p-2.5 sm:px-5 sm:py-2.5 rounded-xl transition flex items-center gap-2 z-30 shadow-lg">
+            <span className="hidden sm:inline">Quitter l&apos;exercice</span>
+            <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
           </a>
 
           {error && (
@@ -317,11 +317,32 @@ export default function SpecifiquePage() {
 
           {/* Titre */}
           <div className="absolute top-3 sm:top-5 left-1/2 -translate-x-1/2 text-center z-20 pointer-events-none">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Choisissez votre entraînement</h1>
+            <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-slate-800 tracking-tight">Choisissez votre entraînement</h1>
           </div>
 
-          {/* Constellation avec parallaxe */}
-          <div className="relative w-full max-w-4xl aspect-square md:aspect-video">
+          {/* Version mobile : liste de cartes */}
+          <div className="flex flex-col gap-3 w-full px-4 mt-14 md:hidden">
+            {familles.map((f, idx) => {
+              const Icon = f.icon
+              const isLoading = loadingFamille === f.id
+              const mobileColors = ['from-[#7DD3FC] to-[#38BDF8]', 'from-[#38BDF8] to-[#3B82F6]', 'from-[#3B82F6] to-[#6366F1]', 'from-[#6366F1] to-[#4F46E5]']
+              return (
+                <button key={f.id} onClick={() => !loadingFamille && startExercice(f)} disabled={!!loadingFamille} className={`flex items-center gap-4 bg-white rounded-2xl p-4 shadow-sm border border-slate-200 transition-all hover:shadow-md ${loadingFamille && !isLoading ? 'opacity-40' : ''} cursor-pointer`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center bg-gradient-to-br ${mobileColors[idx]} shrink-0`}>
+                    {isLoading ? <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> : <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />}
+                  </div>
+                  <div className="text-left flex-1 min-w-0">
+                    <h3 className="font-black text-slate-800 text-sm">{f.titre}</h3>
+                    <p className="text-xs text-slate-500 leading-relaxed truncate">{f.description}</p>
+                  </div>
+                  <svg className="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Constellation desktop */}
+          <div className="relative w-full max-w-4xl aspect-square md:aspect-video hidden md:block">
 
             {/* Lignes SVG avec flux lumineux */}
             <svg className="absolute inset-0 w-full h-full pointer-events-none z-0">
@@ -448,7 +469,7 @@ export default function SpecifiquePage() {
                 </svg>
               </div>
               <div className="text-center">
-                <p className="text-slate-500 font-bold text-sm">Génération des exercices...</p>
+                <p className="text-slate-500 font-bold text-sm">Génération des questions...</p>
                 <p className="text-slate-400 font-medium text-sm mt-1" style={{animation: 'fadeIn 0.5s ease-out 8s forwards', opacity: 0}}>Encore quelques secondes</p>
               </div>
             </div>

@@ -50,13 +50,17 @@ export async function POST(req) {
         if (plan === 'monthly' && session.subscription) {
           const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
           const subscription = await stripe.subscriptions.retrieve(subId)
+          const periodEnd = subscription.current_period_end
+          const endDate = typeof periodEnd === 'number'
+            ? new Date(periodEnd > 1e12 ? periodEnd : periodEnd * 1000)
+            : new Date(periodEnd)
           const { error } = await supabaseAdmin.from('subscriptions').upsert({
             user_id: userId,
             stripe_customer_id: customerId,
             stripe_subscription_id: subId,
             plan: 'monthly',
             status: 'active',
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: endDate.toISOString(),
           }, { onConflict: 'user_id' })
           if (error) console.error('Supabase upsert error (monthly):', error)
         }
@@ -68,9 +72,13 @@ export async function POST(req) {
         const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
         if (subId) {
           const subscription = await stripe.subscriptions.retrieve(subId)
+          const periodEnd = subscription.current_period_end
+          const endDate = typeof periodEnd === 'number'
+            ? new Date(periodEnd > 1e12 ? periodEnd : periodEnd * 1000)
+            : new Date(periodEnd)
           await supabaseAdmin.from('subscriptions').update({
             status: 'active',
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            current_period_end: endDate.toISOString(),
           }).eq('stripe_subscription_id', subId)
         }
         break

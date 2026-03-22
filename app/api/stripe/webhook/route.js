@@ -50,6 +50,8 @@ export async function POST(req) {
         if (plan === 'monthly' && session.subscription) {
           const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
           const subscription = await stripe.subscriptions.retrieve(subId)
+          console.log('Subscription object keys:', Object.keys(subscription))
+          console.log('current_period_end:', subscription.current_period_end, typeof subscription.current_period_end)
           const periodEnd = subscription.current_period_end
           const endDate = typeof periodEnd === 'number'
             ? new Date(periodEnd > 1e12 ? periodEnd : periodEnd * 1000)

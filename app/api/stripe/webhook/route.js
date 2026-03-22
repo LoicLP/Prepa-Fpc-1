@@ -22,69 +22,76 @@ export async function POST(req) {
 
   try {
     switch (event.type) {
-      // Paiement unique (annuel) ou premier paiement abonnement
       case 'checkout.session.completed': {
         const session = event.data.object
-        const userId = session.metadata.userId
-        const plan = session.metadata.plan
+        const userId = session.metadata?.userId
+        const plan = session.metadata?.plan
+        const customerId = typeof session.customer === 'string' ? session.customer : session.customer?.id
+
+        if (!userId || !plan) {
+          console.error('Missing metadata:', { userId, plan })
+          break
+        }
 
         if (plan === 'yearly') {
-          // Paiement unique — premium pour 1 an
           const expiresAt = new Date()
           expiresAt.setFullYear(expiresAt.getFullYear() + 1)
 
-          await supabaseAdmin.from('subscriptions').upsert({
+          const { error } = await supabaseAdmin.from('subscriptions').upsert({
             user_id: userId,
-            stripe_customer_id: session.customer,
+            stripe_customer_id: customerId,
             plan: 'yearly',
             status: 'active',
             current_period_end: expiresAt.toISOString(),
           }, { onConflict: 'user_id' })
+          if (error) console.error('Supabase upsert error (yearly):', error)
         }
 
         if (plan === 'monthly' && session.subscription) {
-          const subscription = await stripe.subscriptions.retrieve(session.subscription)
-          await supabaseAdmin.from('subscriptions').upsert({
+          const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id
+          const subscription = await stripe.subscriptions.retrieve(subId)
+          const { error } = await supabaseAdmin.from('subscriptions').upsert({
             user_id: userId,
-            stripe_customer_id: session.customer,
-            stripe_subscription_id: session.subscription,
+            stripe_customer_id: customerId,
+            stripe_subscription_id: subId,
             plan: 'monthly',
             status: 'active',
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
           }, { onConflict: 'user_id' })
+          if (error) console.error('Supabase upsert error (monthly):', error)
         }
         break
       }
 
-      // Renouvellement mensuel réussi
       case 'invoice.paid': {
         const invoice = event.data.object
-        if (invoice.subscription) {
-          const subscription = await stripe.subscriptions.retrieve(invoice.subscription)
+        const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
+        if (subId) {
+          const subscription = await stripe.subscriptions.retrieve(subId)
           await supabaseAdmin.from('subscriptions').update({
             status: 'active',
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-          }).eq('stripe_subscription_id', invoice.subscription)
+          }).eq('stripe_subscription_id', subId)
         }
         break
       }
 
-      // Annulation abonnement mensuel
       case 'customer.subscription.deleted': {
         const subscription = event.data.object
+        const subId = typeof subscription.id === 'string' ? subscription.id : subscription.id
         await supabaseAdmin.from('subscriptions').update({
           status: 'canceled',
-        }).eq('stripe_subscription_id', subscription.id)
+        }).eq('stripe_subscription_id', subId)
         break
       }
 
-      // Paiement échoué
       case 'invoice.payment_failed': {
         const invoice = event.data.object
-        if (invoice.subscription) {
+        const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
+        if (subId) {
           await supabaseAdmin.from('subscriptions').update({
             status: 'past_due',
-          }).eq('stripe_subscription_id', invoice.subscription)
+          }).eq('stripe_subscription_id', subId)
         }
         break
       }

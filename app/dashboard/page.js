@@ -30,6 +30,10 @@ function DashboardContent() {
   const [page, setPage] = useState(searchParams.get('tab') || 'dashboard')
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [trialDays, setTrialDays] = useState(7)
+  const [isPremium, setIsPremium] = useState(false)
+  const [subscriptionPlan, setSubscriptionPlan] = useState(null)
+  const [subscriptionEnd, setSubscriptionEnd] = useState(null)
+  const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showTip, setShowTip] = useState(false)
   const [tipIndex, setTipIndex] = useState(0)
 
@@ -59,6 +63,14 @@ function DashboardContent() {
       setNewFirstName(session.user?.user_metadata?.first_name || '')
       setNewLastName(session.user?.user_metadata?.last_name || '')
       fetchHistorique(session.user.id)
+      // Fetch subscription
+      supabase.from('subscriptions').select('*').eq('user_id', session.user.id).eq('status', 'active').single().then(({ data: sub }) => {
+        if (sub && new Date(sub.current_period_end) > new Date()) {
+          setIsPremium(true)
+          setSubscriptionPlan(sub.plan)
+          setSubscriptionEnd(sub.current_period_end)
+        }
+      })
       // Calcul trial
       const created = new Date(session.user.created_at)
       const now = new Date()
@@ -73,6 +85,26 @@ function DashboardContent() {
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  async function handleCheckout(plan) {
+    setCheckoutLoading(true)
+    try {
+      const priceId = plan === 'monthly'
+        ? process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY
+        : process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY
+      const res = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ priceId, userId: user.id, userEmail: user.email }),
+      })
+      const { url, error } = await res.json()
+      if (error) throw new Error(error)
+      window.location.href = url
+    } catch (err) {
+      console.error('Checkout error:', err)
+      setCheckoutLoading(false)
+    }
+  }
 
   const tips = [
     'Pour convertir des mL en L, divisez par 1000.',
@@ -118,7 +150,6 @@ function DashboardContent() {
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
   const subtitle = hour < 12 ? 'Une petite session de révision ce matin ?' : hour < 18 ? 'C\'est le moment idéal pour réviser !' : 'Une dernière session avant la fin de journée ?'
-  const isPremium = false // TODO: brancher sur le statut premium réel
   const email = user?.email || ''
   const createdAt = new Date(user?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const stats = { qcm: 0, score: '-', calculs: 0, redactions: 0 }
@@ -268,20 +299,29 @@ function DashboardContent() {
                     <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>💡 {tips[tipIndex]}</p>
                   </div>
                 </div>
-                {trialDays > 0 && (
-                  <div className="flex items-center gap-3">
-                    <div className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 px-4 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-amber-200/50">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-                      <span className="font-black text-sm">{trialDays}j restant{trialDays > 1 ? 's' : ''}</span>
-                    </div>
-                    <button onClick={() => setPage('abonnement')} className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer">Devenir premium</button>
+                {isPremium ? (
+                  <div className="bg-gradient-to-r from-emerald-400 to-green-500 text-emerald-950 px-4 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-emerald-200/50">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    <span className="font-black text-sm">Premium {subscriptionPlan === 'monthly' ? 'Mensuel' : 'Annuel'}</span>
                   </div>
-                )}
-                {trialDays === 0 && (
-                  <button onClick={() => setPage('abonnement')} className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-black text-sm px-5 py-2.5 rounded-xl shadow-md shadow-amber-200/50 hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    Devenir premium
-                  </button>
+                ) : (
+                  <>
+                    {trialDays > 0 && (
+                      <div className="flex items-center gap-3">
+                        <div className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 px-4 py-2 rounded-xl flex items-center gap-2 shadow-md shadow-amber-200/50">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                          <span className="font-black text-sm">{trialDays}j restant{trialDays > 1 ? 's' : ''}</span>
+                        </div>
+                        <button onClick={() => setPage('abonnement')} className="bg-slate-900 hover:bg-black text-white font-bold text-sm px-4 py-2 rounded-xl transition shadow-md cursor-pointer">Devenir premium</button>
+                      </div>
+                    )}
+                    {trialDays === 0 && (
+                      <button onClick={() => setPage('abonnement')} className="bg-gradient-to-r from-amber-400 to-yellow-500 text-amber-950 font-black text-sm px-5 py-2.5 rounded-xl shadow-md shadow-amber-200/50 hover:shadow-lg transition flex items-center gap-2 cursor-pointer">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        Devenir premium
+                      </button>
+                    )}
+                  </>
                 )}
               </div>
 
@@ -1058,7 +1098,7 @@ function DashboardContent() {
                       ))}
                     </ul>
                   </div>
-                  <div className="w-full py-3.5 bg-slate-50 border border-slate-200 text-slate-700 font-black rounded-xl text-center text-sm">Expire dans {trialDays} jour{trialDays > 1 ? 's' : ''}</div>
+                  <div className="w-full py-3.5 bg-slate-50 border border-slate-200 text-slate-700 font-black rounded-xl text-center text-sm">{trialDays === 0 ? 'Expiré' : `Expire dans ${trialDays} jour${trialDays > 1 ? 's' : ''}`}</div>
                 </div>
 
                 {/* Formule Mensuelle */}
@@ -1084,7 +1124,7 @@ function DashboardContent() {
                       ))}
                     </ul>
                   </div>
-                  <button className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-center transition shadow-lg shadow-red-200 text-sm cursor-pointer">S'abonner maintenant</button>
+                  <button onClick={() => handleCheckout('monthly')} disabled={checkoutLoading} className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-center transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">{checkoutLoading ? 'Redirection...' : "S'abonner maintenant"}</button>
                 </div>
 
                 {/* Pack Sérénité */}
@@ -1113,7 +1153,7 @@ function DashboardContent() {
                       ))}
                     </ul>
                   </div>
-                  <button className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-center transition shadow-lg shadow-red-200 text-sm cursor-pointer">S'abonner maintenant</button>
+                  <button onClick={() => handleCheckout('yearly')} disabled={checkoutLoading} className="w-full py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl text-center transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">{checkoutLoading ? 'Redirection...' : "S'abonner maintenant"}</button>
                 </div>
 
               </div>

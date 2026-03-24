@@ -14,7 +14,7 @@ export default function AdminPage() {
   const emptyArticle = { title: '', slug: '', category: '', category_color: 'blue', excerpt: '', content: '', date: new Date().toISOString().split('T')[0], reading_time: '5 min de lecture', published: true, image_url: '' }
   const [form, setForm] = useState(emptyArticle)
 
-  const ADMIN_EMAIL = 'pauldebruinier@gmail.com'
+  const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {

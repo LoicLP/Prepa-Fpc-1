@@ -237,7 +237,7 @@ export default function CalculsDosesPage() {
             <ul className="space-y-3">
               <li><a href="/blog" className="hover:text-white transition">Dates concours FPC</a></li>
               <li><a href="/blog" className="hover:text-white transition">Dossier Passerelle AS/AP</a></li>
-              <li><a href="/calculs-doses" className="text-white transition">Formules calculs de doses</a></li>
+              <li><a href="/calculs-doses" className="hover:text-white transition">Formules calculs de doses</a></li>
             </ul>
           </div>
           <div>

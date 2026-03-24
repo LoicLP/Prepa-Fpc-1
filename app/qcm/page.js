@@ -383,10 +383,11 @@ function Nav() {
 
 function Footer() {
   return (
-    <footer className="bg-slate-950 text-slate-400 py-8 sm:py-12 text-sm mt-auto">
+    <footer className="bg-slate-950 text-slate-400 py-12 text-sm mt-auto">
       <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
         <div className="lg:col-span-2">
           <div className="flex items-center gap-2 mb-4">
+            <svg className="w-5 h-5 text-red-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
             <h4 className="text-white font-bold text-lg">Prépa FPC</h4>
           </div>
           <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier (Aides-Soignants et Auxiliaires de Puériculture).</p>
@@ -408,7 +409,7 @@ function Footer() {
           </ul>
         </div>
       </div>
-      <div className="max-w-6xl mx-auto px-4 mt-8 sm:mt-12 pt-8 border-t border-slate-800 text-center">
+      <div className="max-w-6xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center">
         <p>&copy; 2026 Prépa FPC (passerelle-fpc.fr). Tous droits réservés.</p>
       </div>
     </footer>

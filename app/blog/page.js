@@ -19,6 +19,8 @@ export default function BlogPage() {
   const [user, setUser] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
+  const articlesPerPage = 6
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -132,8 +134,9 @@ export default function BlogPage() {
             <div className="animate-spin w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full"></div>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {articles.map(article => {
+            {articles.slice((currentPage - 1) * articlesPerPage, currentPage * articlesPerPage).map(article => {
               const colors = colorMap[article.category_color] || colorMap.blue
               return (
                 <a key={article.id} href={`/blog/${article.slug}`} className="article-card bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden flex flex-col">
@@ -157,6 +160,23 @@ export default function BlogPage() {
               )
             })}
           </div>
+          {/* Pagination */}
+          {articles.length > articlesPerPage && (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              <button onClick={() => { setCurrentPage(p => Math.max(1, p - 1)); window.scrollTo(0, 0) }} disabled={currentPage === 1} className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold text-sm hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+              </button>
+              {Array.from({ length: Math.ceil(articles.length / articlesPerPage) }, (_, i) => (
+                <button key={i} onClick={() => { setCurrentPage(i + 1); window.scrollTo(0, 0) }} className={`w-10 h-10 rounded-xl font-bold text-sm transition cursor-pointer ${currentPage === i + 1 ? 'bg-red-600 text-white shadow-lg shadow-red-200' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-50'}`}>
+                  {i + 1}
+                </button>
+              ))}
+              <button onClick={() => { setCurrentPage(p => Math.min(Math.ceil(articles.length / articlesPerPage), p + 1)); window.scrollTo(0, 0) }} disabled={currentPage === Math.ceil(articles.length / articlesPerPage)} className="px-4 py-2 rounded-xl border border-slate-200 bg-white text-slate-700 font-bold text-sm hover:bg-slate-50 transition disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </button>
+            </div>
+          )}
+          </>
         )}
       </main>
 
@@ -165,7 +185,7 @@ export default function BlogPage() {
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4"><Stethoscope className="w-5 h-5 text-red-500" /><h4 className="text-white font-bold text-lg">Prépa FPC</h4></div>
-            <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier.</p>
+            <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier (Aides-Soignants et Auxiliaires de Puériculture).</p>
           </div>
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Ressources IFSI</h4>

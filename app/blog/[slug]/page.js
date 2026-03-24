@@ -172,13 +172,14 @@ export default function ArticlePage() {
         <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4"><Stethoscope className="w-5 h-5 text-red-500" /><h4 className="text-white font-bold text-lg">Prépa FPC</h4></div>
-            <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier.</p>
+            <p className="max-w-xs leading-relaxed">La plateforme d'entraînement de référence pour la réussite du concours infirmier (Aides-Soignants et Auxiliaires de Puériculture).</p>
           </div>
           <div>
-            <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Ressources</h4>
+            <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Ressources IFSI</h4>
             <ul className="space-y-3">
-              <li><a href="/blog" className="hover:text-white transition">Blog</a></li>
-              <li><a href="/calculs-doses" className="hover:text-white transition">Calculs de doses</a></li>
+              <li><a href="/blog" className="hover:text-white transition">Dates concours FPC</a></li>
+              <li><a href="/blog" className="hover:text-white transition">Dossier Passerelle AS/AP</a></li>
+              <li><a href="/calculs-doses" className="hover:text-white transition">Formules calculs de doses</a></li>
             </ul>
           </div>
           <div>

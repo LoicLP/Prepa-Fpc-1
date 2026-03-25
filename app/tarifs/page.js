@@ -133,7 +133,7 @@ export default function TarifsPage() {
                   ))}
                 </ul>
               </div>
-              <a href="/signup" className="w-full py-4 px-6 bg-slate-50 hover:bg-slate-100 text-slate-900 font-black rounded-2xl text-center transition border border-slate-200 block">S'abonner maintenant</a>
+              <a href="/signup" className="w-full py-4 px-6 bg-slate-900 hover:bg-black text-white font-black rounded-2xl text-center transition shadow-lg block">S'abonner maintenant</a>
             </div>
 
             {/* Pack Sérénité */}

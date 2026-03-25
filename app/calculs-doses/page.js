@@ -235,7 +235,7 @@ export default function CalculsDosesPage() {
           <div>
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Ressources IFSI</h4>
             <ul className="space-y-3">
-              <li><a href="/blog" className="hover:text-white transition">Dates concours FPC</a></li>
+              <li><a href="/blog/dates-concours-fpc-infirmier-2026" className="hover:text-white transition">Dates concours FPC</a></li>
               <li><a href="/blog" className="hover:text-white transition">Dossier Passerelle AS/AP</a></li>
               <li><a href="/calculs-doses" className="hover:text-white transition">Formules calculs de doses</a></li>
             </ul>
@@ -250,7 +250,7 @@ export default function CalculsDosesPage() {
           </div>
         </div>
         <div className="max-w-6xl mx-auto px-4 mt-12 pt-8 border-t border-slate-800 text-center">
-          <p>&copy; 2026 Prépa FPC (passerelle-fpc.fr). Tous droits réservés.</p>
+          <p>&copy; 2026 Prépa FPC (prepa-fpc.fr). Tous droits réservés.</p>
         </div>
       </footer>
     </div>

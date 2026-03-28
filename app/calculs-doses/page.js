@@ -135,26 +135,15 @@ export default function CalculsDosesPage() {
       </nav>
 
       {/* HEADER */}
-      <header className="pt-16 pb-8 bg-slate-50 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")"}}></div>
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
+      <header className="pt-16 pb-8 bg-gradient-to-b from-slate-200 to-slate-200">
+        <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-4 whitespace-nowrap">Maîtrisez parfaitement les <span className="text-red-600">calculs pour le concours</span></h1>
           <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez les formules avec les 4 fiches de révisions indispensables !</p>
         </div>
       </header>
 
-      {/* ONGLETS */}
-      <div className="bg-slate-50 pb-6 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-5" style={{backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")"}}></div>
-        <div className="flex justify-center gap-2 relative z-10">
-          <button onClick={() => setActiveTab('fiches')} className={`px-6 py-2.5 rounded-full font-bold text-sm transition cursor-pointer ${activeTab === 'fiches' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Fiches de révision</button>
-          <button onClick={() => setActiveTab('exercices')} className={`px-6 py-2.5 rounded-full font-bold text-sm transition cursor-pointer ${activeTab === 'exercices' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Générateur d'exercices</button>
-        </div>
-      </div>
 
       {/* ==================== FICHES DE RÉVISION ==================== */}
-      {activeTab === 'fiches' && (
-        <>
         <section className="py-12 md:py-16 bg-gradient-to-b from-slate-200 to-slate-50">
           <div className="max-w-[90rem] mx-auto px-4 grid md:grid-cols-2 gap-8">
 
@@ -683,11 +672,7 @@ export default function CalculsDosesPage() {
             </a>
           </div>
         </section>
-        </>
-      )}
-
       {/* ==================== GÉNÉRATEUR D'EXERCICES ==================== */}
-      {activeTab === 'exercices' && (
         <section className="py-12 bg-slate-50 flex-1">
           <div className="max-w-2xl mx-auto px-4">
 
@@ -760,7 +745,6 @@ export default function CalculsDosesPage() {
             )}
           </div>
         </section>
-      )}
 
       {/* FOOTER */}
       <footer className="bg-slate-950 text-slate-400 py-12 text-sm mt-auto">

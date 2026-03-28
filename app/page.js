@@ -94,7 +94,7 @@ export default function HomePage() {
           <div className="flex items-center gap-4">
            {!authLoading && (user ? (
               <>
-                <a href="/dashboard" className="hidden md:inline-flex bg-red-600 hover:bg-red-700 text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-red-200 transition transform hover:-translate-y-0.5 text-sm">Mon tableau de bord</a>
+                <a href="/dashboard" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5 text-sm">Mon tableau de bord</a>
               </>
             ) : (
               <>

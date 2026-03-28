@@ -8,16 +8,6 @@ export default function CalculsDosesPage() {
   const [user, setUser] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
-  const [activeTab, setActiveTab] = useState('fiches')
-  const [exCategory, setExCategory] = useState('concentrations')
-  const [exercise, setExercise] = useState(null)
-  const [userAnswer, setUserAnswer] = useState('')
-  const [exState, setExState] = useState('idle')
-  const [exLoading, setExLoading] = useState(false)
-  const [exError, setExError] = useState('')
-  const [exRemaining, setExRemaining] = useState(null)
-  const [isCorrect, setIsCorrect] = useState(false)
-  const [sessionScore, setSessionScore] = useState({ correct: 0, total: 0 })
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -29,39 +19,6 @@ export default function CalculsDosesPage() {
     })
     return () => subscription.unsubscribe()
   }, [])
-
-  async function generateExercise() {
-    setExLoading(true)
-    setExError('')
-    setExercise(null)
-    setUserAnswer('')
-    setExState('idle')
-    try {
-      const res = await fetch('/api/calculs-doses', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ category: exCategory }),
-      })
-      const data = await res.json()
-      if (data.error) throw new Error(data.error)
-      setExercise(data.exercise)
-      if (data.remaining !== undefined) setExRemaining(data.remaining)
-    } catch (err) {
-      setExError(err.message)
-    }
-    setExLoading(false)
-  }
-
-  function checkAnswer() {
-    if (!userAnswer || !exercise) return
-    const userVal = parseFloat(userAnswer.replace(',', '.'))
-    const expectedVal = parseFloat(exercise.answer)
-    const tolerance = exCategory === 'debit' ? 1 : 0.1
-    const correct = Math.abs(userVal - expectedVal) <= tolerance
-    setIsCorrect(correct)
-    setExState('answered')
-    setSessionScore(prev => ({ correct: prev.correct + (correct ? 1 : 0), total: prev.total + 1 }))
-  }
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -135,7 +92,7 @@ export default function CalculsDosesPage() {
       </nav>
 
       {/* HEADER */}
-      <header className="pt-16 pb-8 bg-gradient-to-b from-slate-200 to-slate-200">
+      <header className="pt-16 pb-8 bg-slate-50">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-4 whitespace-nowrap">Maîtrisez parfaitement les <span className="text-red-600">calculs pour le concours</span></h1>
           <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez les formules avec les 4 fiches de révisions indispensables !</p>
@@ -144,7 +101,7 @@ export default function CalculsDosesPage() {
 
 
       {/* ==================== FICHES DE RÉVISION ==================== */}
-        <section className="py-12 md:py-16 bg-gradient-to-b from-slate-200 to-slate-50">
+        <section className="py-12 md:py-16 bg-slate-50">
           <div className="max-w-[90rem] mx-auto px-4 grid md:grid-cols-2 gap-8">
 
             {/* Produit en croix */}
@@ -666,83 +623,10 @@ export default function CalculsDosesPage() {
           <div className="max-w-4xl mx-auto px-4 text-center">
             <h2 className="text-2xl font-black text-white mb-3">Prêt(e) à passer à la pratique ?</h2>
             <p className="text-slate-400 font-medium text-sm mb-2">Inscrivez-vous et accédez à tous les entraînements pour le concours FPC.</p>
-            <p className="text-slate-500 font-bold text-sm mb-8">Essai gratuit de 7 jours, sans carte bancaire.</p>
+            <p className="text-white font-medium text-sm mb-8">Essai gratuit de 7 jours, sans carte bancaire.</p>
             <a href="/signup" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-black px-8 py-4 rounded-2xl transition shadow-lg shadow-red-200/30 text-sm">
               Commencer à m'entraîner <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
             </a>
-          </div>
-        </section>
-      {/* ==================== GÉNÉRATEUR D'EXERCICES ==================== */}
-        <section className="py-12 bg-slate-50 flex-1">
-          <div className="max-w-2xl mx-auto px-4">
-
-            {/* Sélection catégorie */}
-            <div className="flex justify-center gap-3 mb-8">
-              <button onClick={() => { setExCategory('concentrations'); setExercise(null); setExState('idle') }} className={`px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer ${exCategory === 'concentrations' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Concentrations en %</button>
-              <button onClick={() => { setExCategory('debit'); setExercise(null); setExState('idle') }} className={`px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer ${exCategory === 'debit' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Débit gouttes/min</button>
-            </div>
-
-            {/* Compteur */}
-            <div className="text-center mb-6">
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{exRemaining !== null ? `${exRemaining} exercice${exRemaining > 1 ? 's' : ''} restant${exRemaining > 1 ? 's' : ''} aujourd'hui` : '20 exercices / jour'}</span>
-            </div>
-
-            {/* Bouton générer */}
-            {!exercise && (
-              <div className="text-center">
-                <button onClick={generateExercise} disabled={exLoading} className="bg-red-600 hover:bg-red-700 text-white font-black px-8 py-4 rounded-2xl transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">
-                  {exLoading ? (
-                    <span className="flex items-center gap-2"><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Génération en cours...</span>
-                  ) : 'Générer un exercice'}
-                </button>
-                {exError && <p className="text-red-600 font-bold text-sm mt-4">{exError}</p>}
-              </div>
-            )}
-
-            {/* Exercice */}
-            {exercise && (
-              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-                <div className="p-6 sm:p-8">
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${exCategory === 'concentrations' ? 'bg-slate-100 text-slate-800' : 'bg-rose-100 text-rose-700'}`}>{exCategory === 'concentrations' ? 'Concentration' : 'Débit'}</span>
-                  </div>
-                  <p className="text-slate-900 font-bold text-lg leading-relaxed mb-6">{exercise.question}</p>
-
-                  {exState === 'idle' && (
-                    <div>
-                      <div className="flex gap-3">
-                        <input type="number" step="any" value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()} placeholder="Votre réponse" className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400" />
-                        <span className="flex items-center text-slate-500 font-bold text-sm">{exercise.unit}</span>
-                      </div>
-                      <button onClick={checkAnswer} disabled={!userAnswer} className="w-full mt-4 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">Vérifier ma réponse</button>
-                    </div>
-                  )}
-
-                  {exState === 'answered' && (
-                    <div>
-                      <div className={`rounded-2xl p-5 mb-4 ${isCorrect ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
-                        <div className="flex items-center gap-2 mb-2">
-                          {isCorrect ? (
-                            <><svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><span className="font-black text-emerald-800">Bonne réponse !</span></>
-                          ) : (
-                            <><svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span className="font-black text-red-800">Mauvaise réponse — la bonne réponse est {exercise.answer} {exercise.unit}</span></>
-                          )}
-                        </div>
-                        <p className="text-sm font-medium leading-relaxed mt-3 whitespace-pre-line" style={{color: isCorrect ? '#065f46' : '#991b1b'}}>{exercise.explanation}</p>
-                      </div>
-                      <button onClick={() => { setExercise(null); setUserAnswer(''); setExState('idle'); setIsCorrect(false) }} className="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-black rounded-xl transition text-sm cursor-pointer">Exercice suivant</button>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Score session */}
-            {sessionScore.total > 0 && (
-              <div className="mt-6 text-center">
-                <span className="text-sm font-bold text-slate-500">{sessionScore.correct}/{sessionScore.total} bonne{sessionScore.correct > 1 ? 's' : ''} réponse{sessionScore.correct > 1 ? 's' : ''} cette session</span>
-              </div>
-            )}
           </div>
         </section>
 

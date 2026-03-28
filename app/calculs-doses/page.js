@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
 
 const Stethoscope = ({className}) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
@@ -8,6 +8,30 @@ export default function CalculsDosesPage() {
   const [user, setUser] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [authLoading, setAuthLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState('fiches')
+  const [exCategory, setExCategory] = useState('concentrations')
+  const [exercise, setExercise] = useState(null)
+  const [userAnswer, setUserAnswer] = useState('')
+  const [exState, setExState] = useState('idle')
+  const [exLoading, setExLoading] = useState(false)
+  const [exError, setExError] = useState('')
+  const [exRemaining, setExRemaining] = useState(null)
+  const [isCorrect, setIsCorrect] = useState(false)
+  const [sessionScore, setSessionScore] = useState({ correct: 0, total: 0 })
+  const ficheRefs = useRef([])
+
+  async function downloadFiche(index, title) {
+    const el = ficheRefs.current[index]
+    if (!el) return
+    const html2pdf = (await import('html2pdf.js')).default
+    html2pdf().set({
+      margin: 10,
+      filename: `fiche-${title.toLowerCase().replace(/[^a-z0-9]/g, '-')}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).from(el).save()
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -19,6 +43,39 @@ export default function CalculsDosesPage() {
     })
     return () => subscription.unsubscribe()
   }, [])
+
+  async function generateExercise() {
+    setExLoading(true)
+    setExError('')
+    setExercise(null)
+    setUserAnswer('')
+    setExState('idle')
+    try {
+      const res = await fetch('/api/calculs-doses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ category: exCategory }),
+      })
+      const data = await res.json()
+      if (data.error) throw new Error(data.error)
+      setExercise(data.exercise)
+      if (data.remaining !== undefined) setExRemaining(data.remaining)
+    } catch (err) {
+      setExError(err.message)
+    }
+    setExLoading(false)
+  }
+
+  function checkAnswer() {
+    if (!userAnswer || !exercise) return
+    const userVal = parseFloat(userAnswer.replace(',', '.'))
+    const expectedVal = parseFloat(exercise.answer)
+    const tolerance = exCategory === 'debit' ? 1 : 0.1
+    const correct = Math.abs(userVal - expectedVal) <= tolerance
+    setIsCorrect(correct)
+    setExState('answered')
+    setSessionScore(prev => ({ correct: prev.correct + (correct ? 1 : 0), total: prev.total + 1 }))
+  }
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -92,138 +149,257 @@ export default function CalculsDosesPage() {
       </nav>
 
       {/* HEADER */}
-      <header className="pt-16 pb-12 bg-white border-b border-slate-100 relative overflow-hidden">
+      <header className="pt-16 pb-8 bg-slate-50 relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")"}}></div>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-50 border border-red-100 text-red-700 text-sm font-bold mb-6">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
-            Entraînement ciblé
-          </div>
-          <h1 className="text-4xl md:text-5xl font-black text-slate-900 mb-6">Maîtrisez les <span className="text-red-600">calculs de doses</span></h1>
-          <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez toutes les formules essentielles et entraînez-vous avec des exercices générés à l'infini. C'est la clé pour assurer vos points à l'épreuve écrite.</p>
+          <h1 className="text-3xl md:text-4xl font-black text-slate-900 mb-4">Maîtrisez parfaitement les <span className="text-red-600">calculs de doses</span></h1>
+          <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez les formules avec les 4 fiches de révisions indispensables et entraînez-vous avec des exercices !</p>
         </div>
       </header>
 
-      {/* SECTION FORMULES */}
-      <section className="py-16 md:py-24 bg-slate-900 relative overflow-hidden">
-        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-96 h-96 bg-red-500/5 rounded-full"></div>
-          <div className="absolute -bottom-32 -left-20 w-80 h-80 bg-slate-700/30 rounded-full"></div>
+      {/* ONGLETS */}
+      <div className="bg-slate-50 pb-6 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-5" style={{backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")"}}></div>
+        <div className="flex justify-center gap-2 relative z-10">
+          <button onClick={() => setActiveTab('fiches')} className={`px-6 py-2.5 rounded-full font-bold text-sm transition cursor-pointer ${activeTab === 'fiches' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Fiches de révision</button>
+          <button onClick={() => setActiveTab('exercices')} className={`px-6 py-2.5 rounded-full font-bold text-sm transition cursor-pointer ${activeTab === 'exercices' ? 'bg-slate-900 text-white shadow-lg' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Générateur d'exercices</button>
         </div>
-        <div className="max-w-5xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-black text-white mb-4">Les formules indispensables</h2>
-            <p className="text-slate-400 font-medium">Apprenez-les par cœur — elles reviennent à chaque concours.</p>
-          </div>
-          <div className="grid md:grid-cols-2 gap-8">
+      </div>
+
+      {/* ==================== FICHES DE RÉVISION ==================== */}
+      {activeTab === 'fiches' && (
+        <>
+        <section className="py-12 md:py-16 bg-gradient-to-b from-slate-200 to-slate-50">
+          <div className="max-w-7xl mx-auto px-4 grid md:grid-cols-2 gap-8">
+
             {/* Produit en croix */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-                </div>
-                <h3 className="text-xl font-bold text-slate-900">Produit en croix</h3>
+            <div ref={el => ficheRefs.current[0] = el} className="bg-white rounded-3xl shadow-md p-7 hover:shadow-lg transition border-2 border-purple-300" style={{backgroundImage:'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize:'16px 16px'}}>
+              <div className="relative mb-5 text-center">
+                <h3 className="text-xl font-black text-slate-900">Le Produit en croix</h3>
+                <button onClick={() => downloadFiche(0, 'produit-en-croix')} className="absolute right-0 top-0 text-slate-400 hover:text-red-600 transition cursor-pointer" title="Télécharger en PDF"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></button>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6 text-center mb-4">
-                <p className="text-2xl font-black text-slate-900">x = (a × d) / b</p>
+              <div className="bg-purple-200 rounded-2xl p-5 text-center mb-6">
+                <p className="text-2xl font-black text-purple-900">x = (a × d) / b</p>
               </div>
-              <p className="text-slate-600 font-medium text-sm leading-relaxed">La base de tout calcul de dose. Si <strong className="text-slate-800">b mg</strong> correspondent à <strong className="text-slate-800">d ml</strong>, alors pour <strong className="text-slate-800">a mg</strong> il faut <strong className="text-slate-800">x ml</strong>.</p>
+              <p className="text-sm font-black text-slate-900 mb-2">Méthode</p>
+              <ul className="space-y-2 text-slate-600 text-sm mb-6">
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">&#x2794;</span>Identifier les deux paires de <mark className="bg-purple-100 text-inherit px-1 rounded">valeurs liées</mark></li>
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">&#x2794;</span>Vérifier que les <mark className="bg-purple-100 text-inherit px-1 rounded">unités sont identiques</mark></li>
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">&#x2794;</span>Multiplier en <mark className="bg-purple-100 text-inherit px-1 rounded">diagonale</mark></li>
+                <li className="flex items-start gap-2"><span className="text-purple-500 mt-0.5">&#x2794;</span>Diviser par la valeur restante</li>
+              </ul>
+              <p className="text-sm font-black text-slate-900 mb-2">Exemples</p>
+              <div className="space-y-2 mb-6">
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>750 mg</strong> d'amoxicilline. Flacon : 500 mg / 5 ml.<br/>x = (750 × 5) / 500 = <mark className="bg-purple-200 text-inherit px-1 rounded font-bold">7,5 ml</mark></p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>200 mg</strong> de paracétamol. Sirop : 120 mg / 5 ml.<br/>x = (200 × 5) / 120 = <mark className="bg-purple-200 text-inherit px-1 rounded font-bold">8,3 ml</mark></p>
+              </div>
+              <p className="text-sm font-black text-slate-900 mb-2">Pièges</p>
+              <ul className="text-sm text-slate-500 space-y-1">
+                <li>&#x2022; Oublier de <mark className="bg-purple-100 text-inherit px-1 rounded">convertir</mark> dans la même unité</li>
+                <li>&#x2022; Inverser les valeurs dans la croix</li>
+                <li>&#x2022; Ne pas vérifier la cohérence du résultat</li>
+              </ul>
             </div>
 
-            {/* Débit en gouttes */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M7 16.3c2.2 0 4-1.83 4-4.05 0-1.16-.57-2.26-1.71-3.19S7.29 6.75 7 5.3c-.29 1.45-1.14 2.84-2.29 3.76S3 11.1 3 12.25c0 2.22 1.8 4.05 4 4.05z"/><path d="M12.56 14.69c1.34 0 2.44-1.12 2.44-2.48 0-.71-.35-1.38-1.05-1.95S12.6 9.08 12.44 8.2c-.18.88-.7 1.74-1.4 2.3s-1.16 1.24-1.16 1.7c0 1.36 1.12 2.48 2.44 2.48z"/></svg>
+            {/* Débit en gouttes/min */}
+            <div ref={el => ficheRefs.current[1] = el} className="bg-white rounded-3xl shadow-md p-7 hover:shadow-lg transition border-2 border-blue-300" style={{backgroundImage:'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize:'16px 16px'}}>
+              <div className="relative mb-5 text-center">
+                <h3 className="text-xl font-black text-slate-900">Débit en gouttes/min</h3>
+                <button onClick={() => downloadFiche(1, 'debit-gouttes-min')} className="absolute right-0 top-0 text-slate-400 hover:text-red-600 transition cursor-pointer" title="Télécharger en PDF"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></button>
+              </div>
+              <div className="bg-blue-200 rounded-2xl p-5 text-center mb-2">
+                <p className="text-xl font-black text-blue-900">Débit = (Vol × 20) / (Temps × 60)</p>
+              </div>
+              <p className="text-center text-xs font-bold text-slate-400 mb-6">Simplifiée : <mark className="bg-blue-100 text-inherit px-1 rounded">Vol / (Temps × 3)</mark></p>
+
+              <div className="grid grid-cols-2 gap-3 mb-6">
+                <div className="bg-slate-50 rounded-xl p-3 text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Standard</p>
+                  <p className="text-lg font-black text-slate-900">1 ml = <mark className="bg-blue-100 text-inherit px-1 rounded">20 gttes</mark></p>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Débit en gouttes/min</h3>
+                <div className="bg-slate-50 rounded-xl p-3 text-center">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase">Pédiatrique</p>
+                  <p className="text-lg font-black text-slate-900">1 ml = <mark className="bg-blue-100 text-inherit px-1 rounded">60 gttes</mark></p>
+                </div>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6 text-center mb-4">
-                <p className="text-2xl font-black text-slate-900">Débit = (Volume × 20) / (Temps × 60)</p>
+              <p className="text-sm font-black text-slate-900 mb-2">Exemples</p>
+              <div className="space-y-2 mb-6">
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>1000 ml</strong> NaCl en <strong>6h</strong> (standard)<br/>(1000 × 20) / (6 × 60) = <mark className="bg-blue-200 text-inherit px-1 rounded font-bold">56 gouttes/min</mark></p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>250 ml</strong> en <strong>2h</strong> (standard)<br/>250 / (2 × 3) = <mark className="bg-blue-200 text-inherit px-1 rounded font-bold">42 gouttes/min</mark></p>
               </div>
-              <p className="text-slate-600 font-medium text-sm leading-relaxed">Volume en ml, temps en heures. <strong className="text-slate-800">1 ml = 20 gouttes</strong> (perfuseur standard). Pour un perfuseur pédiatrique : 1 ml = 60 gouttes.</p>
+              <p className="text-sm font-black text-slate-900 mb-2">Pièges</p>
+              <ul className="text-sm text-slate-500 space-y-1">
+                <li>&#x2022; Confondre <mark className="bg-blue-100 text-inherit px-1 rounded">standard (×20)</mark> et <mark className="bg-blue-100 text-inherit px-1 rounded">pédiatrique (×60)</mark></li>
+                <li>&#x2022; Oublier de convertir les heures en minutes</li>
+                <li>&#x2022; Arrondir à l'entier (pas de demi-gouttes)</li>
+              </ul>
             </div>
 
             {/* Conversions */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/></svg>
+            <div ref={el => ficheRefs.current[2] = el} className="bg-white rounded-3xl shadow-md p-7 hover:shadow-lg transition border-2 border-green-300" style={{backgroundImage:'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize:'16px 16px'}}>
+              <div className="relative mb-5 text-center">
+                <h3 className="text-xl font-black text-slate-900">Conversions de masse</h3>
+                <button onClick={() => downloadFiche(2, 'conversions-masse')} className="absolute right-0 top-0 text-slate-400 hover:text-red-600 transition cursor-pointer" title="Télécharger en PDF"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></button>
+              </div>
+              <div className="bg-green-200 rounded-2xl p-5 mb-6">
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  <span className="text-xl font-black text-green-900">1 g</span>
+                  <span className="text-slate-300">=</span>
+                  <span className="text-xl font-black text-green-900">1 000 mg</span>
+                  <span className="text-slate-300">=</span>
+                  <span className="text-xl font-black text-green-900">1 000 000 µg</span>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Conversions de masse</h3>
+                <p className="text-center text-xs font-bold text-slate-400 mt-2">× <mark className="bg-green-200 text-inherit px-1 rounded">1 000</mark> à chaque étape</p>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6 text-center mb-4 space-y-1">
-                <p className="text-lg font-black text-slate-900">1 g = 1 000 mg</p>
-                <p className="text-lg font-black text-slate-900">1 mg = 1 000 µg</p>
+              <p className="text-sm font-black text-slate-900 mb-2">Exemples</p>
+              <div className="space-y-2 mb-6">
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>0,075 g = ? mg</strong><br/>0,075 × 1 000 = <mark className="bg-green-200 text-inherit px-1 rounded font-bold">75 mg</mark> (virgule → 3 rangs à droite)</p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>2 500 µg = ? mg</strong><br/>2 500 / 1 000 = <mark className="bg-green-200 text-inherit px-1 rounded font-bold">2,5 mg</mark> (virgule → 3 rangs à gauche)</p>
               </div>
-              <p className="text-slate-600 font-medium text-sm leading-relaxed">La première étape avant tout calcul : <strong className="text-slate-800">convertir dans la même unité</strong>. Beaucoup d'erreurs viennent d'un oubli de conversion.</p>
+              <p className="text-sm font-black text-slate-900 mb-2">Pièges</p>
+              <ul className="text-sm text-slate-500 space-y-1">
+                <li>&#x2022; Déplacer la virgule dans le <mark className="bg-green-100 text-inherit px-1 rounded">mauvais sens</mark></li>
+                <li>&#x2022; Convertir AVANT le calcul de dose</li>
+                <li>&#x2022; mg ≠ µg (facteur 1 000 = <mark className="bg-green-100 text-inherit px-1 rounded">surdosage</mark>)</li>
+              </ul>
             </div>
 
-            {/* Pourcentage */}
-            <div className="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="w-12 h-12 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center shrink-0">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></svg>
+            {/* Concentrations */}
+            <div ref={el => ficheRefs.current[3] = el} className="bg-white rounded-3xl shadow-md p-7 hover:shadow-lg transition border-2 border-amber-300" style={{backgroundImage:'linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px)', backgroundSize:'16px 16px'}}>
+              <div className="relative mb-5 text-center">
+                <h3 className="text-xl font-black text-slate-900">Concentration en %</h3>
+                <button onClick={() => downloadFiche(3, 'concentration-pourcentage')} className="absolute right-0 top-0 text-slate-400 hover:text-red-600 transition cursor-pointer" title="Télécharger en PDF"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></button>
+              </div>
+              <div className="bg-amber-200 rounded-2xl p-5 text-center mb-6">
+                <p className="text-2xl font-black text-amber-900">X% = X g pour 100 ml</p>
+                <p className="text-xs font-bold text-slate-400 mt-1">LA règle à retenir</p>
+              </div>
+              <p className="text-sm font-black text-slate-900 mb-2">Méthode</p>
+              <ul className="space-y-2 text-slate-600 text-sm mb-6">
+                <li className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#x2794;</span>Lire le % → nombre de <mark className="bg-amber-100 text-inherit px-1 rounded">g pour 100 ml</mark></li>
+                <li className="flex items-start gap-2"><span className="text-amber-500 mt-0.5">&#x2794;</span><mark className="bg-amber-100 text-inherit px-1 rounded">Produit en croix</mark> pour tout autre volume</li>
+              </ul>
+              <p className="text-sm font-black text-slate-900 mb-2">Exemples</p>
+              <div className="space-y-2 mb-6">
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>G5%</strong>, flacon 500 ml → (5 × 500) / 100 = <mark className="bg-amber-200 text-inherit px-1 rounded font-bold">25 g</mark></p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>Bétadine 10%</strong>, 125 ml → (10 × 125) / 100 = <mark className="bg-amber-200 text-inherit px-1 rounded font-bold">12,5 g</mark></p>
+                <p className="text-sm text-slate-600 bg-slate-50 rounded-xl p-3"><strong>NaCl 0,9%</strong>, poche 1L → (0,9 × 1000) / 100 = <mark className="bg-amber-200 text-inherit px-1 rounded font-bold">9 g</mark></p>
+              </div>
+              <p className="text-sm font-black text-slate-900 mb-2">Pièges</p>
+              <ul className="text-sm text-slate-500 space-y-1">
+                <li>&#x2022; 0,9% = <mark className="bg-amber-100 text-inherit px-1 rounded">0,9 g</mark> (pas 9 g) pour 100 ml</li>
+                <li>&#x2022; Convertir les <mark className="bg-amber-100 text-inherit px-1 rounded">litres en ml</mark> avant le calcul</li>
+                <li>&#x2022; Ne pas confondre % et g/L</li>
+              </ul>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Astuces calcul mental */}
+        <section className="py-16 bg-white">
+          <div className="max-w-5xl mx-auto px-4">
+            <div className="text-center mb-10">
+              <h2 className="text-2xl font-black text-slate-900 mb-3">Astuces de calcul mental</h2>
+              <p className="text-slate-600 font-medium text-sm">Les raccourcis qui font gagner du temps le jour J.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">1</div>
+                <h4 className="font-bold text-slate-900 mb-2">Diviser par 0,5</h4>
+                <p className="text-slate-600 text-sm font-medium">Diviser par 0,5 revient à <strong className="text-slate-800">multiplier par 2</strong>. Exemple : 60 / 0,5 = 120.</p>
+              </div>
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">2</div>
+                <h4 className="font-bold text-slate-900 mb-2">Diviser par 0,25</h4>
+                <p className="text-slate-600 text-sm font-medium">Diviser par 0,25 revient à <strong className="text-slate-800">multiplier par 4</strong>. Très courant dans les dilutions.</p>
+              </div>
+              <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200">
+                <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">3</div>
+                <h4 className="font-bold text-slate-900 mb-2">Trouver 10% puis ajuster</h4>
+                <p className="text-slate-600 text-sm font-medium">Pour trouver 5%, calculez <strong className="text-slate-800">10% puis divisez par 2</strong>. Rapide et fiable.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+        </>
+      )}
+
+      {/* ==================== GÉNÉRATEUR D'EXERCICES ==================== */}
+      {activeTab === 'exercices' && (
+        <section className="py-12 bg-slate-50 flex-1">
+          <div className="max-w-2xl mx-auto px-4">
+
+            {/* Sélection catégorie */}
+            <div className="flex justify-center gap-3 mb-8">
+              <button onClick={() => { setExCategory('concentrations'); setExercise(null); setExState('idle') }} className={`px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer ${exCategory === 'concentrations' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Concentrations en %</button>
+              <button onClick={() => { setExCategory('debit'); setExercise(null); setExState('idle') }} className={`px-5 py-2.5 rounded-xl font-bold text-sm transition cursor-pointer ${exCategory === 'debit' ? 'bg-slate-900 text-white' : 'bg-white text-slate-600 border border-slate-200 hover:bg-slate-100'}`}>Débit gouttes/min</button>
+            </div>
+
+            {/* Compteur */}
+            <div className="text-center mb-6">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">{exRemaining !== null ? `${exRemaining} exercice${exRemaining > 1 ? 's' : ''} restant${exRemaining > 1 ? 's' : ''} aujourd'hui` : '20 exercices / jour'}</span>
+            </div>
+
+            {/* Bouton générer */}
+            {!exercise && (
+              <div className="text-center">
+                <button onClick={generateExercise} disabled={exLoading} className="bg-red-600 hover:bg-red-700 text-white font-black px-8 py-4 rounded-2xl transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">
+                  {exLoading ? (
+                    <span className="flex items-center gap-2"><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg>Génération en cours...</span>
+                  ) : 'Générer un exercice'}
+                </button>
+                {exError && <p className="text-red-600 font-bold text-sm mt-4">{exError}</p>}
+              </div>
+            )}
+
+            {/* Exercice */}
+            {exercise && (
+              <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+                <div className="p-6 sm:p-8">
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-bold ${exCategory === 'concentrations' ? 'bg-blue-100 text-blue-700' : 'bg-rose-100 text-rose-700'}`}>{exCategory === 'concentrations' ? 'Concentration' : 'Débit'}</span>
+                  </div>
+                  <p className="text-slate-900 font-bold text-lg leading-relaxed mb-6">{exercise.question}</p>
+
+                  {exState === 'idle' && (
+                    <div>
+                      <div className="flex gap-3">
+                        <input type="number" step="any" value={userAnswer} onChange={(e) => setUserAnswer(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && userAnswer && checkAnswer()} placeholder="Votre réponse" className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400" />
+                        <span className="flex items-center text-slate-500 font-bold text-sm">{exercise.unit}</span>
+                      </div>
+                      <button onClick={checkAnswer} disabled={!userAnswer} className="w-full mt-4 py-3.5 bg-red-600 hover:bg-red-700 text-white font-black rounded-xl transition shadow-lg shadow-red-200 text-sm cursor-pointer disabled:opacity-50">Vérifier ma réponse</button>
+                    </div>
+                  )}
+
+                  {exState === 'answered' && (
+                    <div>
+                      <div className={`rounded-2xl p-5 mb-4 ${isCorrect ? 'bg-emerald-50 border border-emerald-200' : 'bg-red-50 border border-red-200'}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          {isCorrect ? (
+                            <><svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><span className="font-black text-emerald-800">Bonne réponse !</span></>
+                          ) : (
+                            <><svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg><span className="font-black text-red-800">Mauvaise réponse — la bonne réponse est {exercise.answer} {exercise.unit}</span></>
+                          )}
+                        </div>
+                        <p className="text-sm font-medium leading-relaxed mt-3 whitespace-pre-line" style={{color: isCorrect ? '#065f46' : '#991b1b'}}>{exercise.explanation}</p>
+                      </div>
+                      <button onClick={() => { setExercise(null); setUserAnswer(''); setExState('idle'); setIsCorrect(false) }} className="w-full py-3.5 bg-slate-900 hover:bg-black text-white font-black rounded-xl transition text-sm cursor-pointer">Exercice suivant</button>
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-xl font-bold text-slate-900">Concentration en %</h3>
               </div>
-              <div className="bg-slate-50 rounded-2xl p-6 text-center mb-4">
-                <p className="text-2xl font-black text-slate-900">X% = X g pour 100 ml</p>
+            )}
+
+            {/* Score session */}
+            {sessionScore.total > 0 && (
+              <div className="mt-6 text-center">
+                <span className="text-sm font-bold text-slate-500">{sessionScore.correct}/{sessionScore.total} bonne{sessionScore.correct > 1 ? 's' : ''} réponse{sessionScore.correct > 1 ? 's' : ''} cette session</span>
               </div>
-              <p className="text-slate-600 font-medium text-sm leading-relaxed">Exemple : <strong className="text-slate-800">G5 (Glucosé 5%)</strong> signifie 5 g de glucose dans 100 ml. Un flacon de 500 ml contient donc 25 g.</p>
-            </div>
+            )}
           </div>
-        </div>
-      </section>
-
-      {/* SECTION ENTRAÎNEMENT */}
-      <section className="py-20 bg-red-600 relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)', backgroundSize: '20px 20px'}}></div>
-        <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
-          <div className="w-20 h-20 bg-white/20 text-white rounded-3xl flex items-center justify-center mx-auto mb-8">
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
-          </div>
-          <h2 className="text-3xl font-black text-white mb-4">Prêt à vous entraîner ?</h2>
-          <p className="text-lg text-red-100 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">Testez vos connaissances avec notre QCM de 20 questions couvrant tous les types de calculs : produit en croix, débits, conversions, pourcentages et calcul mental.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/qcm" className="inline-flex items-center justify-center gap-2 bg-white hover:bg-slate-50 text-red-600 font-bold px-8 py-4 rounded-2xl transition-all shadow-xl group text-lg">
-              <svg className="w-5 h-5 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
-              Lancer le test gratuit
-            </a>
-            <a href="/signup" className="inline-flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white font-bold px-8 py-4 rounded-2xl transition-all shadow-lg text-lg">
-              Accès illimité
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* SECTION ASTUCES */}
-      <section className="py-20 bg-white">
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-14">
-            <h2 className="text-3xl font-black text-slate-900 mb-4">Astuces de calcul mental</h2>
-            <p className="text-slate-600 font-medium">Les petits raccourcis qui font gagner du temps le jour J.</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">1</div>
-              <h4 className="font-bold text-slate-900 mb-2">Diviser par 0,5</h4>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">Diviser par 0,5 revient à <strong className="text-slate-800">multiplier par 2</strong>. Exemple : 60 / 0,5 = 120.</p>
-            </div>
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">2</div>
-              <h4 className="font-bold text-slate-900 mb-2">Diviser par 0,25</h4>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">Diviser par 0,25 revient à <strong className="text-slate-800">multiplier par 4</strong>. Très courant dans les dilutions.</p>
-            </div>
-            <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 shadow-sm">
-              <div className="bg-red-600 text-white w-10 h-10 rounded-xl flex items-center justify-center font-black text-lg mb-4">3</div>
-              <h4 className="font-bold text-slate-900 mb-2">Trouver 10% puis ajuster</h4>
-              <p className="text-slate-600 text-sm font-medium leading-relaxed">Pour trouver 5%, calculez d'abord <strong className="text-slate-800">10% puis divisez par 2</strong>. Rapide et fiable.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* FOOTER */}
       <footer className="bg-slate-950 text-slate-400 py-12 text-sm mt-auto">

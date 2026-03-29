@@ -103,7 +103,7 @@ export default function TarifsPage() {
       </header>
 
       {/* SECTION CARTES DE PRIX */}
-      <section className="py-16 md:py-24 relative">
+      <section className="py-12 md:py-16 relative">
         <div className="absolute inset-0 opacity-[0.03]" style={{backgroundImage: 'radial-gradient(circle, #dc2626 1px, transparent 1px)', backgroundSize: '24px 24px'}}></div>
         <div className="max-w-5xl mx-auto px-4 relative z-10">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-stretch">

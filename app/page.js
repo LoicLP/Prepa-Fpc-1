@@ -357,7 +357,7 @@ export default function HomePage() {
                     <svg className={`w-5 h-5 transition-transform duration-300 ${activeFaq === index ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6"/></svg>
                   </div>
                 </button>
-                <div className="px-6 overflow-hidden transition-all duration-300" style={{ maxHeight: activeFaq === index ? '200px' : '0', opacity: activeFaq === index ? 1 : 0 }}>
+                <div className="px-6 overflow-hidden transition-all duration-300" style={{ maxHeight: activeFaq === index ? '500px' : '0', opacity: activeFaq === index ? 1 : 0 }}>
                   <p className="pb-6 text-slate-600 font-medium leading-relaxed">{faq.a}</p>
                 </div>
               </div>

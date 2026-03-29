@@ -34,7 +34,7 @@ export default function TarifsPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-red-200">
+    <div className="min-h-screen bg-[#eceef1] text-slate-900 selection:bg-red-200">
       <style>{`html { scroll-behavior: smooth; scroll-padding-top: 7rem; }`}</style>
 
       {/* NAVIGATION */}
@@ -95,7 +95,7 @@ export default function TarifsPage() {
       </nav>
 
       {/* HEADER TARIFS */}
-      <header className="pt-16 pb-12 bg-white border-b border-slate-100 relative overflow-hidden">
+      <header className="pt-16 pb-12 bg-[#eceef1] relative overflow-hidden">
         <div className="absolute inset-0 opacity-5" style={{backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23000000' fill-opacity='1' fill-rule='evenodd'%3E%3Ccircle cx='3' cy='3' r='3'/%3E%3Ccircle cx='13' cy='13' r='3'/%3E%3C/g%3E%3C/svg%3E\")"}}></div>
         <div className="max-w-4xl mx-auto px-4 text-center relative z-10">
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-6 tracking-tight">Aborder le concours FPC <span className="text-red-600">sereinement</span>.</h1>

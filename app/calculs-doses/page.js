@@ -33,7 +33,7 @@ export default function CalculsDosesPage() {
   ]
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-red-200 flex flex-col">
+    <div className="min-h-screen bg-[#eceef1] text-slate-900 selection:bg-red-200 flex flex-col">
 
       {/* NAVIGATION */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
@@ -91,7 +91,7 @@ export default function CalculsDosesPage() {
       </nav>
 
       {/* HEADER */}
-      <header className="pt-16 pb-8 bg-slate-50">
+      <header className="pt-16 pb-8 bg-[#eceef1]">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight">Maîtrisez parfaitement les <span className="text-red-600">calculs pour le concours</span></h1>
           <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez les formules avec les 4 fiches de révisions indispensables !</p>
@@ -100,7 +100,7 @@ export default function CalculsDosesPage() {
 
 
       {/* ==================== FICHES DE RÉVISION ==================== */}
-        <section className="py-12 md:py-16 bg-slate-50">
+        <section className="py-12 md:py-16 bg-[#eceef1]">
           <div className="max-w-[90rem] mx-auto px-4 grid md:grid-cols-2 gap-8">
 
             {/* Produit en croix */}

@@ -119,7 +119,7 @@ export default function BlogPage() {
       </nav>
 
       {/* HEADER */}
-      <header className="bg-slate-50 pt-16 pb-12">
+      <header className="bg-[#eceef1] pt-16 pb-12">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-6 tracking-tight">Toutes les informations pour <span className="text-red-600">réussir le concours FPC</span></h1>
           <p className="text-lg text-slate-600 mx-auto font-medium">Actualités, conseils et astuces pour réussir au mieux votre sélection d'entrée en IFSI.</p>

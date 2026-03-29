@@ -397,7 +397,7 @@ export default function MathsPage() {
                             <div key={qIdx}>
                               <div className="flex items-start gap-3 mb-2">
                                 <span className="w-6 h-6 bg-slate-900 text-white rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
-                                <p className="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1 min-w-0">{q.question}</p>
+                                <p className="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1 min-w-0" dangerouslySetInnerHTML={{__html: q.question.replace(/\s*:\s*(?=\d)/g, ' :<br class="sm:hidden"/> ')}} />
                                 <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
                               <div className="ml-0 sm:ml-9 w-full sm:max-w-sm">

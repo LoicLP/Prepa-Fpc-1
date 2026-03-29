@@ -63,10 +63,10 @@ const familles = [
 ]
 
 const colorMap = {
-  operations: { text: 'text-sky-500', iconBg: 'bg-sky-100', gradient: 'from-[#7DD3FC] to-[#38BDF8]', badge: 'bg-sky-50 text-sky-600', wrapper: 'bg-sky-100/60', progressBar: 'bg-sky-400', ring: 'focus:ring-sky-300 focus:border-sky-400', dropColor: '#38BDF8' },
-  conversions: { text: 'text-blue-500', iconBg: 'bg-blue-100', gradient: 'from-[#38BDF8] to-[#3B82F6]', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100/60', progressBar: 'bg-blue-500', ring: 'focus:ring-blue-300 focus:border-blue-400', dropColor: '#3B82F6' },
-  pourcentages: { text: 'text-indigo-500', iconBg: 'bg-indigo-100', gradient: 'from-[#3B82F6] to-[#6366F1]', badge: 'bg-indigo-50 text-indigo-600', wrapper: 'bg-indigo-100/60', progressBar: 'bg-indigo-500', ring: 'focus:ring-indigo-300 focus:border-indigo-400', dropColor: '#6366F1' },
-  equations: { text: 'text-indigo-600', iconBg: 'bg-indigo-100', gradient: 'from-[#6366F1] to-[#4F46E5]', badge: 'bg-indigo-50 text-indigo-700', wrapper: 'bg-indigo-100/60', progressBar: 'bg-indigo-600', ring: 'focus:ring-indigo-300 focus:border-indigo-500', dropColor: '#4F46E5' }
+  operations: { text: 'text-sky-500', iconBg: 'bg-sky-100', gradient: 'from-[#7DD3FC] to-[#38BDF8]', badge: 'bg-sky-50 text-sky-600', wrapper: 'bg-sky-100', progressBar: 'bg-sky-400', ring: 'focus:ring-sky-300 focus:border-sky-400', dropColor: '#38BDF8' },
+  conversions: { text: 'text-blue-500', iconBg: 'bg-blue-100', gradient: 'from-[#38BDF8] to-[#3B82F6]', badge: 'bg-blue-50 text-blue-600', wrapper: 'bg-blue-100', progressBar: 'bg-blue-500', ring: 'focus:ring-blue-300 focus:border-blue-400', dropColor: '#3B82F6' },
+  pourcentages: { text: 'text-indigo-500', iconBg: 'bg-indigo-100', gradient: 'from-[#3B82F6] to-[#6366F1]', badge: 'bg-indigo-50 text-indigo-600', wrapper: 'bg-indigo-100', progressBar: 'bg-indigo-500', ring: 'focus:ring-indigo-300 focus:border-indigo-400', dropColor: '#6366F1' },
+  equations: { text: 'text-indigo-600', iconBg: 'bg-indigo-100', gradient: 'from-[#6366F1] to-[#4F46E5]', badge: 'bg-indigo-50 text-indigo-700', wrapper: 'bg-indigo-100', progressBar: 'bg-indigo-600', ring: 'focus:ring-indigo-300 focus:border-indigo-500', dropColor: '#4F46E5' }
 }
 
 export default function SpecifiquePage() {
@@ -446,7 +446,7 @@ export default function SpecifiquePage() {
       {step === 'loading' && selectedFamille && (() => {
         const fillColor = colorMap[selectedFamille.id]?.dropColor || '#3b82f6'
         return (
-        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col pt-14 lg:pt-0 ${colorMap[selectedFamille.id]?.wrapper || 'bg-slate-100/60'}`}>
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col pt-14 lg:pt-0 ${colorMap[selectedFamille.id]?.wrapper || 'bg-slate-100'}`}>
           <style>{`
             @keyframes dropFill { 0% { transform: translateY(100%); } 100% { transform: translateY(0%); } }
             @keyframes dropPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }

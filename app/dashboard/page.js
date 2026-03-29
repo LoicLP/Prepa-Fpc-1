@@ -79,6 +79,12 @@ function DashboardContent() {
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
       setTrialDays(Math.max(0, 7 - diffDays))
       setLoading(false)
+      // Vérification des emails de relance (fire-and-forget)
+      fetch('/api/emails/check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: session.user.id })
+      }).catch(() => {})
     })
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (!session) window.location.href = '/auth'

@@ -93,7 +93,7 @@ export default function CalculsDosesPage() {
       {/* HEADER */}
       <header className="pt-16 pb-8 bg-slate-50">
         <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 mb-4 whitespace-nowrap">Maîtrisez parfaitement les <span className="text-red-600">calculs pour le concours</span></h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4 tracking-tight">Maîtrisez parfaitement les <span className="text-red-600">calculs pour le concours</span></h1>
           <p className="text-lg text-slate-600 font-medium max-w-2xl mx-auto leading-relaxed">Révisez les formules avec les 4 fiches de révisions indispensables !</p>
         </div>
       </header>

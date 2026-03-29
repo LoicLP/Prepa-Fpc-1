@@ -446,7 +446,7 @@ export default function SpecifiquePage() {
       {step === 'loading' && selectedFamille && (() => {
         const fillColor = colorMap[selectedFamille.id]?.dropColor || '#3b82f6'
         return (
-        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col ${colorMap[selectedFamille.id]?.wrapper || 'bg-slate-100/60'}`}>
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col pt-14 lg:pt-0 ${colorMap[selectedFamille.id]?.wrapper || 'bg-slate-100/60'}`}>
           <style>{`
             @keyframes dropFill { 0% { transform: translateY(100%); } 100% { transform: translateY(0%); } }
             @keyframes dropPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
@@ -486,8 +486,8 @@ export default function SpecifiquePage() {
 
       {/* ===== ÉPREUVE ===== */}
       {step === 'epreuve' && sujet && data && selectedFamille && (
-        <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto flex flex-col`}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto flex flex-col pt-14 lg:pt-0`}>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-4 sm:pt-8 shrink-0">
             <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
             <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
               <span className="hidden sm:inline">Quitter l&apos;exercice</span>
@@ -590,7 +590,7 @@ export default function SpecifiquePage() {
 
       {/* ===== RÉSULTATS ===== */}
       {step === 'resultat' && correction && selectedFamille && (
-        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col ${c.wrapper}`}>
+        <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col pt-14 lg:pt-0 ${c.wrapper}`}>
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
             <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
             <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">

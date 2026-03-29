@@ -348,8 +348,8 @@ export default function MathsPage() {
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
                       <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Mathématiques
                       </span>

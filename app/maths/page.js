@@ -241,7 +241,7 @@ export default function MathsPage() {
       </div>
 
       {/* MAIN */}
-      <div className="flex-1 flex flex-col min-h-screen lg:pl-[90px]">
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-[90px] max-w-full overflow-x-hidden">
         <header className="lg:hidden h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 sticky top-0 z-30">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
           <span className="font-black text-lg text-slate-900">Prépa <span className="text-red-600">FPC</span></span>
@@ -348,8 +348,8 @@ export default function MathsPage() {
                       </a>
                     </div>
                   </div>
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 sm:gap-3">
                       <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Mathématiques
                       </span>
@@ -397,10 +397,10 @@ export default function MathsPage() {
                             <div key={qIdx}>
                               <div className="flex items-start gap-3 mb-2">
                                 <span className="w-6 h-6 bg-slate-900 text-white rounded-md flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">{q.id}</span>
-                                <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
+                                <p className="text-xs sm:text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1 min-w-0">{q.question}</p>
                                 <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
-                              <div className="ml-9 w-full sm:max-w-sm">
+                              <div className="ml-0 sm:ml-9 w-full sm:max-w-sm">
                                 <input
                                   type="text"
                                   className="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition placeholder:text-slate-400 placeholder:font-normal"
@@ -418,7 +418,7 @@ export default function MathsPage() {
 
                   {error && <p className="text-red-600 font-bold text-sm mt-4">{error}</p>}
 
-                  <div className="flex items-center justify-end mt-8 pb-4">
+                  <div className="flex items-center justify-center mt-8 pb-4">
                     <button onClick={handleSubmit} className="bg-red-600 hover:bg-red-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg shadow-red-200/50 text-sm flex items-center gap-2 cursor-pointer">
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>
                       Soumettre mes réponses

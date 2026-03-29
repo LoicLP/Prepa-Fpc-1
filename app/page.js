@@ -231,7 +231,7 @@ export default function HomePage() {
       </section>
 
       {/* SECTION ÉLIGIBILITÉ */}
-      <section className="py-24 bg-slate-50 border-b border-slate-200 overflow-hidden relative">
+      <section className="py-24 bg-[#eceef1] border-b border-slate-200 overflow-hidden relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-black text-slate-900 mb-4 tracking-tight">Êtes-vous éligible au concours FPC ?</h2>

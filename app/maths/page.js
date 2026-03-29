@@ -325,48 +325,48 @@ export default function MathsPage() {
 
           {/* ===== ÉPREUVE ===== */}
           {step === 'epreuve' && sujet && (
-            <div className="animate-fade-in">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-full lg:h-[calc(100vh-2.5rem)] flex flex-col">
+            <div className="animate-fade-in overflow-x-hidden">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-full lg:h-[calc(100vh-2.5rem)] flex flex-col overflow-hidden">
 
                 {/* Barre du haut : chrono */}
-                <div className="bg-slate-900 rounded-t-2xl px-4 sm:px-6 py-4 sm:py-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <h2 className="text-xl sm:text-2xl font-black text-white">{sujet.titre}</h2>
-                    <div className="flex items-center gap-4 shrink-0 ml-4">
-                      <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
+                <div className="bg-slate-900 rounded-t-2xl px-3 sm:px-6 py-3 sm:py-5 overflow-hidden">
+                  <div className="flex items-center justify-between mb-3 sm:mb-4">
+                    <h2 className="text-base sm:text-2xl font-black text-white truncate mr-3">{sujet.titre}</h2>
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                      <div className={`flex items-center gap-2 sm:gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
                         <div className="w-24 sm:w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
                           <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-red-400'}`} style={{width: `${timePercent}%`}}></div>
                         </div>
-                        <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
-                          <svg className="w-8 h-6 text-red-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
+                        <div className={`flex items-center gap-1 sm:gap-2 font-black text-sm sm:text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
+                          <svg className="w-6 h-4 sm:w-8 sm:h-6 text-red-400 heartbeat-anim" viewBox="0 0 80 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{strokeDasharray: 200, strokeDashoffset: 0}}><polyline points="0,12 15,12 20,12 25,2 30,22 35,6 40,18 45,12 50,12 55,12 60,12 65,8 68,16 70,12 80,12"/></svg>
                           {String(minutes).padStart(2, '0')}:{String(seconds).padStart(2, '0')}
                         </div>
                       </div>
-                      <a href="/dashboard" className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                      <a href="/dashboard" className="hidden sm:flex bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition items-center gap-2">
                         Quitter l'exercice
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                       </a>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Mathématiques
                       </span>
-                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Sans calculatrice
                       </span>
                       {sujet.source === 'annale' ? (
-                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-white">
                           Annale {sujet.ville} {sujet.annee}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-white">
                           Sujet créé par nos soins
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-slate-400 font-bold uppercase tracking-wider">Note sur {sujet.noteMax || 10} points — Durée : 30 minutes</p>
+                    <p className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-wider">Note sur {sujet.noteMax || 10} pts — 30 min</p>
                   </div>
                 </div>
 

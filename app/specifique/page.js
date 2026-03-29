@@ -211,7 +211,7 @@ export default function SpecifiquePage() {
         .premium-scan { animation: premiumScan 5s ease-in-out infinite; }
       `}</style>
 
-      {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-40 lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
+      {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-[45] lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
 
       {/* SIDEBAR */}
       <div className={`fixed inset-y-0 left-0 z-50 flex items-center pl-3 py-5 transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
@@ -489,16 +489,16 @@ export default function SpecifiquePage() {
       {/* ===== ÉPREUVE ===== */}
       {step === 'epreuve' && sujet && data && selectedFamille && (
         <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto flex flex-col pt-14 lg:pt-0`}>
-          <div className="flex items-center justify-between gap-3 px-4 pt-2 sm:pt-8 pb-2 sm:pb-4 shrink-0">
-            <h1 className="text-base sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left flex-1" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
+          <div className="flex items-center justify-between gap-3 p-4 pt-4 sm:pt-8 shrink-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left flex-1" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
             <a href="/dashboard" className="hidden sm:flex bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition items-center gap-2 shadow-lg shrink-0">
               Quitter l&apos;exercice
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
-          <div className="flex-1 flex items-center justify-center px-4 pb-8">
+          <div className="flex-1 flex items-start sm:items-center justify-center px-2 sm:px-4 pb-4 sm:pb-8">
             <div className="w-full max-w-2xl">
-            <div className="rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6">
+            <div className="rounded-2xl sm:rounded-[2.5rem] p-1 sm:p-6">
               <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
                 {/* Header */}
                 <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-5 border-b border-slate-100 gap-2">

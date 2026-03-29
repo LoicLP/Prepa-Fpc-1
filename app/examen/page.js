@@ -378,10 +378,10 @@ export default function ExamenPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col">
 
                 {/* Barre du haut */}
-                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
+                <div className="bg-slate-900 rounded-t-2xl px-4 sm:px-6 py-4 sm:py-5">
                   <div className="flex items-start justify-between mb-4">
                     <h2 className="text-xl sm:text-2xl font-black text-white">{sujetMaths.titre}</h2>
-                    <div className="flex items-center gap-4 shrink-0 ml-4">
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-4">
                       <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
                         <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
                           <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-yellow-400'}`} style={{width: `${timePercent}%`}}></div>
@@ -422,14 +422,14 @@ export default function ExamenPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 p-6 sm:p-8 overflow-y-auto">
+                <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
                     <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
                     <p className="text-sm text-amber-800 font-medium">Cette épreuve doit être réalisée <strong>sans calculatrice</strong>, conformément aux conditions du concours FPC. Munissez-vous d'un brouillon pour poser vos calculs.</p>
                   </div>
 
-                  <div className="space-y-8">
+                  <div className="space-y-4 sm:space-y-8">
                     {sujetMaths.exercices?.map((ex, exIdx) => (
                       <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
                         <div className="flex items-center gap-3 mb-5">
@@ -452,7 +452,7 @@ export default function ExamenPage() {
                                 <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
                                 <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
-                              <div className="ml-9 max-w-sm">
+                              <div className="ml-9 w-full sm:max-w-sm">
                                 <input
                                   type="text"
                                   className="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition placeholder:text-slate-400 placeholder:font-normal"
@@ -567,7 +567,7 @@ export default function ExamenPage() {
                         Barème de notation
                       </button>
                       {showBareme && (
-                        <div className="absolute top-full right-0 mt-2 bg-yellow-50 border border-yellow-300 rounded-xl shadow-xl p-4 z-50 w-80 animate-fade-in">
+                        <div className="absolute top-full right-0 mt-2 bg-yellow-50 border border-yellow-300 rounded-xl shadow-xl p-4 z-50 w-full max-w-xs sm:w-80 animate-fade-in">
                           <button onClick={() => setShowBareme(false)} className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-yellow-200 text-yellow-500 transition cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                           </button>
@@ -581,7 +581,7 @@ export default function ExamenPage() {
 
                 <div className="flex-1 flex flex-col lg:flex-row">
                   {/* Sujet */}
-                  <div className="lg:w-[45%] border-b lg:border-b-0 lg:border-r border-slate-200 p-6 sm:p-8 overflow-y-auto">
+                  <div className="lg:w-[45%] border-b lg:border-b-0 lg:border-r border-slate-200 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
                     {sujetRedaction.texte && (
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
@@ -599,13 +599,13 @@ export default function ExamenPage() {
                   </div>
 
                   {/* Zone de rédaction */}
-                  <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                  <div className="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-black text-slate-900 text-sm">Votre rédaction</h3>
                       <span className="text-xs text-slate-400 font-bold">{redaction.length} caractères</span>
                     </div>
                     <textarea
-                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400 transition min-h-[400px]"
+                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-yellow-300 focus:border-yellow-400 transition min-h-[250px] sm:min-h-[400px]"
                       placeholder="Rédigez votre réponse ici..."
                       value={redaction}
                       onChange={(e) => setRedaction(e.target.value)}
@@ -678,7 +678,7 @@ export default function ExamenPage() {
                   <span className="text-6xl font-black text-white">{correctionMaths.note + correctionRedaction.note}</span>
                   <span className="text-6xl font-black text-slate-400">/20</span>
                 </div>
-                <div className="flex items-center justify-center gap-6 mt-4">
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 mt-4">
                   <div className="flex items-center gap-2">
                     <span className="w-3 h-3 bg-yellow-400 rounded-full"></span>
                     <span className="text-sm font-bold text-slate-400">Maths : <span className="text-white">{correctionMaths.note}/{correctionMaths.noteMax || 10}</span></span>

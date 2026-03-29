@@ -327,12 +327,12 @@ export default function MathsPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col">
 
                 {/* Barre du haut : chrono */}
-                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
+                <div className="bg-slate-900 rounded-t-2xl px-4 sm:px-6 py-4 sm:py-5">
                   <div className="flex items-start justify-between mb-4">
                     <h2 className="text-xl sm:text-2xl font-black text-white">{sujet.titre}</h2>
                     <div className="flex items-center gap-4 shrink-0 ml-4">
                       <div className={`flex items-center gap-3 ${isUrgent ? 'pulse-urgent' : ''}`}>
-                        <div className="w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
+                        <div className="w-24 sm:w-32 h-2 bg-white/15 rounded-full overflow-hidden hidden sm:block">
                           <div className={`h-full rounded-full transition-all duration-1000 ${isUrgent ? 'bg-red-500' : 'bg-red-400'}`} style={{width: `${timePercent}%`}}></div>
                         </div>
                         <div className={`flex items-center gap-2 font-black text-lg tabular-nums ${isUrgent ? 'text-red-400' : 'text-white'}`}>
@@ -348,18 +348,18 @@ export default function MathsPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Mathématiques
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-red-400">
                         Sans calculatrice
                       </span>
                       {sujet.source === 'annale' ? (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
                           Annale {sujet.ville} {sujet.annee}
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
+                        <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-white">
                           Sujet créé par nos soins
                         </span>
                       )}
@@ -368,7 +368,7 @@ export default function MathsPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 p-6 sm:p-8 overflow-y-auto">
+                <div className="flex-1 p-4 sm:p-6 md:p-8 overflow-y-auto">
 
                   <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 flex items-start gap-3">
                     <svg className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
@@ -377,7 +377,7 @@ export default function MathsPage() {
 
                   <div className="space-y-8">
                     {sujet.exercices?.map((ex, exIdx) => (
-                      <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-6">
+                      <div key={exIdx} className="bg-slate-200/60 border border-slate-300 rounded-2xl shadow-sm p-4 sm:p-6">
                         <div className="flex items-center gap-3 mb-5">
                           <span className="w-9 h-9 bg-red-600 text-white rounded-xl flex items-center justify-center font-black text-sm shadow-sm">{ex.numero}</span>
                           <h3 className="font-black text-slate-900 text-base sm:text-lg flex-1">{ex.titre}</h3>
@@ -398,7 +398,7 @@ export default function MathsPage() {
                                 <p className="text-sm text-slate-800 font-semibold leading-relaxed whitespace-pre-line flex-1">{q.question}</p>
                                 <span className="text-xs font-bold text-slate-400 shrink-0 ml-2">{q.points} pt{q.points > 1 ? 's' : ''}</span>
                               </div>
-                              <div className="ml-9 max-w-sm">
+                              <div className="ml-9 w-full sm:max-w-sm">
                                 <input
                                   type="text"
                                   className="w-full bg-white border-2 border-slate-300 rounded-xl px-4 py-3 text-sm text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-slate-400 transition placeholder:text-slate-400 placeholder:font-normal"
@@ -470,14 +470,14 @@ export default function MathsPage() {
             <div className="animate-fade-in max-w-4xl mx-auto">
 
               {/* Note */}
-              <div className="bg-slate-900 rounded-2xl p-8 text-center mb-6 relative">
+              <div className="bg-slate-900 rounded-2xl p-6 sm:p-8 text-center mb-6 relative">
                 <a href="/dashboard" className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition">
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </a>
                 <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Votre note</p>
                 <div className="flex items-baseline justify-center gap-1">
-                  <span className="text-6xl font-black text-white">{correction.note}</span>
-                  <span className="text-6xl font-black text-slate-400">/{correction.noteMax || 10}</span>
+                  <span className="text-5xl sm:text-6xl font-black text-white">{correction.note}</span>
+                  <span className="text-5xl sm:text-6xl font-black text-slate-400">/{correction.noteMax || 10}</span>
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-4 text-slate-400">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>

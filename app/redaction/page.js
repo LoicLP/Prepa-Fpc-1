@@ -281,7 +281,7 @@ export default function RedactionPage() {
           {/* ===== LOADING ===== */}
           {step === 'loading' && (
             <div className="animate-fade-in min-h-[calc(100vh-2.5rem)] flex items-center justify-center">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-8">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-4 sm:px-8">
                 <div className="w-24 h-24 bg-gradient-to-br from-purple-500 to-violet-500 shadow-xl shadow-purple-200 mb-8" style={{animation: 'morph 4s ease-in-out infinite'}}></div>
                 <h2 className="text-xl font-black text-slate-900 mb-2">Génération du sujet en cours...</h2>
                 <p className="text-slate-500 font-medium text-sm text-center mb-8">Nous préparons votre épreuve de rédaction.</p>
@@ -310,7 +310,7 @@ export default function RedactionPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm min-h-[calc(100vh-2.5rem)] flex flex-col">
 
                 {/* Barre du haut : chrono */}
-                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
+                <div className="bg-slate-900 rounded-t-2xl px-4 sm:px-6 py-4 sm:py-5">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h2 className="text-xl sm:text-2xl font-black text-white">{sujet.titre?.split(/\s[—–\-]\s/)[0]}</h2>
@@ -355,7 +355,7 @@ export default function RedactionPage() {
                         Barème de notation
                       </button>
                       {showBareme && (
-                        <div className="absolute top-full right-0 mt-2 bg-purple-50 border border-purple-200 rounded-xl shadow-xl p-4 z-50 w-80 animate-fade-in">
+                        <div className="absolute top-full right-0 mt-2 bg-purple-50 border border-purple-200 rounded-xl shadow-xl p-4 z-50 w-full max-w-xs sm:w-80 animate-fade-in">
                           <button onClick={() => setShowBareme(false)} className="absolute top-2 right-2 w-6 h-6 flex items-center justify-center rounded-md hover:bg-purple-200 text-purple-500 transition cursor-pointer">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                           </button>
@@ -369,7 +369,7 @@ export default function RedactionPage() {
 
                 <div className="flex-1 flex flex-col lg:flex-row">
                   {/* Sujet */}
-                  <div className="lg:w-[45%] border-b lg:border-b-0 lg:border-r border-slate-200 p-6 sm:p-8 overflow-y-auto">
+                  <div className="lg:w-[45%] border-b lg:border-b-0 lg:border-r border-slate-200 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
                     {sujet.texte && (
                       <div className="bg-slate-50 border border-slate-200 rounded-xl p-5 mb-6">
@@ -387,13 +387,13 @@ export default function RedactionPage() {
                   </div>
 
                   {/* Zone de rédaction */}
-                  <div className="flex-1 p-6 sm:p-8 flex flex-col">
+                  <div className="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-black text-slate-900 text-sm">Votre rédaction</h3>
                       <span className="text-xs text-slate-400 font-bold">{redaction.length} caractères</span>
                     </div>
                     <textarea
-                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition min-h-[400px]"
+                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition min-h-[250px] sm:min-h-[400px]"
                       placeholder="Rédigez votre réponse ici..."
                       value={redaction}
                       onChange={(e) => setRedaction(e.target.value)}
@@ -415,7 +415,7 @@ export default function RedactionPage() {
           {/* ===== CORRECTING ===== */}
           {step === 'correcting' && (
             <div className="animate-fade-in min-h-[calc(100vh-2.5rem)] flex items-center justify-center">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-8">
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm max-w-xl w-full flex flex-col items-center justify-center py-12 px-4 sm:px-8">
                 <svg style={{width:0,height:0,position:'absolute'}}>
                   <defs>
                     <filter id="goo" x="-50%" y="-50%" width="200%" height="200%">

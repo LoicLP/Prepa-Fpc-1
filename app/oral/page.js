@@ -289,13 +289,13 @@ export default function OralPage() {
                 {error && <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm p-4 rounded-xl mb-6 text-center">{error}</div>}
 
                 <label className="block cursor-pointer mb-6">
-                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-3xl p-12 sm:p-16 text-center transition-all hover:shadow-lg hover:shadow-emerald-100 group">
+                  <div className="bg-gradient-to-br from-emerald-50 to-teal-50 border-2 border-dashed border-emerald-300 hover:border-emerald-500 rounded-3xl p-8 sm:p-12 lg:p-16 text-center transition-all hover:shadow-lg hover:shadow-emerald-100 group">
                     <div className="w-20 h-20 bg-white text-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-100 group-hover:scale-110 transition-transform">
                       <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3-3 3 3"/></svg>
                     </div>
                     <p className="font-black text-slate-800 text-xl mb-2">Déposez votre CV ici</p>
                     <p className="text-slate-500 font-medium mb-6">ou cliquez pour parcourir vos fichiers</p>
-                    <div className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-3 rounded-xl transition shadow-lg shadow-emerald-200">
+                    <div className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-4 sm:px-8 py-2.5 sm:py-3 rounded-xl transition shadow-lg shadow-emerald-200">
                       <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
                       Importer mon CV
                     </div>
@@ -357,7 +357,7 @@ export default function OralPage() {
                 <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
                   <div className="flex items-start justify-between mb-4">
                     <h2 className="text-xl sm:text-2xl font-black text-white">Préparation à l'oral</h2>
-                    <div className="flex items-center gap-4 shrink-0 ml-4">
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-4">
                       <div className="flex items-center gap-2 font-black text-lg tabular-nums text-white">
                         <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                         {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}

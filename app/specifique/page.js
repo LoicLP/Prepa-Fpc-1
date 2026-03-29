@@ -407,7 +407,7 @@ export default function SpecifiquePage() {
                   <button
                     onClick={() => !loadingFamille && startExercice(cat)}
                     disabled={!!loadingFamille}
-                    className={`relative w-22 h-22 md:w-28 md:h-28 flex items-center justify-center border-2 transition-all duration-500 cursor-pointer ${cat.colorTheme} ${isHovered ? `scale-125 ${cat.glowTheme}` : 'scale-100 hover:scale-110 shadow-lg'} ${isDimmed ? 'opacity-30 grayscale' : 'opacity-100'} `}
+                    className={`relative w-16 h-16 sm:w-22 sm:h-22 md:w-28 md:h-28 flex items-center justify-center border-2 transition-all duration-500 cursor-pointer ${cat.colorTheme} ${isHovered ? `scale-125 ${cat.glowTheme}` : 'scale-100 hover:scale-110 shadow-lg'} ${isDimmed ? 'opacity-30 grayscale' : 'opacity-100'} `}
                     style={{borderRadius: ['60% 40% 30% 70% / 60% 30% 70% 40%', '40% 60% 70% 30% / 50% 60% 40% 50%', '70% 30% 50% 50% / 30% 50% 50% 70%', '50% 50% 30% 70% / 40% 70% 30% 60%'][idx]}}
                   >
                     {isLoading ? (
@@ -425,7 +425,7 @@ export default function SpecifiquePage() {
                   </div>
 
                   {/* Label sous le noeud */}
-                  <div className={`absolute ${idx === 0 || idx === 2 ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 whitespace-nowrap text-center transition-opacity duration-300 ${isHovered || isDimmed ? 'opacity-0' : 'opacity-70'}`}>
+                  <div className={`absolute ${idx === 0 || idx === 2 ? 'bottom-full mb-4' : 'top-full mt-4'} left-1/2 -translate-x-1/2 sm:whitespace-nowrap text-center max-w-[120px] sm:max-w-none transition-opacity duration-300 ${isHovered || isDimmed ? 'opacity-0' : 'opacity-70'}`}>
                     <span className={`text-base font-black tracking-wide ${cat.labelColor}`}>{cat.titre}</span>
                   </div>
                 </div>
@@ -490,7 +490,7 @@ export default function SpecifiquePage() {
           </div>
           <div className="flex-1 flex items-center justify-center px-4 pb-8">
             <div className="w-full max-w-2xl">
-            <div className="rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6">
+            <div className="rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6">
               <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
                 {/* Header */}
                 <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-5 border-b border-slate-100 gap-2">

@@ -226,8 +226,8 @@ function QuizContent() {
       `}</style>
 
       <div className="fixed top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div className="absolute top-[-10%] left-[-5%] w-[500px] h-[500px] bg-blue-200/40 rounded-full mix-blend-multiply blur-3xl"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-rose-200/40 rounded-full mix-blend-multiply blur-3xl"></div>
+        <div className="absolute top-[-10%] left-[-5%] w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-blue-200/40 rounded-full mix-blend-multiply blur-3xl"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[300px] h-[300px] sm:w-[500px] sm:h-[500px] bg-rose-200/40 rounded-full mix-blend-multiply blur-3xl"></div>
       </div>
 
       <Nav />
@@ -247,7 +247,7 @@ function QuizContent() {
             </a>
 
             {/* QCM CARD */}
-            <div className={`${colors.wrapper} rounded-2xl sm:rounded-[2.5rem] p-3 sm:p-6 shadow-sm`}>
+            <div className={`${colors.wrapper} rounded-2xl sm:rounded-[2.5rem] p-4 sm:p-6 shadow-sm`}>
             <div className="bg-white rounded-xl sm:rounded-[2rem] shadow-xl flex flex-col overflow-hidden relative">
               {/* Header */}
               <div className="relative flex flex-wrap justify-between items-center p-3 sm:p-5 border-b border-slate-100 gap-2">

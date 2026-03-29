@@ -297,10 +297,7 @@ function DashboardContent() {
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition">
             <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
           </button>
-          <a href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-red-600 text-white rounded-lg flex items-center justify-center">
-              <Stethoscope size={16} strokeWidth={2.5} />
-            </div>
+          <a href="/" className="flex items-center">
             <span className="font-black text-lg text-slate-900">Prépa <span className="text-red-600">FPC</span></span>
           </a>
           <div className="w-9"></div>

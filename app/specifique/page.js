@@ -445,10 +445,10 @@ export default function SpecifiquePage() {
             @keyframes dropFill { 0% { transform: translateY(100%); } 100% { transform: translateY(0%); } }
             @keyframes dropPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
           `}</style>
-          <div className="relative flex items-center justify-center p-4 pt-6 sm:pt-8 shrink-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={colorMap[selectedFamille.id]?.text || 'text-blue-500'}>— {selectedFamille.titre}</span></h1>
-            <a href="/dashboard" className="absolute right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
-              Quitter l&apos;exercice
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={colorMap[selectedFamille.id]?.text || 'text-blue-500'}>— {selectedFamille.titre}</span></h1>
+            <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
+              <span className="hidden sm:inline">Quitter l&apos;exercice</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
@@ -481,10 +481,10 @@ export default function SpecifiquePage() {
       {/* ===== ÉPREUVE ===== */}
       {step === 'epreuve' && sujet && data && selectedFamille && (
         <div className={`fixed inset-0 z-40 lg:pl-[90px] ${c.wrapper} overflow-y-auto flex flex-col`}>
-          <div className="relative flex items-center justify-center p-4 pt-6 sm:pt-8 shrink-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
-            <a href="/dashboard" className="absolute right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
-              Quitter l&apos;exercice
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
+            <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
+              <span className="hidden sm:inline">Quitter l&apos;exercice</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
@@ -585,19 +585,19 @@ export default function SpecifiquePage() {
       {/* ===== RÉSULTATS ===== */}
       {step === 'resultat' && correction && selectedFamille && (
         <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col ${c.wrapper}`}>
-          <div className="relative flex items-center justify-center p-4 pt-6 sm:pt-8 shrink-0">
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
-            <a href="/dashboard" className="absolute right-4 bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
-              Quitter l&apos;exercice
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
+            <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
+              <span className="hidden sm:inline">Quitter l&apos;exercice</span>
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
           <div className="flex-1 flex items-center justify-center px-4">
-          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-8 sm:p-12 max-w-md w-full text-center">
+          <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-12 max-w-md w-full text-center">
             <span className={`${c.badge} px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase`}>{selectedFamille.titre}</span>
             <div className="flex justify-center items-center my-5">
-              <span className={`text-6xl sm:text-7xl font-black ${c.text} tracking-tighter`}>{correction.note}</span>
-              <span className="text-6xl sm:text-7xl font-black text-slate-900 tracking-tighter">/{correction.noteMax}</span>
+              <span className={`text-5xl sm:text-7xl font-black ${c.text} tracking-tighter`}>{correction.note}</span>
+              <span className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tighter">/{correction.noteMax}</span>
             </div>
             <p className="text-slate-400 text-sm font-bold mb-8">Ne compte pas dans la moyenne</p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3">

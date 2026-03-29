@@ -576,9 +576,9 @@ export default function SpecifiquePage() {
             </div>
 
             {/* Navigation rapide */}
-            <div className="flex flex-wrap justify-center gap-2 mt-5">
+            <div className="flex justify-center gap-1.5 sm:gap-2 mt-5">
               {sujet.questions.map((q, i) => (
-                <button key={i} onClick={() => setCurrent(i)} className={`w-8 h-8 rounded-lg font-bold text-xs transition cursor-pointer bg-slate-900 text-white ${i === current ? 'ring-2 ring-offset-2 ring-slate-900' : reponses[q.id]?.trim() ? 'opacity-100' : 'opacity-40 hover:opacity-60'}`}>
+                <button key={i} onClick={() => setCurrent(i)} className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg font-bold text-[10px] sm:text-xs transition cursor-pointer bg-slate-900 text-white ${i === current ? 'ring-2 ring-offset-2 ring-slate-900' : reponses[q.id]?.trim() ? 'opacity-100' : 'opacity-40 hover:opacity-60'}`}>
                   {i + 1}
                 </button>
               ))}

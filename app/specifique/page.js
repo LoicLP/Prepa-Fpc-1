@@ -214,8 +214,8 @@ export default function SpecifiquePage() {
       {sidebarOpen && <div className="fixed inset-0 bg-black/30 z-[45] lg:hidden" onClick={() => setSidebarOpen(false)}></div>}
 
       {/* SIDEBAR */}
-      <div className={`fixed inset-y-0 left-0 z-50 flex items-center pl-3 py-5 transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
-        <aside className="w-[72px] bg-white rounded-2xl shadow-lg shadow-slate-200/60 border border-slate-200/60 flex flex-col items-center py-5 h-[calc(100vh-2.5rem)]" style={{fontFamily: "'Nunito', sans-serif"}}>
+      <div className={`fixed top-14 lg:top-0 bottom-0 left-0 z-50 flex items-center pl-3 py-3 lg:py-5 transition-transform duration-300 lg:translate-x-0 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}`}>
+        <aside className="w-[72px] bg-white rounded-2xl shadow-lg shadow-slate-200/60 border border-slate-200/60 flex flex-col items-center py-5 h-full lg:h-[calc(100vh-2.5rem)]" style={{fontFamily: "'Nunito', sans-serif"}}>
           <a href="/" className="mb-4"><div className={`w-10 h-10 text-white rounded-xl flex items-center justify-center hover:scale-105 transition-all bg-gradient-to-br ${selectedFamille ? c.gradient : 'from-blue-500 to-blue-600'}`}><Stethoscope size={20} strokeWidth={2.5} /></div></a>
           <div className="w-7 h-px bg-slate-200 mb-3"></div>
           <nav className="flex-1 flex flex-col items-center gap-0.5 w-full px-1.5">
@@ -593,14 +593,14 @@ export default function SpecifiquePage() {
       {/* ===== RÉSULTATS ===== */}
       {step === 'resultat' && correction && selectedFamille && (
         <div className={`fixed inset-0 z-40 lg:pl-[90px] flex flex-col pt-14 lg:pt-0 ${c.wrapper}`}>
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-4 pt-6 sm:pt-8 shrink-0">
-            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
-            <a href="/dashboard" className="bg-slate-900 hover:bg-black text-white font-bold text-xs sm:text-sm px-3 sm:px-5 py-2 sm:py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shrink-0">
-              <span className="hidden sm:inline">Quitter l&apos;exercice</span>
+          <div className="flex items-center justify-between gap-3 p-4 pt-4 sm:pt-8 shrink-0">
+            <h1 className="text-lg sm:text-2xl md:text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left flex-1" style={{fontFamily: "'Nunito', sans-serif"}}>Entraînement spécifique <span className={c.text}>— {selectedFamille.titre}</span></h1>
+            <a href="/dashboard" className="hidden sm:flex bg-slate-900 hover:bg-black text-white font-bold text-sm px-5 py-2.5 rounded-xl transition items-center gap-2 shadow-lg shrink-0">
+              Quitter l&apos;exercice
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
             </a>
           </div>
-          <div className="flex-1 flex items-center justify-center px-4">
+          <div className="flex-1 flex items-start sm:items-center justify-center px-2 sm:px-4 pb-4 sm:pb-8">
           <div className="bg-white rounded-2xl shadow-lg border border-slate-100 p-6 sm:p-12 max-w-md w-full text-center">
             <span className={`${c.badge} px-3 py-1.5 rounded-lg text-xs font-bold tracking-wide uppercase`}>{selectedFamille.titre}</span>
             <div className="flex justify-center items-center my-5">

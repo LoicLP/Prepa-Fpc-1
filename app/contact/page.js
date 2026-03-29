@@ -9,26 +9,31 @@ export default function ContactPage() {
   const [authLoading, setAuthLoading] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
   const [category, setCategory] = useState('')
-  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
-  const [files, setFiles] = useState([])
   const [honeypot, setHoneypot] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState('')
 
   const categories = [
     { id: 'bug', label: 'Signaler un bug', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M8 2l1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg> },
     { id: 'question', label: 'Question', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> },
     { id: 'suggestion', label: 'Suggestion', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> },
-    { id: 'abonnement', label: 'Abonnement', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg> },
     { id: 'autre', label: 'Autre', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> }
   ]
-  const [loading, setLoading] = useState(false)
-  const [success, setSuccess] = useState(false)
-  const [error, setError] = useState('')
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => { setUser(session?.user ?? null); setAuthLoading(false) })
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => setUser(session?.user ?? null))
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      if (session?.user?.email) setEmail(session.user.email)
+      setAuthLoading(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      setUser(session?.user ?? null)
+      if (session?.user?.email) setEmail(session.user.email)
+    })
     return () => subscription.unsubscribe()
   }, [])
 
@@ -43,28 +48,23 @@ export default function ContactPage() {
     e.preventDefault()
     setError('')
     if (!category) { setError('Veuillez sélectionner une catégorie.'); return }
-    if (!name.trim() || !email.trim() || !message.trim()) { setError('Veuillez remplir tous les champs.'); return }
+    if (!email.trim()) { setError('Veuillez entrer votre adresse email.'); return }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setError('Veuillez entrer une adresse email valide.'); return }
-    if (files.length > 3) { setError('Maximum 3 fichiers autorisés.'); return }
-    const maxSize = 5 * 1024 * 1024
-    if (files.some(f => f.size > maxSize)) { setError('Chaque fichier doit faire moins de 5 Mo.'); return }
+    if (!subject.trim()) { setError('Veuillez entrer un sujet.'); return }
+    if (subject.trim().length > 200) { setError('Le sujet ne doit pas dépasser 200 caractères.'); return }
+    if (!message.trim()) { setError('Veuillez entrer votre message.'); return }
+    if (message.trim().length > 5000) { setError('Le message ne doit pas dépasser 5000 caractères.'); return }
     setLoading(true)
     try {
-      const formData = new FormData()
-      formData.append('name', name.trim())
-      formData.append('email', email.trim())
-      formData.append('message', message.trim())
-      formData.append('category', category)
-      formData.append('honeypot', honeypot)
-      files.forEach(f => formData.append('files', f))
       const res = await fetch('/api/contact', {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), subject: subject.trim(), message: message.trim(), category, honeypot })
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Une erreur est survenue.'); setLoading(false); return }
       setSuccess(true)
-      setName(''); setEmail(''); setMessage(''); setCategory(''); setFiles([])
+      setSubject(''); setMessage(''); setCategory('')
     } catch { setError('Une erreur est survenue. Veuillez réessayer.') }
     setLoading(false)
   }
@@ -92,8 +92,8 @@ export default function ContactPage() {
               <a href="/dashboard" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5 text-sm">Mon tableau de bord</a>
             ) : (
               <>
-                <a href="/login" className="hidden md:block text-slate-600 font-bold hover:text-slate-900 transition text-sm">Connexion</a>
-                <a href="/signup" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-bold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5 text-sm">Inscription</a>
+                <a href="/login" className="hidden md:block text-slate-600 font-semibold hover:text-slate-900 transition">Connexion</a>
+                <a href="/signup" className="hidden md:inline-flex bg-slate-900 hover:bg-black text-white px-5 py-2.5 rounded-full font-semibold shadow-lg shadow-slate-200 transition transform hover:-translate-y-0.5">Inscription</a>
               </>
             ))}
             <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition">
@@ -155,7 +155,7 @@ export default function ContactPage() {
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-2">Catégorie</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {categories.map(cat => (
                     <button key={cat.id} type="button" onClick={() => setCategory(cat.id)} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold transition cursor-pointer border ${category === cat.id ? 'bg-red-50 border-red-300 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'}`}>
                       {cat.icon}
@@ -166,50 +166,26 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Nom</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
-                  <input type="text" value={name} onChange={e => setName(e.target.value)} placeholder="Votre nom" className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition" />
-                </div>
-              </div>
-
-              <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Email</label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg></div>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.fr" className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition" />
+                  <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="votre@email.fr" disabled={!!user} className={`w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition ${user ? 'text-slate-500 cursor-not-allowed' : ''}`} />
+                </div>
+                {user && <p className="text-xs text-slate-400 mt-1">Email récupéré depuis votre compte</p>}
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1.5">Sujet</label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg></div>
+                  <input type="text" value={subject} onChange={e => setSubject(e.target.value)} placeholder="Résumez votre demande" maxLength={200} className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition" />
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-bold text-slate-700 mb-1.5">Message</label>
-                <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Votre message..." rows={5} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition resize-none" />
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold text-slate-700 mb-1.5">Pièces jointes <span className="text-slate-400 font-medium">(optionnel, max 3 fichiers, 5 Mo chacun)</span></label>
-                <label className="flex flex-col items-center justify-center gap-2 py-6 bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl cursor-pointer hover:border-red-300 hover:bg-red-50/30 transition">
-                  <svg className="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0 3 3m-3-3-3 3M6.75 19.5a4.5 4.5 0 0 1-1.41-8.775 5.25 5.25 0 0 1 10.233-2.33 3 3 0 0 1 3.758 3.848A3.752 3.752 0 0 1 18 19.5H6.75Z"/></svg>
-                  <span className="text-sm font-medium text-slate-500">Cliquez ou glissez vos fichiers ici</span>
-                  <span className="text-xs text-slate-400">Images, PDF, captures d'écran</span>
-                  <input type="file" multiple accept="image/*,.pdf,.doc,.docx" className="hidden" onChange={e => { const newFiles = [...files, ...Array.from(e.target.files)].slice(0, 3); setFiles(newFiles); e.target.value = '' }} />
-                </label>
-                {files.length > 0 && (
-                  <div className="mt-3 space-y-2">
-                    {files.map((f, i) => (
-                      <div key={i} className="flex items-center justify-between bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <svg className="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-                          <span className="text-sm font-medium text-slate-700 truncate">{f.name}</span>
-                          <span className="text-xs text-slate-400 shrink-0">({(f.size / 1024 / 1024).toFixed(1)} Mo)</span>
-                        </div>
-                        <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} className="text-slate-400 hover:text-red-500 transition shrink-0 ml-2 cursor-pointer">
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Décrivez votre demande en détail..." rows={5} maxLength={5000} className="w-full px-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none font-medium transition resize-none" />
+                <p className="text-xs text-slate-400 mt-1 text-right">{message.length} / 5000</p>
               </div>
 
               <button type="submit" disabled={loading} className="w-full bg-slate-900 hover:bg-black text-white font-bold py-3.5 rounded-xl transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">

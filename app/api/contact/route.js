@@ -1,104 +1,107 @@
 import { NextResponse } from 'next/server'
-import { createClient } from '@supabase/supabase-js'
+import nodemailer from 'nodemailer'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
+const validCategories = ['bug', 'question', 'suggestion', 'autre']
+const categoryLabels = { bug: 'Bug', question: 'Question', suggestion: 'Suggestion', autre: 'Autre' }
 
-const validCategories = ['bug', 'question', 'suggestion', 'abonnement', 'autre']
-const categoryLabels = { bug: 'Bug', question: 'Question', suggestion: 'Suggestion', abonnement: 'Abonnement', autre: 'Autre' }
-const allowedTypes = ['image/png', 'image/jpeg', 'image/gif', 'image/webp', 'application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document']
-const maxFileSize = 5 * 1024 * 1024
+const allowedOrigins = [
+  'https://prepa-fpc.fr',
+  'https://www.prepa-fpc.fr',
+  'http://localhost:3000'
+]
+
+// Rate limit store (en mémoire, reset au redémarrage)
+const rateLimitMap = new Map()
+
+function escapeHtml(str) {
+  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;')
+}
 
 export async function POST(request) {
   try {
-    const formData = await request.formData()
-    const name = formData.get('name')
-    const email = formData.get('email')
-    const message = formData.get('message')
-    const category = formData.get('category')
-    const honeypot = formData.get('honeypot')
-    const files = formData.getAll('files')
+    // Protection CSRF : vérifier l'origine
+    const origin = request.headers.get('origin')
+    if (origin && !allowedOrigins.includes(origin)) {
+      return NextResponse.json({ error: 'Origine non autorisée.' }, { status: 403 })
+    }
+
+    const { email, subject, message, category, honeypot } = await request.json()
 
     // Anti-spam : honeypot
     if (honeypot) {
       return NextResponse.json({ success: true })
     }
 
-    // Validation
+    // Validation catégorie
     if (!category || !validCategories.includes(category)) {
       return NextResponse.json({ error: 'Veuillez sélectionner une catégorie.' }, { status: 400 })
     }
-    if (!name || !email || !message) {
+
+    // Validation champs
+    if (!email || !subject || !message) {
       return NextResponse.json({ error: 'Veuillez remplir tous les champs.' }, { status: 400 })
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return NextResponse.json({ error: 'Adresse email invalide.' }, { status: 400 })
     }
+    if (subject.length > 200) {
+      return NextResponse.json({ error: 'Le sujet ne doit pas dépasser 200 caractères.' }, { status: 400 })
+    }
     if (message.length > 5000) {
-      return NextResponse.json({ error: 'Le message est trop long (5000 caractères max).' }, { status: 400 })
+      return NextResponse.json({ error: 'Le message ne doit pas dépasser 5000 caractères.' }, { status: 400 })
     }
 
-    // Validation fichiers
-    const realFiles = files.filter(f => f && f.size > 0)
-    if (realFiles.length > 3) {
-      return NextResponse.json({ error: 'Maximum 3 fichiers autorisés.' }, { status: 400 })
-    }
-    for (const file of realFiles) {
-      if (file.size > maxFileSize) {
-        return NextResponse.json({ error: `Le fichier "${file.name}" dépasse 5 Mo.` }, { status: 400 })
-      }
-      if (!allowedTypes.includes(file.type)) {
-        return NextResponse.json({ error: `Type de fichier non autorisé : ${file.name}` }, { status: 400 })
-      }
-    }
-
-    // Rate limiting par IP (max 3 messages/heure)
+    // Rate limiting par IP (max 3 messages / 15 min)
     const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown'
-    const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString()
-
-    const { count } = await supabase
-      .from('contacts')
-      .select('*', { count: 'exact', head: true })
-      .eq('ip', ip)
-      .gte('created_at', oneHourAgo)
-
-    if (count >= 3) {
-      return NextResponse.json({ error: 'Trop de messages envoyés. Veuillez réessayer dans une heure.' }, { status: 429 })
+    const now = Date.now()
+    const windowMs = 15 * 60 * 1000
+    const ipData = rateLimitMap.get(ip) || []
+    const recent = ipData.filter(t => now - t < windowMs)
+    if (recent.length >= 3) {
+      return NextResponse.json({ error: 'Trop de messages envoyés. Veuillez réessayer dans 15 minutes.' }, { status: 429 })
     }
+    recent.push(now)
+    rateLimitMap.set(ip, recent)
 
-    // Upload fichiers dans Supabase Storage
-    const uploadedFiles = []
-    const ticketId = Date.now().toString(36).toUpperCase()
-    for (const file of realFiles) {
-      const ext = file.name.split('.').pop()
-      const path = `contact/${ticketId}/${crypto.randomUUID()}.${ext}`
-      const buffer = Buffer.from(await file.arrayBuffer())
-      const { error: uploadError } = await supabase.storage
-        .from('contact-files')
-        .upload(path, buffer, { contentType: file.type })
-      if (uploadError) {
-        console.error('Upload error:', uploadError)
-        continue
+    // Échappement HTML
+    const safeEmail = escapeHtml(email)
+    const safeSubject = escapeHtml(subject)
+    const safeMessage = escapeHtml(message)
+    const safeCategory = categoryLabels[category]
+
+    // Envoi email via SMTP
+    const transporter = nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '587'),
+      secure: false,
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASSWORD
       }
-      const { data: urlData } = supabase.storage.from('contact-files').getPublicUrl(path)
-      uploadedFiles.push({ name: file.name, url: urlData.publicUrl })
-    }
+    })
 
-    // Insert en base
-    const subject = `${categoryLabels[category]}-${ticketId}`
-    const { error } = await supabase
-      .from('contacts')
-      .insert({
-        name, email, message, category, subject, ip,
-        attachments: uploadedFiles.length > 0 ? uploadedFiles : null
-      })
-
-    if (error) {
-      console.error('Supabase insert error:', error)
-      return NextResponse.json({ error: 'Erreur lors de l\'envoi. Veuillez réessayer.' }, { status: 500 })
-    }
+    await transporter.sendMail({
+      from: `"Prépa FPC - Contact" <${process.env.SMTP_USER}>`,
+      to: process.env.SMTP_USER,
+      replyTo: email,
+      subject: `[${safeCategory}] ${safeSubject}`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background: #dc2626; color: white; padding: 20px; border-radius: 12px 12px 0 0;">
+            <h2 style="margin: 0;">Nouveau message — ${safeCategory}</h2>
+          </div>
+          <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0; border-top: none; border-radius: 0 0 12px 12px;">
+            <p style="margin: 0 0 8px;"><strong>De :</strong> ${safeEmail}</p>
+            <p style="margin: 0 0 8px;"><strong>Catégorie :</strong> ${safeCategory}</p>
+            <p style="margin: 0 0 16px;"><strong>Sujet :</strong> ${safeSubject}</p>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
+            <div style="white-space: pre-wrap; color: #334155; line-height: 1.6;">${safeMessage}</div>
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 16px 0;" />
+            <p style="font-size: 12px; color: #94a3b8; margin: 0;">IP : ${ip} — Envoyé depuis le formulaire de contact Prépa FPC</p>
+          </div>
+        </div>
+      `
+    })
 
     return NextResponse.json({ success: true })
   } catch (err) {

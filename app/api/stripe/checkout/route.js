@@ -13,14 +13,23 @@ export async function POST(req) {
 
     const isRecurring = priceId === process.env.STRIPE_PRICE_MONTHLY
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionParams = {
       customer_email: userEmail,
       mode: isRecurring ? 'subscription' : 'payment',
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { userId, plan: isRecurring ? 'monthly' : 'yearly' },
       success_url: `${req.headers.get('origin')}/dashboard?tab=abonnement&success=true`,
       cancel_url: `${req.headers.get('origin')}/dashboard?tab=abonnement&canceled=true`,
-    })
+    }
+
+    // Transférer les metadata vers le payment_intent (annuel) ou la subscription (mensuel)
+    if (isRecurring) {
+      sessionParams.subscription_data = { metadata: { userId, plan: 'monthly' } }
+    } else {
+      sessionParams.payment_intent_data = { metadata: { userId, plan: 'yearly' } }
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionParams)
 
     return NextResponse.json({ url: session.url })
   } catch (err) {

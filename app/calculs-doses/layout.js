@@ -19,7 +19,7 @@ export const metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://prepa-fpc.vercel.app/calculs-doses",
+    canonical: "https://www.prepa-fpc.fr/calculs-doses",
   },
 }
 

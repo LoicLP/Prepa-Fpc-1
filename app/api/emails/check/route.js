@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin, buildEmailHtml, claimAndSend, hasEmailBeenSent, hasRecentEmail } from '../../../../lib/email'
 
-const siteUrl = 'https://prepa-fpc.vercel.app'
+const siteUrl = 'https://www.prepa-fpc.fr'
 
 export async function POST(request) {
   try {

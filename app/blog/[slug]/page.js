@@ -90,9 +90,9 @@ export default function ArticlePage() {
     description: article.excerpt,
     datePublished: article.date,
     dateModified: article.date,
-    author: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://prepa-fpc.vercel.app' },
-    publisher: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://prepa-fpc.vercel.app' },
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://prepa-fpc.vercel.app/blog/${params.slug}` },
+    author: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://www.prepa-fpc.fr' },
+    publisher: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://www.prepa-fpc.fr' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://www.prepa-fpc.fr/blog/${params.slug}` },
     ...(article.image_url && { image: article.image_url }),
   }
 

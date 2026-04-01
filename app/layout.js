@@ -1,6 +1,6 @@
 import "./globals.css";
 
-const siteUrl = "https://prepa-fpc.vercel.app";
+const siteUrl = "https://www.prepa-fpc.fr";
 const siteName = "Prépa FPC";
 const description = "Préparez le concours FPC infirmier (passerelle IFSI) avec des QCM de maths, calculs de doses, simulations d'oral et cours de culture sanitaire et sociale. La plateforme de référence pour les aides-soignants et auxiliaires de puériculture.";
 

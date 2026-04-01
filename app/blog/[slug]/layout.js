@@ -19,7 +19,7 @@ export async function generateMetadata({ params }) {
     return { title: 'Article introuvable' }
   }
 
-  const url = `https://prepa-fpc.vercel.app/blog/${slug}`
+  const url = `https://www.prepa-fpc.fr/blog/${slug}`
 
   return {
     title: article.title,

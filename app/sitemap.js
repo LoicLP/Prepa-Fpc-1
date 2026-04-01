@@ -5,6 +5,8 @@ const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 )
 
+const siteUrl = 'https://www.prepa-fpc.fr'
+
 export default async function sitemap() {
   const { data: articles } = await supabase
     .from('articles')
@@ -13,37 +15,18 @@ export default async function sitemap() {
     .order('date', { ascending: false })
 
   const articleUrls = (articles || []).map((article) => ({
-    url: `https://prepa-fpc.vercel.app/blog/${article.slug}`,
+    url: `${siteUrl}/blog/${article.slug}`,
     lastModified: new Date(article.date),
     changeFrequency: 'monthly',
-    priority: 0.8,
+    priority: 0.7,
   }))
 
   return [
-    {
-      url: 'https://prepa-fpc.vercel.app',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 1,
-    },
-    {
-      url: 'https://prepa-fpc.vercel.app/blog',
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: 'https://prepa-fpc.vercel.app/tarifs',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.7,
-    },
-    {
-      url: 'https://prepa-fpc.vercel.app/calculs-doses',
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.8,
-    },
+    { url: siteUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: `${siteUrl}/tarifs`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
+    { url: `${siteUrl}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
+    { url: `${siteUrl}/calculs-doses`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteUrl}/contact`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.4 },
     ...articleUrls,
   ]
 }

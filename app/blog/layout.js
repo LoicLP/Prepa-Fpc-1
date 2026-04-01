@@ -8,7 +8,7 @@ export const metadata = {
     type: "website",
   },
   alternates: {
-    canonical: "https://prepa-fpc.vercel.app/blog",
+    canonical: "https://www.prepa-fpc.fr/blog",
   },
 }
 

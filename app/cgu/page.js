@@ -5,121 +5,76 @@ const Stethoscope = ({className}) => <svg viewBox="0 0 24 24" fill="none" stroke
 export default function CGUPage() {
   const sections = [
     {
-      title: "Article 1 — Mentions légales",
-      content: `Le site www.prepa-fpc.fr (ci-après "la Plateforme") est édité par :
-
-• Raison sociale : LP Labs, SAS au capital de 50 €
-• Siège social : 20 route de la Rousserie, 50200 Monthuchon, France
-• SIRET : 102 976 990 00014
-• Directeur de la publication : Paul Debruinier
-• Contact : support@prepa-fpc.fr
-
-Hébergeur : Vercel Inc., 440 N Barranca Ave #4133, Covina, CA 91723, États-Unis.`
+      title: "Article 1 — Objet",
+      html: `<p>Les présentes <strong>Conditions Générales d'Utilisation et de Vente</strong> (CGU/CGV) définissent les conditions d'accès et d'utilisation de la Plateforme <strong>Prépa FPC</strong> (<strong>www.prepa-fpc.fr</strong>), destinée à la préparation du concours FPC d'entrée en IFSI pour les professionnels en reconversion (aides-soignants, auxiliaires de puériculture).</p>
+<p>La Plateforme propose des outils d'entraînement : <strong>QCM de mathématiques</strong>, exercices de <strong>calculs de doses</strong>, sujets de <strong>rédaction</strong>, <strong>examens blancs</strong>, préparation à l'<strong>oral</strong> et articles de blog informatifs.</p>`
     },
     {
-      title: "Article 2 — Objet",
-      content: `Les présentes Conditions Générales d'Utilisation (CGU) définissent les conditions d'accès et d'utilisation de la Plateforme Prépa FPC, destinée à la préparation du concours FPC d'entrée en IFSI (Institut de Formation en Soins Infirmiers) pour les professionnels en reconversion (aides-soignants, auxiliaires de puériculture).
-
-La Plateforme propose des outils d'entraînement : QCM de mathématiques, exercices de calculs de doses, sujets de rédaction, examens blancs, préparation à l'oral et articles de blog informatifs.`
+      title: "Article 2 — Acceptation",
+      html: `<p>L'utilisation de la Plateforme implique l'<strong>acceptation pleine et entière</strong> des présentes CGU/CGV. LP Labs se réserve le droit de modifier les CGU/CGV à tout moment. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation après modification vaut acceptation.</p>`
     },
     {
-      title: "Article 3 — Acceptation des CGU",
-      content: `L'utilisation de la Plateforme implique l'acceptation pleine et entière des présentes CGU. LP Labs se réserve le droit de modifier les CGU à tout moment. Les utilisateurs seront informés de toute modification substantielle. La poursuite de l'utilisation de la Plateforme après modification vaut acceptation des nouvelles CGU.`
+      title: "Article 3 — Accès à la Plateforme",
+      html: `<p>La Plateforme est accessible <strong>gratuitement pendant 7 jours</strong> à compter de l'inscription. Au-delà, l'accès aux fonctionnalités premium nécessite la souscription d'un <strong>abonnement payant</strong>.</p>
+<p>LP Labs s'efforce d'assurer la disponibilité <strong>24h/24 et 7j/7</strong>, mais ne saurait être tenue responsable des interruptions pour maintenance, mises à jour ou cas de force majeure.</p>`
     },
     {
-      title: "Article 4 — Accès à la Plateforme",
-      content: `La Plateforme est accessible gratuitement pendant une période d'essai de 7 jours à compter de l'inscription. Au-delà, l'accès aux fonctionnalités premium nécessite la souscription d'un abonnement payant.
-
-LP Labs s'efforce d'assurer la disponibilité de la Plateforme 24h/24 et 7j/7, mais ne saurait être tenue responsable des interruptions pour maintenance, mises à jour ou cas de force majeure.`
+      title: "Article 4 — Création de compte",
+      html: `<p>L'inscription est ouverte à toute personne physique <strong>âgée d'au moins 17 ans</strong>. L'utilisateur s'engage à fournir des informations exactes et à maintenir la <strong>confidentialité de ses identifiants</strong>.</p>
+<p>Chaque utilisateur est responsable de toute activité réalisée depuis son compte. En cas d'utilisation non autorisée, contactez immédiatement <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong>.</p>`
     },
     {
-      title: "Article 5 — Création de compte",
-      content: `L'inscription est ouverte à toute personne physique majeure ou âgée d'au moins 17 ans. L'utilisateur s'engage à fournir des informations exactes et à maintenir la confidentialité de ses identifiants de connexion.
-
-Chaque utilisateur est responsable de toute activité réalisée depuis son compte. En cas d'utilisation non autorisée, l'utilisateur doit en informer immédiatement LP Labs à support@prepa-fpc.fr.`
+      title: "Article 5 — Utilisation de la Plateforme",
+      html: `<p>L'utilisateur s'engage à utiliser la Plateforme de manière conforme à sa destination. Sont <strong>strictement interdits</strong> :</p>
+<ul>
+<li>La <strong>reproduction, copie ou extraction</strong> du contenu de la Plateforme</li>
+<li>L'utilisation de <strong>robots, scripts ou outils automatisés</strong></li>
+<li>Le <strong>partage de compte</strong> ou d'identifiants avec des tiers</li>
+<li>Toute tentative de <strong>contournement des mesures de sécurité</strong></li>
+<li>La <strong>revente ou redistribution</strong> du contenu pédagogique</li>
+</ul>`
     },
     {
-      title: "Article 6 — Utilisation de la Plateforme",
-      content: `L'utilisateur s'engage à utiliser la Plateforme de manière conforme à sa destination. Sont notamment interdits :
-
-• La reproduction, copie ou extraction du contenu de la Plateforme
-• L'utilisation de robots, scripts ou outils automatisés
-• Le partage de son compte ou de ses identifiants avec des tiers
-• Toute tentative de contournement des mesures de sécurité
-• La revente ou redistribution du contenu pédagogique`
+      title: "Article 6 — Propriété intellectuelle",
+      html: `<p>L'ensemble des contenus de la Plateforme est la <strong>propriété exclusive de LP Labs</strong> et est protégé par le droit de la propriété intellectuelle.</p>
+<p>L'utilisateur bénéficie d'un droit d'utilisation <strong>personnel et non cessible</strong>. Toute reproduction ou diffusion non autorisée constitue une <strong>contrefaçon sanctionnée pénalement</strong>.</p>`
     },
     {
-      title: "Article 7 — Propriété intellectuelle",
-      content: `L'ensemble des contenus de la Plateforme (textes, exercices, algorithmes, design, logos, code source) est la propriété exclusive de LP Labs et est protégé par le droit de la propriété intellectuelle.
-
-L'utilisateur bénéficie d'un droit d'utilisation personnel et non cessible dans le cadre de sa préparation au concours FPC. Toute reproduction ou diffusion non autorisée constitue une contrefaçon sanctionnée pénalement.`
+      title: "Article 7 — Contenu pédagogique",
+      html: `<p>Les exercices, QCM et examens blancs sont des <strong>outils d'entraînement complémentaires</strong>. Ils ne se substituent pas à une formation officielle et <strong>ne garantissent pas la réussite</strong> au concours FPC.</p>
+<p>Les sujets générés par intelligence artificielle sont calibrés sur les <strong>annales officielles</strong> du concours mais peuvent comporter des approximations.</p>`
     },
     {
-      title: "Article 8 — Contenu pédagogique",
-      content: `Les exercices, QCM, sujets de rédaction et examens blancs proposés sur la Plateforme sont des outils d'entraînement complémentaires. Ils ne se substituent pas à une formation officielle et ne garantissent pas la réussite au concours FPC.
-
-Les sujets générés par intelligence artificielle sont calibrés sur les annales officielles du concours mais peuvent comporter des approximations.`
+      title: "Article 8 — Abonnements et paiements (CGV)",
+      html: `<p>La Plateforme propose des abonnements payants dont les tarifs sont indiqués sur la page <strong><a href="/tarifs" class="text-red-600 hover:underline">Tarifs</a></strong>. Les paiements sont sécurisés par <strong>Stripe</strong>.</p>
+<ul>
+<li><strong>Abonnement mensuel</strong> : sans engagement, résiliable à tout moment</li>
+<li><strong>Abonnement annuel</strong> : paiement unique pour 12 mois d'accès</li>
+</ul>
+<p>La résiliation prend effet à la <strong>fin de la période en cours</strong>. Aucun remboursement au prorata ne sera effectué.</p>
+<p>Conformément à l'article <strong>L221-28 du Code de la consommation</strong>, le droit de rétractation ne s'applique pas aux contenus numériques fournis immédiatement après l'achat.</p>`
     },
     {
-      title: "Article 9 — Abonnements et paiements",
-      content: `La Plateforme propose des abonnements payants (mensuel et annuel) dont les tarifs sont indiqués sur la page Tarifs. Les paiements sont sécurisés par Stripe.
-
-• Abonnement mensuel : sans engagement, résiliable à tout moment
-• Abonnement annuel : paiement unique pour 12 mois d'accès
-
-La résiliation prend effet à la fin de la période en cours. Aucun remboursement au prorata ne sera effectué pour la période restante. Conformément à l'article L221-28 du Code de la consommation, le droit de rétractation ne s'applique pas aux contenus numériques fournis immédiatement après l'achat.`
+      title: "Article 9 — Suspension et résiliation",
+      html: `<p>LP Labs se réserve le droit de <strong>suspendre ou supprimer</strong> un compte utilisateur, <strong>sans préavis ni indemnité</strong>, en cas de violation des présentes CGU/CGV, notamment en cas de fraude, d'utilisation abusive ou de comportement nuisible.</p>`
     },
     {
-      title: "Article 10 — Protection des données personnelles",
-      content: `Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, LP Labs collecte et traite les données personnelles suivantes :
-
-• Données d'inscription : prénom, adresse email
-• Données d'utilisation : historique d'exercices, scores, progression
-• Données techniques : adresse IP, données de navigation
-
-Ces données sont nécessaires à la fourniture du service et ne sont jamais vendues à des tiers. L'utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données en contactant support@prepa-fpc.fr.
-
-Durée de conservation : les données sont conservées pendant la durée du compte et supprimées 12 mois après la dernière connexion.`
+      title: "Article 10 — Droit applicable et litiges",
+      html: `<p>Les présentes CGU/CGV sont soumises au <strong>droit français</strong>. En cas de litige, les parties s'engagent à rechercher une <strong>solution amiable</strong>. À défaut, les <strong>tribunaux compétents de Coutances (Manche)</strong> seront seuls compétents.</p>`
     },
     {
-      title: "Article 11 — Cookies",
-      content: `La Plateforme utilise des cookies essentiels au fonctionnement du service (authentification, préférences). Des cookies analytiques peuvent être utilisés pour mesurer l'audience du site.
-
-L'utilisateur peut configurer son navigateur pour refuser les cookies optionnels. Le refus des cookies essentiels peut empêcher l'utilisation de certaines fonctionnalités.`
-    },
-    {
-      title: "Article 12 — Limitation de responsabilité",
-      content: `LP Labs ne saurait être tenue responsable :
-
-• Des interruptions de service pour maintenance ou raisons techniques
-• Des résultats obtenus au concours FPC
-• De l'utilisation faite par l'utilisateur des contenus pédagogiques
-• Des dommages indirects liés à l'utilisation de la Plateforme
-• Du contenu des sites tiers accessibles par des liens hypertextes`
-    },
-    {
-      title: "Article 13 — Suspension et résiliation",
-      content: `LP Labs se réserve le droit de suspendre ou de supprimer un compte utilisateur, sans préavis ni indemnité, en cas de violation des présentes CGU, notamment en cas de fraude, d'utilisation abusive ou de comportement nuisible.`
-    },
-    {
-      title: "Article 14 — Droit applicable et litiges",
-      content: `Les présentes CGU sont soumises au droit français. En cas de litige, les parties s'engagent à rechercher une solution amiable avant toute action judiciaire. À défaut, les tribunaux compétents de Coutances (Manche) seront seuls compétents.`
-    },
-    {
-      title: "Article 15 — Contact",
-      content: `Pour toute question relative aux présentes CGU ou à l'utilisation de la Plateforme :
-
-• Email : support@prepa-fpc.fr
-• Formulaire de contact : www.prepa-fpc.fr/contact
-• Adresse : LP Labs, 20 route de la Rousserie, 50200 Monthuchon`
+      title: "Article 11 — Contact",
+      html: `<ul>
+<li>Email : <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong></li>
+<li>Formulaire : <strong><a href="/contact" class="text-red-600 hover:underline">www.prepa-fpc.fr/contact</a></strong></li>
+<li>Adresse : <strong>LP Labs, 20 route de la Rousserie, 50200 Monthuchon</strong></li>
+</ul>`
     }
   ]
 
   return (
     <div className="min-h-screen bg-[#eceef1] text-slate-900" style={{fontFamily: "'Nunito', sans-serif"}}>
       <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-
-      {/* NAV */}
       <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
           <a href="/" className="flex items-center gap-3">
@@ -132,25 +87,20 @@ L'utilisateur peut configurer son navigateur pour refuser les cookies optionnels
           <a href="/" className="text-slate-600 font-semibold hover:text-slate-900 transition text-sm">Retour à l'accueil</a>
         </div>
       </nav>
-
-      {/* CONTENU */}
       <main className="max-w-4xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="mb-10">
-          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-3">Conditions Générales d'Utilisation</h1>
+          <h1 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight mb-3">Conditions Générales d'Utilisation et de Vente</h1>
           <p className="text-slate-500 font-medium">Dernière mise à jour : 1er avril 2026</p>
         </div>
-
-        <div className="space-y-8">
+        <div className="space-y-6">
           {sections.map((section, i) => (
             <section key={i} className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8">
               <h2 className="text-lg font-black text-slate-900 mb-4">{section.title}</h2>
-              <div className="text-sm text-slate-600 leading-relaxed whitespace-pre-line">{section.content}</div>
+              <div className="text-sm text-slate-600 leading-relaxed [&_ul]:list-disc [&_ul]:pl-5 [&_ul]:space-y-1.5 [&_p]:mb-3 [&_li]:leading-relaxed" dangerouslySetInnerHTML={{__html: section.html}} />
             </section>
           ))}
         </div>
       </main>
-
-      {/* FOOTER */}
       <footer className="bg-slate-950 text-slate-400 py-12 text-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center">
           <p>&copy; 2026 Prépa FPC (prepa-fpc.fr). Tous droits réservés.</p>

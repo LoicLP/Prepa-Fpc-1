@@ -33,7 +33,7 @@ export async function POST(req) {
       line_items: [{ price: priceId, quantity: 1 }],
       metadata: { userId, plan: isRecurring ? 'monthly' : 'yearly' },
       automatic_tax: { enabled: true },
-      success_url: `${req.headers.get('origin')}/dashboard?tab=abonnement&success=true`,
+      success_url: `${req.headers.get('origin')}/dashboard?success=true`,
       cancel_url: `${req.headers.get('origin')}/dashboard?tab=abonnement&canceled=true`,
     }
 

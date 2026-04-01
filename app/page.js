@@ -48,12 +48,14 @@ export default function HomePage() {
   }
 
   const faqData = [
-    { q: "Puis-je passer le concours si je n'ai pas le baccalauréat ?", a: "Oui, tout à fait ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Il vous suffit de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, peu importe votre domaine d'activité précédent." },
-    { q: "Puis-je passer le concours si je n'ai pas le baccalauréat ?", a: "Oui, tout à fait ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Il vous suffit de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, peu importe votre domaine d'activité précédent." },
-    { q: "Puis-je passer le concours si je n'ai pas le baccalauréat ?", a: "Oui, tout à fait ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Il vous suffit de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, peu importe votre domaine d'activité précédent." },
-    { q: "La plateforme est-elle adaptée si je suis nul(le) en maths ?", a: "C'est notre spécialité ! Nous avons conçu une méthode \"Anti-Blocage\" qui reprend les bases étape par étape (produits en croix, conversions, pourcentages). Chaque exercice est accompagné d'une correction détaillée qui vous explique exactement comment arriver au résultat, de façon simple." },
-    { q: "Comment puis-je financer ma formation en IFSI ?", a: "Plusieurs solutions existent selon votre statut : promotion professionnelle prise en charge par votre employeur, projet de transition professionnelle (Transitions Pro), financements Pôle Emploi pour les demandeurs d'emploi, ou encore l'autofinancement. Nous abordons ce sujet en détail dans notre espace Blog." },
-    { q: "Combien de temps dois-je consacrer aux révisions ?", a: "Nous conseillons de démarrer vos révisions 3 à 6 mois avant la date du concours, à raison de 2 à 4 heures par semaine. Notre plateforme vous permet de réviser à votre propre rythme, sur mobile, tablette ou ordinateur, que vous ayez 15 minutes dans les transports ou une heure de libre le week-end." }
+    { q: "Puis-je passer le concours FPC sans le baccalauréat ?", a: "Oui ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Il vous suffit de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, quel que soit votre domaine d'activité précédent." },
+    { q: "En quoi consiste l'épreuve écrite du concours FPC ?", a: "L'épreuve écrite dure 1 heure et se divise en deux parties : une sous-épreuve de calculs (calculs de doses, conversions, pourcentages, produits en croix) notée sur 10 points, et une sous-épreuve de rédaction (analyse de texte ou questions sur un sujet de culture sanitaire et sociale) notée sur 10 points. Attention : une note inférieure à 8/20 à l'écrit est éliminatoire." },
+    { q: "La plateforme est-elle adaptée si je suis nul(le) en maths ?", a: "Absolument ! Notre plateforme propose un entraînement spécifique qui reprend les bases étape par étape : produits en croix, conversions, pourcentages, calculs de doses. Chaque exercice est accompagné d'une correction détaillée qui vous explique la méthode de résolution de façon simple et progressive." },
+    { q: "Comment se déroule l'épreuve orale ?", a: "L'épreuve orale dure 20 minutes et est notée sur 20 points. Vous présentez votre parcours professionnel et votre projet de reconversion devant un jury composé de formateurs IFSI et de professionnels de santé. Notre outil de préparation à l'oral analyse votre CV et génère des questions personnalisées pour vous entraîner." },
+    { q: "Y a-t-il une période d'essai gratuite ?", a: "Oui, vous bénéficiez de 7 jours d'essai gratuit dès votre inscription. Pendant cette période, vous avez accès à toutes les fonctionnalités de la plateforme : entraînements de mathématiques, sujets de rédaction, examens blancs et préparation à l'oral." },
+    { q: "Combien de temps dois-je consacrer aux révisions ?", a: "Nous conseillons de démarrer vos révisions 3 à 6 mois avant le concours, à raison de 2 à 4 heures par semaine. Notre plateforme vous permet de réviser à votre rythme, sur mobile, tablette ou ordinateur, que vous ayez 15 minutes dans les transports ou une heure de libre le week-end." },
+    { q: "Quelles sont les dates du concours FPC ?", a: "Les dates varient selon les IFSI et les régions. Généralement, les inscriptions ouvrent entre janvier et mars, les épreuves écrites se déroulent entre mars et mai, et les oraux entre mai et juin. Consultez notre article de blog dédié aux dates du concours FPC pour le calendrier complet et à jour." },
+    { q: "Comment puis-je financer ma formation en IFSI ?", a: "Plusieurs solutions existent selon votre situation : promotion professionnelle prise en charge par votre employeur, projet de transition professionnelle (Transitions Pro), financements France Travail pour les demandeurs d'emploi, ou autofinancement. Nous détaillons chaque dispositif dans notre espace Blog." }
   ]
 
   const navLinks = [
@@ -341,6 +343,17 @@ export default function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* FAQ Schema pour Google */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqData.map(faq => ({
+          "@type": "Question",
+          "name": faq.q,
+          "acceptedAnswer": { "@type": "Answer", "text": faq.a }
+        }))
+      })}} />
 
       {/* SECTION FAQ */}
       <section className="py-20 bg-[#eceef1] border-t border-slate-200">

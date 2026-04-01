@@ -75,6 +75,63 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Prépa FPC",
+          "alternateName": "Prépa FPC - La passerelle IFSI",
+          "url": "https://www.prepa-fpc.fr",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://www.prepa-fpc.fr/blog?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+          }
+        })}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "LP Labs",
+          "legalName": "LP Labs SAS",
+          "url": "https://www.prepa-fpc.fr",
+          "logo": "https://www.prepa-fpc.fr/favicon.svg",
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "email": "support@prepa-fpc.fr",
+            "contactType": "customer service",
+            "availableLanguage": "French"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "20 route de la Rousserie",
+            "addressLocality": "Monthuchon",
+            "postalCode": "50200",
+            "addressCountry": "FR"
+          },
+          "sameAs": []
+        })}} />
+        <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "EducationalOrganization",
+          "name": "Prépa FPC",
+          "description": "Plateforme de préparation au concours FPC d'entrée en IFSI",
+          "url": "https://www.prepa-fpc.fr",
+          "offers": [
+            {
+              "@type": "Offer",
+              "name": "Abonnement mensuel",
+              "price": "12.99",
+              "priceCurrency": "EUR",
+              "url": "https://www.prepa-fpc.fr/tarifs"
+            },
+            {
+              "@type": "Offer",
+              "name": "Pack annuel",
+              "price": "89.99",
+              "priceCurrency": "EUR",
+              "url": "https://www.prepa-fpc.fr/tarifs"
+            }
+          ]
+        })}} />
         <Script async src="https://www.googletagmanager.com/gtag/js?id=G-W24Z96D93P" strategy="afterInteractive" />
         <Script id="gtag-init" strategy="afterInteractive">{`
           window.dataLayer = window.dataLayer || [];

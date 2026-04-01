@@ -37,6 +37,7 @@ function DashboardContent() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showTip, setShowTip] = useState(false)
   const [tipIndex, setTipIndex] = useState(0)
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false)
 
   const [newLastName, setNewLastName] = useState('')
   const [newFirstName, setNewFirstName] = useState('')
@@ -79,6 +80,11 @@ function DashboardContent() {
       const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
       setTrialDays(Math.max(0, 7 - diffDays))
       setLoading(false)
+      // Afficher la pop-up de succès après paiement
+      if (searchParams.get('success') === 'true') {
+        setShowSuccessPopup(true)
+        window.history.replaceState({}, '', '/dashboard')
+      }
       // Vérification des emails de relance (fire-and-forget)
       fetch('/api/emails/check', {
         method: 'POST',
@@ -310,6 +316,22 @@ function DashboardContent() {
         </header>
 
         <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+
+          {/* Pop-up succès abonnement */}
+          {showSuccessPopup && (
+            <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowSuccessPopup(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center animate-fade-in" onClick={e => e.stopPropagation()}>
+                <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                </div>
+                <h2 className="text-2xl font-black text-slate-900 mb-2">Abonnement activé !</h2>
+                <p className="text-slate-500 font-medium mb-6">Félicitations, vous avez désormais accès à toutes les fonctionnalités premium. Bon entraînement !</p>
+                <button onClick={() => setShowSuccessPopup(false)} className="bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-xl transition cursor-pointer shadow-lg">
+                  C'est parti !
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* ============ ACCUEIL ============ */}
           {page === 'dashboard' && (

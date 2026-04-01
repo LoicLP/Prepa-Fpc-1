@@ -50,14 +50,16 @@ export async function POST(req) {
       // Abonnement mensuel : premier paiement ou renouvellement
       case 'invoice.paid': {
         const invoice = event.data.object
+        console.log('invoice.paid - invoice.subscription:', invoice.subscription)
         const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
-        if (!subId) break
+        if (!subId) { console.log('invoice.paid - no subId, skipping'); break }
 
         const subscription = await stripe.subscriptions.retrieve(subId)
+        console.log('invoice.paid - subscription metadata:', JSON.stringify(subscription.metadata))
         const userId = subscription.metadata?.userId
 
         if (!userId) {
-          console.error('Missing userId in subscription metadata')
+          console.error('Missing userId in subscription metadata. Sub ID:', subId)
           break
         }
 

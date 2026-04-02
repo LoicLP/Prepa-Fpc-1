@@ -18,11 +18,18 @@ export default function ContactPage() {
   const [error, setError] = useState('')
 
   const categories = [
-    { id: 'bug', label: 'Signaler un bug', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M8 2l1.88 1.88M14.12 3.88 16 2M9 7.13v-1a3.003 3.003 0 1 1 6 0v1"/><path d="M12 20c-3.3 0-6-2.7-6-6v-3a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v3c0 3.3-2.7 6-6 6"/><path d="M12 20v-9"/><path d="M6.53 9C4.6 8.8 3 7.1 3 5"/><path d="M6 13H2"/><path d="M3 21c0-2.1 1.7-3.9 3.8-4"/><path d="M20.97 5c0 2.1-1.6 3.8-3.5 4"/><path d="M22 13h-4"/><path d="M17.2 17c2.1.1 3.8 1.9 3.8 4"/></svg> },
-    { id: 'question', label: 'Question', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg> },
-    { id: 'suggestion', label: 'Suggestion', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> },
-    { id: 'autre', label: 'Autre', icon: <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg> }
+    { id: 'bug', label: 'Bug', desc: 'Signaler un problème', emoji: '🐛', color: 'red' },
+    { id: 'question', label: 'Question', desc: 'Besoin d\'aide', emoji: '❓', color: 'blue' },
+    { id: 'suggestion', label: 'Suggestion', desc: 'Proposer une idée', emoji: '💡', color: 'amber' },
+    { id: 'autre', label: 'Autre', desc: 'Autre demande', emoji: '💬', color: 'slate' }
   ]
+
+  const catColors = {
+    red: { bg: 'bg-red-50', border: 'border-red-300', text: 'text-red-700', iconBg: 'bg-red-100' },
+    blue: { bg: 'bg-blue-50', border: 'border-blue-300', text: 'text-blue-700', iconBg: 'bg-blue-100' },
+    amber: { bg: 'bg-amber-50', border: 'border-amber-300', text: 'text-amber-700', iconBg: 'bg-amber-100' },
+    slate: { bg: 'bg-slate-100', border: 'border-slate-300', text: 'text-slate-700', iconBg: 'bg-slate-200' }
+  }
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -154,14 +161,19 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-slate-700 mb-2">Catégorie</label>
-                <div className="grid grid-cols-2 gap-2">
-                  {categories.map(cat => (
-                    <button key={cat.id} type="button" onClick={() => setCategory(cat.id)} className={`flex items-center gap-2 px-3 py-2.5 rounded-xl text-sm font-bold transition cursor-pointer border ${category === cat.id ? 'bg-red-50 border-red-300 text-red-700' : 'bg-slate-50 border-slate-200 text-slate-600 hover:border-slate-300'}`}>
-                      {cat.icon}
-                      <span className="truncate">{cat.label}</span>
-                    </button>
-                  ))}
+                <label className="block text-sm font-bold text-slate-700 mb-3">Quel est le sujet de votre demande ?</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {categories.map(cat => {
+                    const selected = category === cat.id
+                    const c = catColors[cat.color]
+                    return (
+                      <button key={cat.id} type="button" onClick={() => setCategory(cat.id)} className={`flex flex-col items-center gap-1.5 p-4 rounded-2xl text-center transition-all cursor-pointer border-2 ${selected ? `${c.bg} ${c.border} ${c.text} shadow-sm` : 'bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50'}`}>
+                        <span className="text-2xl">{cat.emoji}</span>
+                        <span className="font-black text-sm">{cat.label}</span>
+                        <span className={`text-[11px] font-medium ${selected ? 'opacity-80' : 'text-slate-400'}`}>{cat.desc}</span>
+                      </button>
+                    )
+                  })}
                 </div>
               </div>
 

@@ -25,11 +25,12 @@ const quizData = [
   { category: "Calcul de dose", question: "Prescription : Morphine 0,1 mg/kg en IV pour un patient de 70 kg. Ampoule de 10 mg/ml. Combien de ml injectez-vous ?", options: ["0,7 ml", "1 ml", "3,5 ml", "7 ml"], correct: 0, explanation: "Dose : 0,1 × 70 = 7 mg<br/><br/>Ampoule : 10 mg dans 1 ml<br/>Pour 7 mg : 7 / 10 = <strong>0,7 ml</strong>." }
 ]
 
-// Réordonne les questions pour commencer par la question du jour
-const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % reorderedQuizData.length
-const reorderedQuizData = [...quizData.slice(dayIndex), ...quizData.slice(0, dayIndex)]
-
 const letters = ['A', 'B', 'C', 'D']
+
+function getReorderedQuiz() {
+  const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % quizData.length
+  return [...quizData.slice(dayIndex), ...quizData.slice(0, dayIndex)]
+}
 
 const catColors = {
   "Calcul de dose": { badge: "bg-red-50 text-red-600", wrapper: "bg-red-100/60", card: "bg-red-50 border-red-200", iconText: "text-red-600", progressBar: "bg-red-600" },
@@ -52,6 +53,7 @@ function QuizContent() {
   const searchParams = useSearchParams()
   const startFrom = parseInt(searchParams.get('start')) || 0
   const homeAnswer = searchParams.get('a') !== null ? parseInt(searchParams.get('a')) : null
+  const [reorderedQuizData] = useState(() => getReorderedQuiz())
   const [current, setCurrent] = useState(startFrom)
   const [selected, setSelected] = useState(null)
   const [answers, setAnswers] = useState(() => {

@@ -56,7 +56,7 @@ export default function HomePage() {
     { q: "Combien de temps dois-je consacrer aux révisions ?", a: "Nous conseillons de démarrer vos révisions 3 à 6 mois avant le concours, à raison de 2 à 4 heures par semaine. Notre plateforme vous permet de réviser à votre rythme, sur mobile, tablette ou ordinateur, que vous ayez 15 minutes dans les transports ou une heure de libre le week-end." },
     { q: "Quelles sont les dates du concours FPC ?", a: "Les dates varient selon les IFSI et les régions. Généralement, les inscriptions ouvrent entre janvier et mars, les épreuves écrites se déroulent entre mars et mai, et les oraux entre mai et juin. Consultez <a href='/blog/dates-concours-fpc-infirmier-2026'>notre article dédié aux dates du concours FPC</a> pour le calendrier complet et à jour." },
     { q: "Comment puis-je financer ma formation en IFSI ?", a: "Plusieurs solutions existent selon votre situation : promotion professionnelle prise en charge par votre employeur, projet de transition professionnelle (Transitions Pro), financements France Travail pour les demandeurs d'emploi, ou autofinancement. Retrouvez tous les détails dans <a href='/blog'>notre espace Blog</a>." },
-    { q: "J'ai un problème, comment vous contacter ?", a: "Vous pouvez nous joindre via notre <a href='/contact'>formulaire de contact</a>. Sélectionnez la catégorie correspondante (bug, question, suggestion) et nous vous répondrons dans les plus brefs délais." }
+    { q: "J'ai un problème, comment vous contacter ?", a: "Vous pouvez nous écrire à <strong>support@prepa-fpc.fr</strong>. Nous vous répondrons dans les plus brefs délais." }
   ]
 
   const navLinks = [
@@ -414,7 +414,6 @@ export default function HomePage() {
             <ul className="space-y-3">
               <li><a href="/mentions-legales" className="hover:text-white transition">Mentions légales</a></li>
               <li><a href="/cgu" className="hover:text-white transition">CGV &amp; CGU</a></li>
-              <li><a href="/contact" className="hover:text-white transition">Contact</a></li>
               <li><span className="text-white text-sm font-medium">&#115;&#117;&#112;&#112;&#111;&#114;&#116;&#64;&#112;&#114;&#101;&#112;&#97;&#45;&#102;&#112;&#99;&#46;&#102;&#114;</span></li>
             </ul>
           </div>

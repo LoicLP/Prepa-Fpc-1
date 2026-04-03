@@ -346,13 +346,13 @@ export default function HomePage() {
           <div className="grid md:grid-cols-3 gap-6 md:gap-8">
             <div className="bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-100 hover:shadow-lg transition group">
               <div className="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg></div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Entrainement hebdomadaire</h3>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">Entraînement hebdomadaire</h3>
               <p className="text-slate-600 font-medium leading-relaxed">Notre algorithme génère des <strong className="text-slate-800">calculs de doses</strong> à l'infini ainsi que des <strong className="text-slate-800">calculs de pourcentages</strong> avec des corrections détaillées.</p>
             </div>
             <div className="bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-100 hover:shadow-lg transition group">
               <div className="w-14 h-14 bg-rose-100 text-rose-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
               <h3 className="text-xl font-bold text-slate-900 mb-3">Culture Sanitaire</h3>
-              <p className="text-slate-600 font-medium leading-relaxed">Des entrainements de rédaction ciblées sur <strong className="text-slate-800">l'actualité de la santé</strong> (ARS, éthique, loi) pour cartonner à l'épreuve de rédaction écrite.</p>
+              <p className="text-slate-600 font-medium leading-relaxed">Des entraînements de rédaction ciblés sur <strong className="text-slate-800">l'actualité de la santé</strong> (ARS, éthique, loi) pour cartonner à l'épreuve de rédaction écrite.</p>
             </div>
             <div className="bg-slate-50 p-6 sm:p-8 rounded-3xl border border-slate-100 hover:shadow-lg transition group">
               <div className="w-14 h-14 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform"><svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>

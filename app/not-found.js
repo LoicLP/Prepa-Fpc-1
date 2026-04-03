@@ -5,7 +5,6 @@ export const metadata = { title: 'Page introuvable' }
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-[#eceef1] flex items-center justify-center px-4" style={{fontFamily: "'Nunito', sans-serif"}}>
-      <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
       <div className="text-center max-w-lg">
         <div className="relative mb-6 flex items-center justify-center gap-0">
           {/* 4 */}

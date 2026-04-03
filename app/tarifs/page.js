@@ -123,7 +123,7 @@ export default function TarifsPage() {
               </div>
               <div className="flex-1">
                 <ul className="space-y-4 mb-10">
-                  {["Entrainement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Résiliable à tout moment"].map((item, i) => (
+                  {["Entraînement rédaction et mathématique illimités", "Entraînement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Résiliable à tout moment"].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-slate-700 font-bold text-sm">
                       <Check className="w-5 h-5 text-slate-900 flex-shrink-0" />
                       {item}
@@ -155,7 +155,7 @@ export default function TarifsPage() {
               </div>
               <div className="flex-1 relative">
                 <ul className="space-y-4 mb-10">
-                  {["Entrainement rédaction et mathématique illimités", "Entrainement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
+                  {["Entraînement rédaction et mathématique illimités", "Entraînement à partir d'annales", "Examen blanc écrit", "Dashboard personnalisable", "Méthodologie Dossier & Oral"].map((item, i) => (
                     <li key={i} className="flex items-center gap-3 text-slate-900 font-bold text-sm">
                       <div className="bg-red-100 p-1 rounded-md flex-shrink-0"><Check className="w-4 h-4 text-red-600" /></div>
                       {item}

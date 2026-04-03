@@ -58,7 +58,7 @@ export default function HomePage() {
     { q: "Un enfant de 25kg doit recevoir 15mg/kg/jour en 3 prises. Dose par prise ?", options: ["75 mg", "100 mg", "125 mg", "150 mg"], correct: 2, category: "Calcul de dose", explanation: "25 × 15 = 375mg/jour ÷ 3 = 125mg/prise" }
   ]
 
-  const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % allQuestions.length
+  const dayIndex = Math.floor((Date.now() + 2 * 60 * 60 * 1000) / (1000 * 60 * 60 * 24)) % allQuestions.length
   const todayQuestion = allQuestions[dayIndex]
   const options = todayQuestion.options
   const correctIndex = todayQuestion.correct
@@ -113,7 +113,7 @@ export default function HomePage() {
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .fade-in-up { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease-out, transform 0.6s ease-out; }
         .fade-in-up.visible { opacity: 1; transform: translateY(0); }
-        @keyframes float { 0%, 100% { transform: translateY(0) rotate(3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .qcm-float { animation: float 4s ease-in-out infinite; }
       `}</style>
 
@@ -209,7 +209,7 @@ export default function HomePage() {
 
             {/* QCM Interactif */}
             <div className="relative lg:ml-auto w-full max-w-md mx-auto mt-8 lg:mt-0 qcm-float">
-              <div className="absolute -inset-4 bg-gradient-to-tr from-red-100 to-rose-50 rounded-[3rem] transform rotate-3 scale-105 -z-10"></div>
+              <div className="absolute -inset-4 bg-gradient-to-tr from-red-100 to-rose-50 rounded-[3rem] transform rotate-1 scale-105 -z-10"></div>
               <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden relative">
                 <div className="bg-slate-50 border-b border-slate-100 p-4 flex items-center justify-between">
                   <span className="font-bold text-slate-700 text-sm">Question du jour</span>

@@ -28,7 +28,7 @@ const quizData = [
 const letters = ['A', 'B', 'C', 'D']
 
 function getReorderedQuiz() {
-  const dayIndex = Math.floor(Date.now() / (1000 * 60 * 60 * 24)) % quizData.length
+  const dayIndex = Math.floor((Date.now() + 2 * 60 * 60 * 1000) / (1000 * 60 * 60 * 24)) % quizData.length
   return [...quizData.slice(dayIndex), ...quizData.slice(0, dayIndex)]
 }
 

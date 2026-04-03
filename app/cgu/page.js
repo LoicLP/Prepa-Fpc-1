@@ -168,7 +168,7 @@ export default function CGUPage() {
             <h4 className="text-white font-bold mb-4 uppercase tracking-wider text-xs">Ressources IFSI</h4>
             <ul className="space-y-3">
               <li><a href="/blog/dates-concours-fpc-infirmier-2026" className="hover:text-white transition">Dates concours FPC</a></li>
-              <li><a href="/blog" className="hover:text-white transition">Dossier Passerelle AS/AP</a></li>
+              <li><a href="/blog/dossier-inscription-concours-fpc-infirmier-guide-complet-2026" className="hover:text-white transition">Préparer son dossier FPC</a></li>
               <li><a href="/calculs-doses" className="hover:text-white transition">Formules calculs de doses</a></li>
             </ul>
           </div>

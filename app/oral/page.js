@@ -364,26 +364,26 @@ export default function OralPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col w-full max-w-4xl">
 
                 {/* Header sombre */}
-                <div className="bg-slate-900 rounded-t-2xl px-6 py-5">
-                  <div className="flex items-start justify-between mb-4">
-                    <h2 className="text-xl sm:text-2xl font-black text-white">Préparation à l'oral</h2>
-                    <div className="flex items-center gap-2 sm:gap-4 shrink-0 ml-4">
-                      <div className="flex items-center gap-2 font-black text-lg tabular-nums text-white">
+                <div className="bg-slate-900 rounded-t-2xl px-3 sm:px-6 py-3 sm:py-5 overflow-hidden">
+                  <div className="flex items-start justify-between mb-3 sm:mb-4">
+                    <h2 className="text-base sm:text-2xl font-black text-white truncate mr-3">Préparation à l'oral</h2>
+                    <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+                      <div className="flex items-center gap-1 sm:gap-2 font-black text-sm sm:text-lg tabular-nums text-white">
                         <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
                         {String(oralMinutes).padStart(2, '0')}:{String(oralSeconds).padStart(2, '0')}
                       </div>
-                      <a href="/dashboard" className="bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition flex items-center gap-2">
+                      <a href="/dashboard" className="hidden sm:flex bg-white/15 hover:bg-white/25 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition items-center gap-2">
                         Quitter l'exercice
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                       </a>
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
+                    <div className="flex flex-wrap items-center gap-1.5 sm:gap-3">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
                         Question {currentQ + 1}/{questions.length}
                       </span>
-                      <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
+                      <span className="inline-flex items-center gap-1 px-2 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-black uppercase tracking-wider bg-white/15 text-emerald-400">
                         {q.category}
                       </span>
                     </div>

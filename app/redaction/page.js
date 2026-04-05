@@ -179,7 +179,7 @@ export default function RedactionPage() {
   if (showAccessBlock) return (<div className="min-h-screen bg-[#eceef1] flex items-center justify-center p-4"><div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center"><div className="text-5xl mb-3 mx-auto">😢</div><h2 className="text-2xl font-black text-slate-900 mb-2">Votre essai gratuit est terminé</h2><p className="text-slate-500 font-medium mb-6">Pour continuer à vous entraîner et accéder à tous les exercices, souscrivez à un abonnement.</p><div className="flex flex-col gap-3"><a href="/tarifs" className="bg-slate-900 hover:bg-black text-white font-bold py-3 px-6 rounded-xl transition shadow-lg text-sm">Voir les tarifs</a><a href="/dashboard" className="text-slate-500 font-medium text-sm hover:text-slate-700 transition">Retour au tableau de bord</a></div></div></div>)
 
   return (
-    <div className="min-h-screen lg:h-screen lg:max-h-screen lg:overflow-hidden bg-slate-100 text-slate-900 flex" style={{backgroundImage: 'radial-gradient(#a855f7 1px, transparent 1px)', backgroundSize: '24px 24px'}}>
+    <div className="min-h-screen bg-slate-100 text-slate-900 flex" style={{backgroundImage: 'radial-gradient(#a855f7 1px, transparent 1px)', backgroundSize: '24px 24px'}}>
       <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
       <style>{`
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -232,7 +232,7 @@ export default function RedactionPage() {
       </div>
 
       {/* MAIN */}
-      <div className="flex-1 flex flex-col min-h-0 lg:pl-[90px] max-w-full overflow-x-hidden">
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-[90px] max-w-full overflow-x-hidden">
         <header className="lg:hidden h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between shrink-0 sticky top-0 z-50">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="text-slate-700 p-2 rounded-lg hover:bg-slate-100 transition"><svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg></button>
           <span className="font-black text-lg text-slate-900">Prépa <span className="text-red-600">FPC</span></span>
@@ -320,7 +320,7 @@ export default function RedactionPage() {
               <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex-1 min-h-0 flex flex-col overflow-hidden">
 
                 {/* Barre du haut : chrono */}
-                <div className="bg-slate-900 rounded-t-2xl px-3 sm:px-6 py-3 sm:py-5 overflow-hidden">
+                <div className="bg-slate-900 rounded-t-2xl px-3 sm:px-6 py-3 sm:py-5 overflow-hidden shrink-0">
                   <div className="flex items-center justify-between mb-3 sm:mb-4">
                     <div className="min-w-0 mr-3">
                       <h2 className="text-base sm:text-2xl font-black text-white truncate">{sujet.titre?.split(/\s[—–\-]\s/)[0]}</h2>
@@ -377,7 +377,7 @@ export default function RedactionPage() {
                   </div>
                 </div>
 
-                <div className="flex-1 flex flex-col lg:flex-row">
+                <div className="flex-1 min-h-0 flex flex-col lg:flex-row">
                   {/* Sujet */}
                   <div className="lg:w-[45%] border-b lg:border-b-0 lg:border-r border-slate-200 p-4 sm:p-6 lg:p-8 overflow-y-auto">
 
@@ -397,13 +397,13 @@ export default function RedactionPage() {
                   </div>
 
                   {/* Zone de rédaction */}
-                  <div className="flex-1 p-4 sm:p-6 lg:p-8 flex flex-col">
+                  <div className="flex-1 min-h-0 p-4 sm:p-6 lg:p-8 flex flex-col">
                     <div className="flex items-center justify-between mb-4">
                       <h3 className="font-black text-slate-900 text-sm">Votre rédaction</h3>
                       <span className="text-xs text-slate-400 font-bold">{redaction.length} caractères</span>
                     </div>
                     <textarea
-                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition min-h-[250px] sm:min-h-[400px]"
+                      className="flex-1 w-full bg-slate-50 border border-slate-200 rounded-xl p-5 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-purple-300 focus:border-purple-400 transition min-h-[250px] sm:min-h-[400px] lg:min-h-0"
                       placeholder="Rédigez votre réponse ici..."
                       value={redaction}
                       onChange={(e) => setRedaction(e.target.value)}

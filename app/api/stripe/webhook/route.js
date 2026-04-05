@@ -20,8 +20,6 @@ export async function POST(req) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 })
   }
 
-  console.log('Webhook event type:', event.type)
-
   try {
     switch (event.type) {
       // Session checkout terminée (marche pour mensuel ET annuel)
@@ -29,8 +27,6 @@ export async function POST(req) {
         const session = event.data.object
         const userId = session.metadata?.userId
         const plan = session.metadata?.plan
-
-        console.log('checkout.session.completed - userId:', userId, 'plan:', plan, 'subscription:', session.subscription, 'payment_intent:', session.payment_intent)
 
         if (!userId) { console.error('checkout.session.completed - no userId'); break }
 
@@ -46,7 +42,6 @@ export async function POST(req) {
             current_period_end: endDate.toISOString(),
           }, { onConflict: 'user_id' })
           if (error) console.error('Supabase upsert error (monthly checkout):', error)
-          else console.log('Monthly subscription created for user:', userId)
         }
 
         if (plan === 'yearly') {
@@ -60,7 +55,6 @@ export async function POST(req) {
             current_period_end: expiresAt.toISOString(),
           }, { onConflict: 'user_id' })
           if (error) console.error('Supabase upsert error (yearly checkout):', error)
-          else console.log('Yearly subscription created for user:', userId)
         }
         break
       }
@@ -84,19 +78,16 @@ export async function POST(req) {
           current_period_end: expiresAt.toISOString(),
         }, { onConflict: 'user_id' })
         if (error) console.error('Supabase upsert error (yearly):', error)
-        else console.log('Yearly subscription created for user:', userId)
         break
       }
 
       // Abonnement mensuel : premier paiement ou renouvellement
       case 'invoice.paid': {
         const invoice = event.data.object
-        console.log('invoice.paid - invoice.subscription:', invoice.subscription)
         const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
-        if (!subId) { console.log('invoice.paid - no subId, skipping'); break }
+        if (!subId) break
 
         const subscription = await stripe.subscriptions.retrieve(subId)
-        console.log('invoice.paid - subscription metadata:', JSON.stringify(subscription.metadata))
         const userId = subscription.metadata?.userId
 
         if (!userId) {
@@ -116,7 +107,6 @@ export async function POST(req) {
           current_period_end: endDate.toISOString(),
         }, { onConflict: 'user_id' })
         if (error) console.error('Supabase upsert error (monthly):', error)
-        else console.log('Monthly subscription updated for user:', userId)
         break
       }
 
@@ -126,7 +116,6 @@ export async function POST(req) {
         await supabaseAdmin.from('subscriptions').update({
           status: 'canceled',
         }).eq('stripe_subscription_id', subscription.id)
-        console.log('Subscription canceled:', subscription.id)
         break
       }
 

@@ -71,9 +71,7 @@ export async function POST(request) {
 
     // Envoi email via Resend
     const apiKey = process.env.RESEND_API_KEY
-    console.log('RESEND_API_KEY present:', !!apiKey, 'length:', apiKey?.length)
     if (!apiKey) {
-      console.error('RESEND_API_KEY is missing!')
       return NextResponse.json({ error: 'Configuration email manquante.' }, { status: 500 })
     }
     const resend = new Resend(apiKey)
@@ -100,9 +98,7 @@ export async function POST(request) {
       `
     })
 
-    console.log('Resend response - data:', JSON.stringify(sendData), 'error:', JSON.stringify(sendError))
     if (sendError) {
-      console.error('Resend error:', sendError)
       return NextResponse.json({ error: 'Erreur lors de l\'envoi. Veuillez réessayer.' }, { status: 500 })
     }
 

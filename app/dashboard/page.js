@@ -147,6 +147,23 @@ function DashboardContent() {
     'Un débit en gouttes/min = volume (mL) × 20 / temps (min).',
     'Prenez 5 minutes pour relire vos réponses avant de valider.',
     'Entraînez-vous régulièrement : 20 min/jour valent mieux que 3h une fois.',
+    '1 litre = 100 cL = 1000 mL, pensez aux puissances de 10.',
+    'Pour la rédaction, structurez toujours : introduction, développement, conclusion.',
+    'Un comprimé sécable en 2 = chaque moitié vaut la moitié de la dose.',
+    'Vérifiez toujours l\'unité demandée avant de répondre.',
+    'Pour l\'oral, préparez 3 qualités et 3 axes d\'amélioration.',
+    'La règle de 3 est votre meilleure alliée pour les calculs de doses.',
+    'En culture sanitaire, citez toujours des chiffres et des sources.',
+    'Temps de perfusion (h) = volume (mL) / débit (mL/h).',
+    'Pour les fractions : trouvez le dénominateur commun avant d\'additionner.',
+    'À l\'oral, parlez de vos stages et expériences concrètes.',
+    'Convertir des µg en mg : divisez par 1000.',
+    'Un bon brouillon en rédaction = une meilleure note finale.',
+    'Pour les dilutions : C1 × V1 = C2 × V2.',
+    'Gérez votre stress : respirez 4 secondes, bloquez 4, expirez 4.',
+    'En maths, posez vos calculs étape par étape pour éviter les erreurs.',
+    'Relisez votre copie à voix basse pour repérer les fautes.',
+    'La régularité bat l\'intensité : révisez un peu chaque jour.',
   ]
 
   useEffect(() => {

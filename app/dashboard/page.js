@@ -38,6 +38,11 @@ function DashboardContent() {
   const [showTip, setShowTip] = useState(false)
   const [tipIndex, setTipIndex] = useState(0)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
+  const [showReviewPopup, setShowReviewPopup] = useState(false)
+  const [reviewRating, setReviewRating] = useState(0)
+  const [reviewComment, setReviewComment] = useState('')
+  const [reviewSending, setReviewSending] = useState(false)
+  const [reviewSent, setReviewSent] = useState(false)
 
   const [newLastName, setNewLastName] = useState('')
   const [newFirstName, setNewFirstName] = useState('')
@@ -332,6 +337,80 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* ===== POPUP AVIS ===== */}
+          {showReviewPopup && (
+            <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowReviewPopup(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fade-in overflow-hidden" onClick={e => e.stopPropagation()}>
+                {reviewSent ? (
+                  <div className="p-8 text-center">
+                    <div className="w-16 h-16 bg-amber-100 text-amber-500 rounded-full flex items-center justify-center mx-auto mb-5">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900 mb-2">Merci pour votre avis !</h2>
+                    <p className="text-slate-500 font-medium mb-6">Votre retour nous aide à améliorer la plateforme.</p>
+                    <button onClick={() => setShowReviewPopup(false)} className="bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-xl transition cursor-pointer shadow-lg">Fermer</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-slate-900 px-6 py-5 relative">
+                      <button onClick={() => setShowReviewPopup(false)} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition cursor-pointer">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </button>
+                      <h2 className="text-lg font-black text-white pr-8">Évaluez Prépa FPC</h2>
+                      <p className="text-slate-400 text-sm font-medium mt-1">Votre avis compte pour nous !</p>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-sm font-bold text-slate-700 mb-3">Quelle note donnez-vous au site ?</p>
+                      <div className="flex items-center gap-2 mb-6 justify-center">
+                        {[1, 2, 3, 4, 5].map(star => (
+                          <button key={star} onClick={() => setReviewRating(star)} className="cursor-pointer transition-transform hover:scale-125 focus:outline-none">
+                            <svg className={`w-10 h-10 transition-colors ${star <= reviewRating ? 'text-amber-400' : 'text-slate-200'}`} fill={star <= reviewRating ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-sm font-bold text-slate-700 mb-2">Un commentaire ? <span className="font-normal text-slate-400">(optionnel)</span></p>
+                      <textarea
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-amber-300 focus:border-amber-400 transition h-28"
+                        placeholder="Ce que vous aimez, ce qu'on pourrait améliorer..."
+                        value={reviewComment}
+                        onChange={e => setReviewComment(e.target.value)}
+                        maxLength={2000}
+                      />
+                      <button
+                        onClick={async () => {
+                          if (!reviewRating) return
+                          setReviewSending(true)
+                          try {
+                            const res = await fetch('/api/review', {
+                              method: 'POST',
+                              headers: { 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ rating: reviewRating, comment: reviewComment, email: user?.email })
+                            })
+                            if (res.ok) setReviewSent(true)
+                          } catch {}
+                          setReviewSending(false)
+                        }}
+                        disabled={!reviewRating || reviewSending}
+                        className={`w-full mt-4 font-bold text-sm px-6 py-3 rounded-xl transition cursor-pointer shadow-lg flex items-center justify-center gap-2 ${reviewRating ? 'bg-amber-400 hover:bg-amber-500 text-black' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                      >
+                        {reviewSending ? (
+                          <div className="animate-spin w-5 h-5 border-2 border-black/30 border-t-black rounded-full"></div>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                            Envoyer mon avis
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* ============ ACCUEIL ============ */}
           {page === 'dashboard' && (
             <div>
@@ -519,7 +598,7 @@ function DashboardContent() {
                     <p className="text-[10px] text-slate-400 font-medium">Articles</p>
                   </div>
                 </a>
-                <a href="#" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-200 transition group flex items-center gap-3">
+                <button onClick={() => { setShowReviewPopup(true); setReviewRating(0); setReviewComment(''); setReviewSent(false) }} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-amber-200 transition group flex items-center gap-3 cursor-pointer text-left">
                   <div className="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                   </div>
@@ -527,7 +606,7 @@ function DashboardContent() {
                     <p className="font-bold text-slate-900 text-sm">Évaluez le site</p>
                     <p className="text-[10px] text-slate-400 font-medium">Donnez votre avis</p>
                   </div>
-                </a>
+                </button>
                 <a href="#" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition group flex items-center gap-3">
                   <div className="w-10 h-10 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>

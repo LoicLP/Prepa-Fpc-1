@@ -474,7 +474,7 @@ function DashboardContent() {
                       <p className="text-slate-400 text-sm font-medium mt-1">On vous répond rapidement !</p>
                     </div>
                     <div className="p-6">
-                      <p className="text-sm font-bold text-slate-700 mb-3">Catégorie</p>
+                      <p className="text-sm font-bold text-slate-700 mb-3">Catégorie <span className="text-red-500">*</span></p>
                       <div className="grid grid-cols-2 gap-2 mb-5">
                         {[
                           { id: 'bug', label: 'Bug', icon: <CircleX size={16} strokeWidth={2} /> },

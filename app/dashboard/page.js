@@ -43,6 +43,12 @@ function DashboardContent() {
   const [reviewComment, setReviewComment] = useState('')
   const [reviewSending, setReviewSending] = useState(false)
   const [reviewSent, setReviewSent] = useState(false)
+  const [showSupportPopup, setShowSupportPopup] = useState(false)
+  const [supportCategory, setSupportCategory] = useState('')
+  const [supportMessage, setSupportMessage] = useState('')
+  const [supportFile, setSupportFile] = useState(null)
+  const [supportSending, setSupportSending] = useState(false)
+  const [supportSent, setSupportSent] = useState(false)
 
   const [newLastName, setNewLastName] = useState('')
   const [newFirstName, setNewFirstName] = useState('')
@@ -445,6 +451,96 @@ function DashboardContent() {
             </div>
           )}
 
+          {/* ===== POPUP SUPPORT ===== */}
+          {showSupportPopup && (
+            <div className="fixed inset-0 bg-black/40 z-50 flex items-center justify-center p-4" onClick={() => setShowSupportPopup(false)}>
+              <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full animate-fade-in overflow-hidden" onClick={e => e.stopPropagation()}>
+                {supportSent ? (
+                  <div className="p-8 text-center">
+                    <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-5">
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                    <h2 className="text-2xl font-black text-slate-900 mb-2">Message envoyé !</h2>
+                    <p className="text-slate-500 font-medium mb-6">Nous reviendrons vers vous le plus vite possible.</p>
+                    <button onClick={() => setShowSupportPopup(false)} className="bg-slate-900 hover:bg-black text-white font-bold px-8 py-3 rounded-xl transition cursor-pointer shadow-lg">Fermer</button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-slate-900 px-6 py-5 relative">
+                      <button onClick={() => setShowSupportPopup(false)} className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg hover:bg-white/15 text-white transition cursor-pointer">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                      </button>
+                      <h2 className="text-lg font-black text-white pr-8">Contacter le support</h2>
+                      <p className="text-slate-400 text-sm font-medium mt-1">On vous répond rapidement !</p>
+                    </div>
+                    <div className="p-6">
+                      <p className="text-sm font-bold text-slate-700 mb-3">Catégorie</p>
+                      <div className="grid grid-cols-2 gap-2 mb-5">
+                        {[
+                          { id: 'bug', label: 'Bug', icon: '🐛' },
+                          { id: 'abonnement', label: 'Abonnement', icon: '💳' },
+                          { id: 'suggestion', label: 'Suggestion', icon: '💡' },
+                          { id: 'autre', label: 'Autre', icon: '💬' },
+                        ].map(cat => (
+                          <button key={cat.id} onClick={() => setSupportCategory(cat.id)} className={`p-3 rounded-xl border-2 text-sm font-bold transition cursor-pointer flex items-center gap-2 ${supportCategory === cat.id ? 'border-red-500 bg-red-50 text-red-700' : 'border-slate-200 text-slate-600 hover:border-slate-300'}`}>
+                            <span>{cat.icon}</span> {cat.label}
+                          </button>
+                        ))}
+                      </div>
+                      <p className="text-sm font-bold text-slate-700 mb-2">Votre message</p>
+                      <textarea
+                        className="w-full bg-slate-50 border border-slate-200 rounded-xl p-4 text-sm text-slate-800 leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-red-300 focus:border-red-400 transition h-28 mb-4"
+                        placeholder="Décrivez votre problème ou votre suggestion..."
+                        value={supportMessage}
+                        onChange={e => setSupportMessage(e.target.value)}
+                        maxLength={5000}
+                      />
+                      <div className="mb-4">
+                        <label className="flex items-center gap-2 cursor-pointer text-sm font-medium text-slate-500 hover:text-slate-700 transition">
+                          <div className={`flex items-center gap-2 px-3 py-2 rounded-xl border border-dashed ${supportFile ? 'border-red-400 bg-red-50 text-red-700' : 'border-slate-300 hover:border-slate-400'} transition`}>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                            {supportFile ? supportFile.name : 'Ajouter une pièce jointe'}
+                          </div>
+                          <input type="file" className="hidden" accept="image/*,.pdf,.txt,.doc,.docx" onChange={e => setSupportFile(e.target.files?.[0] || null)} />
+                        </label>
+                        {supportFile && (
+                          <button onClick={() => setSupportFile(null)} className="text-xs text-red-500 hover:text-red-700 font-bold mt-1 cursor-pointer">Retirer</button>
+                        )}
+                      </div>
+                      <button
+                        onClick={async () => {
+                          if (!supportCategory || !supportMessage.trim()) return
+                          setSupportSending(true)
+                          try {
+                            const formData = new FormData()
+                            formData.append('category', supportCategory)
+                            formData.append('message', supportMessage)
+                            formData.append('email', user?.email || '')
+                            if (supportFile) formData.append('file', supportFile)
+                            const res = await fetch('/api/support', { method: 'POST', body: formData })
+                            if (res.ok) setSupportSent(true)
+                          } catch {}
+                          setSupportSending(false)
+                        }}
+                        disabled={!supportCategory || !supportMessage.trim() || supportSending}
+                        className={`w-full font-bold text-sm px-6 py-3 rounded-xl transition cursor-pointer shadow-lg flex items-center justify-center gap-2 ${supportCategory && supportMessage.trim() ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-200 text-slate-400 cursor-not-allowed'}`}
+                      >
+                        {supportSending ? (
+                          <div className="animate-spin w-5 h-5 border-2 border-white/30 border-t-white rounded-full"></div>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                            Envoyer
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* ============ ACCUEIL ============ */}
           {page === 'dashboard' && (
             <div>
@@ -641,7 +737,7 @@ function DashboardContent() {
                     <p className="text-[10px] text-slate-400 font-medium">Donnez votre avis</p>
                   </div>
                 </button>
-                <a href="mailto:support@prepa-fpc.fr?subject=Support Prépa FPC" className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition group flex items-center gap-3">
+                <button onClick={() => { setShowSupportPopup(true); setSupportCategory(''); setSupportMessage(''); setSupportFile(null); setSupportSent(false) }} className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-slate-300 transition group flex items-center gap-3 cursor-pointer text-left">
                   <div className="w-10 h-10 bg-slate-100 text-slate-500 rounded-xl flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
                   </div>
@@ -649,7 +745,7 @@ function DashboardContent() {
                     <p className="font-bold text-slate-900 text-sm">Support</p>
                     <p className="text-[10px] text-slate-400 font-medium">Signaler un bug</p>
                   </div>
-                </a>
+                </button>
               </div>
 
               {/* CTA Premium */}

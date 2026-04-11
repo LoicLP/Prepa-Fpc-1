@@ -62,10 +62,19 @@ export default function OralPage() {
   }, [])
   useEffect(() => {
     if (step !== 'loading') return
-    const interval = setInterval(() => {
-      setLoadingStep(prev => prev < 3 ? prev + 1 : prev)
-    }, 3000)
-    return () => clearInterval(interval)
+    const delays = [3000, 5000, 8000, 10000]
+    let currentStep = 0
+    function scheduleNext() {
+      if (currentStep >= delays.length) return
+      const timeout = setTimeout(() => {
+        setLoadingStep(prev => prev + 1)
+        currentStep++
+        scheduleNext()
+      }, delays[currentStep])
+      return timeout
+    }
+    const timeout = scheduleNext()
+    return () => clearTimeout(timeout)
   }, [step])
 
   // Chronomètre (temps écoulé)

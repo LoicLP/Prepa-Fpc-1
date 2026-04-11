@@ -3,7 +3,7 @@ import { checkRateLimit } from '@/lib/rate-limit'
 import { BASE_ORAL, FORMAT_SORTIE_ORAL } from '@/lib/prompts/base-oral'
 import { SYSTEM_ORAL, PROMPT_ORAL } from '@/lib/prompts/simulation-oral'
 import { callClaude } from '@/lib/anthropic'
-import { PDFParse } from 'pdf-parse'
+import pdf from 'pdf-parse'
 
 const categoryMap = {
   parcours: 'Parcours professionnel',
@@ -31,9 +31,8 @@ export async function POST(request) {
 
     // Extraire le texte du PDF
     const pdfBuffer = Buffer.from(await pdfFile.arrayBuffer())
-    const parser = new PDFParse()
-    const pdfData = await parser.parseBuffer(pdfBuffer)
-    const cvText = pdfData.pages.map(p => p.text).join('\n')
+    const pdfData = await pdf(pdfBuffer)
+    const cvText = pdfData.text
 
     if (!cvText || cvText.trim().length < 20) {
       return NextResponse.json({ error: 'Impossible de lire le contenu du CV. Vérifiez que votre PDF contient du texte.' }, { status: 400 })

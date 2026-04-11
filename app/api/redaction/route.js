@@ -4,8 +4,7 @@ import { BASE_REDACTION, FORMAT_SORTIE_REDACTION, buildHistoryContextRedaction }
 import { SYSTEM_CLASSIQUE, PROMPT_CLASSIQUE } from '@/lib/prompts/format-classique'
 import { SYSTEM_MINI_TEXTE, PROMPT_MINI_TEXTE } from '@/lib/prompts/format-mini-texte'
 import { SYSTEM_DISSERTATIF, PROMPT_DISSERTATIF } from '@/lib/prompts/format-dissertatif'
-
-const apiKey = process.env.GEMINI_API_KEY
+import { callClaude } from '@/lib/anthropic'
 
 const FORMATS = {
   classique: { system: SYSTEM_CLASSIQUE, prompt: PROMPT_CLASSIQUE },
@@ -21,38 +20,13 @@ function pickRandomFormat() {
   return 'dissertatif'
 }
 
-async function callGemini(prompt) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, topP: 0.95, maxOutputTokens: 24000, responseMimeType: 'application/json' }
-      })
-    }
-  )
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error('Gemini API error:', response.status, errorText)
-    throw new Error(`Erreur API Gemini (${response.status})`)
-  }
-
-  const data = await response.json()
-  const allText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || ''
-  if (!allText) throw new Error('Réponse vide de Gemini')
-  return allText.replace(/```json/g, '').replace(/```/g, '').trim()
-}
-
 export async function POST(request) {
   try {
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Clé API Gemini manquante.' }, { status: 500 })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })
     }
 
     const body = await request.json()
@@ -67,35 +41,15 @@ export async function POST(request) {
       const systemInstruction = BASE_REDACTION + '\n\n' + config.system + (historyContext ? '\n\n' + historyContext : '')
       const userPrompt = config.prompt + '\n\n' + FORMAT_SORTIE_REDACTION
 
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: [{ parts: [{ text: userPrompt }] }],
-            generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 24000, responseMimeType: 'application/json' }
-          })
-        }
-      )
-
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text()
-        console.error('Gemini error:', errorText)
-        return NextResponse.json({ error: 'Erreur Gemini' }, { status: 500 })
-      }
-
-      const geminiData = await geminiResponse.json()
-      const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
-      if (!text) return NextResponse.json({ error: 'Réponse Gemini vide' }, { status: 500 })
+      const text = await callClaude(systemInstruction, userPrompt, { temperature: 0.9, maxTokens: 8000 })
 
       let raw
       try {
         raw = JSON.parse(text)
       } catch {
-        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        raw = JSON.parse(cleaned)
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
+        raw = JSON.parse(jsonMatch[0])
       }
 
       // Mapper vers le format attendu par le front existant
@@ -127,10 +81,10 @@ export async function POST(request) {
         return NextResponse.json({ error: 'Sujet et rédaction requis.' }, { status: 400 })
       }
 
-      const prompt = `Tu es un correcteur du concours IFSI FPC pour l'épreuve écrite de sous-admissibilité.
-Tu dois corriger la copie d'un candidat (aide-soignant ou auxiliaire de puériculture) de manière détaillée, exigeante mais bienveillante. Le candidat disposait de 30 minutes.
+      const systemInstruction = `Tu es un correcteur du concours IFSI FPC pour l'épreuve écrite de sous-admissibilité.
+Tu dois corriger la copie d'un candidat (aide-soignant ou auxiliaire de puériculture) de manière détaillée, exigeante mais bienveillante. Le candidat disposait de 30 minutes.`
 
-VOICI LE SUJET (au format JSON) :
+      const userPrompt = `VOICI LE SUJET (au format JSON) :
 ${JSON.stringify(sujet, null, 2)}
 
 VOICI LA COPIE DU CANDIDAT :
@@ -164,7 +118,7 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
   "conseil": "Un conseil pratique et encourageant pour progresser"
 }`
 
-      const raw = await callGemini(prompt)
+      const raw = await callClaude(systemInstruction, userPrompt, { temperature: 0.7, maxTokens: 8000 })
       const jsonMatch = raw.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })

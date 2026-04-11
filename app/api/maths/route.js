@@ -4,8 +4,7 @@ import { join } from 'path'
 import { BASE_SYSTEM, buildHistoryContext } from '@/lib/prompts/base-maths'
 import { SYSTEM_EXAMEN_MATHS, PROMPT_EXAMEN_MATHS } from '@/lib/prompts/examen-maths'
 import { checkRateLimit } from '@/lib/rate-limit'
-
-const apiKey = process.env.GEMINI_API_KEY
+import { callClaude, callClaudeWithPDF } from '@/lib/anthropic'
 
 let annalesBase64 = null
 try {
@@ -16,39 +15,14 @@ try {
   console.error('Impossible de charger le PDF des annales maths:', e.message)
 }
 
-async function callGemini(prompt) {
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.7, topP: 0.95, maxOutputTokens: 24000, responseMimeType: 'application/json' }
-      })
-    }
-  )
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    console.error('Gemini API error:', response.status, errorText)
-    throw new Error(`Erreur API Gemini (${response.status})`)
-  }
-
-  const data = await response.json()
-  const allText = data.candidates?.[0]?.content?.parts?.map(p => p.text || '').join('\n') || ''
-  if (!allText) throw new Error('Réponse vide de Gemini')
-  return allText.replace(/```json/g, '').replace(/```/g, '').trim()
-}
-
 export async function POST(request) {
   try {
     // Rate limiting par IP
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Clé API Gemini manquante.' }, { status: 500 })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })
     }
 
     const body = await request.json()
@@ -59,42 +33,20 @@ export async function POST(request) {
       const historyContext = buildHistoryContext(history)
       const systemInstruction = BASE_SYSTEM + '\n\n' + SYSTEM_EXAMEN_MATHS + (historyContext ? '\n\n' + historyContext : '')
 
-      // Construire les parts (PDF annales + prompt)
-      const parts = []
+      let text
       if (annalesBase64) {
-        parts.push({ inlineData: { mimeType: 'application/pdf', data: annalesBase64 } })
+        text = await callClaudeWithPDF(systemInstruction, PROMPT_EXAMEN_MATHS, annalesBase64, { temperature: 0.85, maxTokens: 12000 })
+      } else {
+        text = await callClaude(systemInstruction, PROMPT_EXAMEN_MATHS, { temperature: 0.85, maxTokens: 12000 })
       }
-      parts.push({ text: PROMPT_EXAMEN_MATHS })
-
-      const geminiResponse = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: [{ parts }],
-            generationConfig: { temperature: 0.85, topP: 0.95, maxOutputTokens: 12000, responseMimeType: 'application/json' }
-          })
-        }
-      )
-
-      if (!geminiResponse.ok) {
-        const errorText = await geminiResponse.text()
-        console.error('Gemini error:', errorText)
-        return NextResponse.json({ error: 'Erreur Gemini' }, { status: 500 })
-      }
-
-      const geminiData = await geminiResponse.json()
-      const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
-      if (!text) return NextResponse.json({ error: 'Réponse Gemini vide' }, { status: 500 })
 
       let raw
       try {
         raw = JSON.parse(text)
       } catch {
-        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        raw = JSON.parse(cleaned)
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
+        raw = JSON.parse(jsonMatch[0])
       }
 
       // Mapper vers le format attendu par le front (numero→id, enonce→question)
@@ -132,11 +84,11 @@ export async function POST(request) {
 
       const reponsesFormatted = Object.entries(reponses).map(([id, val]) => `- Question ${id} : "${val}"`).join('\n')
 
-      const prompt = `Tu es un correcteur du concours IFSI FPC pour l'épreuve de mathématiques.
+      const systemInstruction = `Tu es un correcteur du concours IFSI FPC pour l'épreuve de mathématiques.
 Tu dois corriger les réponses d'un candidat de manière détaillée, juste et bienveillante.
-Rappel du contexte : le candidat disposait de 30 minutes, sans calculatrice.
+Rappel du contexte : le candidat disposait de 30 minutes, sans calculatrice.`
 
-VOICI LE SUJET ET LE BARÈME (au format JSON) :
+      const userPrompt = `VOICI LE SUJET ET LE BARÈME (au format JSON) :
 ${JSON.stringify(exercices, null, 2)}
 
 VOICI LES RÉPONSES DU CANDIDAT :
@@ -177,7 +129,7 @@ Tu dois répondre UNIQUEMENT au format JSON strict :
   "conseil": "Un conseil pratique pour le concours"
 }`
 
-      const raw = await callGemini(prompt)
+      const raw = await callClaude(systemInstruction, userPrompt, { temperature: 0.7, maxTokens: 8000 })
       const jsonMatch = raw.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })

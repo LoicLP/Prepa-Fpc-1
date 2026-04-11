@@ -7,8 +7,7 @@ import { SYSTEM_POURCENTAGES, PROMPT_POURCENTAGES } from '@/lib/prompts/famille-
 import { SYSTEM_PROPORTIONNALITE, PROMPT_PROPORTIONNALITE } from '@/lib/prompts/famille-proportionnalite'
 import { SYSTEM_CONVERSIONS, PROMPT_CONVERSIONS } from '@/lib/prompts/famille-conversions'
 import { SYSTEM_EQUATIONS, PROMPT_EQUATIONS } from '@/lib/prompts/famille-equations'
-
-const apiKey = process.env.GEMINI_API_KEY
+import { callClaude, callClaudeWithPDF } from '@/lib/anthropic'
 
 let annalesBase64 = null
 try {
@@ -31,8 +30,8 @@ export async function POST(request) {
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Clé API Gemini manquante.' }, { status: 500 })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })
     }
 
     const body = await request.json()
@@ -47,42 +46,20 @@ export async function POST(request) {
       const systemInstruction = BASE_SYSTEM + '\n\n' + config.system
       const userPrompt = config.prompt + '\n\n' + FORMAT_SORTIE
 
-      // Construire les parts (PDF annales + prompt)
-      const parts = []
+      let text
       if (annalesBase64) {
-        parts.push({ inlineData: { mimeType: 'application/pdf', data: annalesBase64 } })
+        text = await callClaudeWithPDF(systemInstruction, userPrompt, annalesBase64, { temperature: 0.85, maxTokens: 12000 })
+      } else {
+        text = await callClaude(systemInstruction, userPrompt, { temperature: 0.85, maxTokens: 12000 })
       }
-      parts.push({ text: userPrompt })
-
-      const response = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            system_instruction: { parts: [{ text: systemInstruction }] },
-            contents: [{ parts }],
-            generationConfig: { temperature: 0.85, topP: 0.95, maxOutputTokens: 12000, responseMimeType: 'application/json' }
-          })
-        }
-      )
-
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Gemini API error:', response.status, errorText)
-        return NextResponse.json({ error: `Erreur API Gemini (${response.status})` }, { status: 500 })
-      }
-
-      const data = await response.json()
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text
-      if (!text) return NextResponse.json({ error: 'Réponse Gemini vide' }, { status: 500 })
 
       let sujetData
       try {
         sujetData = JSON.parse(text)
       } catch {
-        const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-        sujetData = JSON.parse(cleaned)
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
+        sujetData = JSON.parse(jsonMatch[0])
       }
 
       // Mapper les champs pour compatibilité avec le front (numero→id, enonce→question)

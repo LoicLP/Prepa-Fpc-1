@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { checkDailyLimit } from '@/lib/daily-limit'
-
-const apiKey = process.env.GEMINI_API_KEY
+import { callClaude } from '@/lib/anthropic'
 
 export async function POST(request) {
   try {
@@ -15,7 +14,7 @@ export async function POST(request) {
       }, { status: 429 })
     }
 
-    if (!apiKey) {
+    if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })
     }
 
@@ -69,38 +68,15 @@ Réponds UNIQUEMENT en JSON avec ce format exact :
   "explanation": "Explication pas à pas de la résolution avec la formule utilisée"
 }`
 
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 1.2,
-            topP: 0.95,
-            maxOutputTokens: 2000,
-            responseMimeType: 'application/json'
-          }
-        })
-      }
-    )
-
-    if (!geminiResponse.ok) {
-      console.error('Gemini error:', await geminiResponse.text())
-      return NextResponse.json({ error: 'Erreur lors de la génération.' }, { status: 500 })
-    }
-
-    const geminiData = await geminiResponse.json()
-    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) return NextResponse.json({ error: 'Réponse vide.' }, { status: 500 })
+    const raw = await callClaude('', prompt, { temperature: 1.0, maxTokens: 2000 })
 
     let exercise
     try {
-      exercise = JSON.parse(text)
+      exercise = JSON.parse(raw)
     } catch {
-      const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      exercise = JSON.parse(cleaned)
+      const jsonMatch = raw.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
+      exercise = JSON.parse(jsonMatch[0])
     }
 
     return NextResponse.json({ exercise, remaining })

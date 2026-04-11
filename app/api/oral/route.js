@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { BASE_ORAL, FORMAT_SORTIE_ORAL } from '@/lib/prompts/base-oral'
 import { SYSTEM_ORAL, PROMPT_ORAL } from '@/lib/prompts/simulation-oral'
-
-const apiKey = process.env.GEMINI_API_KEY
+import { callClaudeWithPDF } from '@/lib/anthropic'
 
 const categoryMap = {
   parcours: 'Parcours professionnel',
@@ -18,8 +17,8 @@ export async function POST(request) {
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
-    if (!apiKey) {
-      return NextResponse.json({ error: 'Clé API Gemini manquante.' }, { status: 500 })
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })
     }
 
     const formData = await request.formData()
@@ -36,41 +35,15 @@ export async function POST(request) {
     const systemInstruction = BASE_ORAL + '\n\n' + SYSTEM_ORAL
     const userPrompt = PROMPT_ORAL + '\n\n' + FORMAT_SORTIE_ORAL
 
-    // Appel Gemini avec le PDF en inline
-    const geminiResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: systemInstruction }] },
-          contents: [{
-            parts: [
-              { inlineData: { mimeType: 'application/pdf', data: pdfBase64 } },
-              { text: userPrompt }
-            ]
-          }],
-          generationConfig: { temperature: 0.9, topP: 0.95, maxOutputTokens: 24000, responseMimeType: 'application/json' }
-        })
-      }
-    )
-
-    if (!geminiResponse.ok) {
-      const errorText = await geminiResponse.text()
-      console.error('Gemini error:', errorText)
-      return NextResponse.json({ error: 'Erreur Gemini' }, { status: 500 })
-    }
-
-    const geminiData = await geminiResponse.json()
-    const text = geminiData.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!text) return NextResponse.json({ error: 'Réponse Gemini vide' }, { status: 500 })
+    const text = await callClaudeWithPDF(systemInstruction, userPrompt, pdfBase64, { temperature: 0.9, maxTokens: 8000 })
 
     let raw
     try {
       raw = JSON.parse(text)
     } catch {
-      const cleaned = text.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim()
-      raw = JSON.parse(cleaned)
+      const jsonMatch = text.match(/\{[\s\S]*\}/)
+      if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
+      raw = JSON.parse(jsonMatch[0])
     }
 
     // Mapper vers le format attendu par le front (numero→id, categorie→category)

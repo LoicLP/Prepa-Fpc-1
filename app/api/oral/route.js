@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { BASE_ORAL, FORMAT_SORTIE_ORAL } from '@/lib/prompts/base-oral'
 import { SYSTEM_ORAL, PROMPT_ORAL } from '@/lib/prompts/simulation-oral'
-import { callClaude } from '@/lib/anthropic'
-import pdf from 'pdf-parse'
+import { callClaudeWithPDF } from '@/lib/anthropic'
 
 const categoryMap = {
   parcours: 'Parcours professionnel',
@@ -29,20 +28,14 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Veuillez télécharger votre CV au format PDF.' }, { status: 400 })
     }
 
-    // Extraire le texte du PDF
     const pdfBuffer = Buffer.from(await pdfFile.arrayBuffer())
-    const pdfData = await pdf(pdfBuffer)
-    const cvText = pdfData.text
-
-    if (!cvText || cvText.trim().length < 20) {
-      return NextResponse.json({ error: 'Impossible de lire le contenu du CV. Vérifiez que votre PDF contient du texte.' }, { status: 400 })
-    }
+    const pdfBase64 = pdfBuffer.toString('base64')
 
     // Assembler les prompts
     const systemInstruction = BASE_ORAL + '\n\n' + SYSTEM_ORAL
-    const userPrompt = `VOICI LE CV DU CANDIDAT :\n\n${cvText}\n\n${PROMPT_ORAL}\n\n${FORMAT_SORTIE_ORAL}`
+    const userPrompt = PROMPT_ORAL + '\n\n' + FORMAT_SORTIE_ORAL
 
-    const text = await callClaude(systemInstruction, userPrompt, { temperature: 0.9, maxTokens: 8000 })
+    const text = await callClaudeWithPDF(systemInstruction, userPrompt, pdfBase64, { temperature: 0.9, maxTokens: 8000 })
 
     let raw
     try {

@@ -26,6 +26,8 @@ export default async function sitemap() {
     { url: `${siteUrl}/tarifs`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${siteUrl}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.8 },
     { url: `${siteUrl}/calculs-doses`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
+    { url: `${siteUrl}/mentions-legales`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/cgu`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
     ...articleUrls,
   ]
 }

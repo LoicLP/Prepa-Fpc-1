@@ -62,7 +62,7 @@ export default function OralPage() {
   }, [])
   useEffect(() => {
     if (step !== 'loading') return
-    const delays = [10000, 10000, 10000]
+    const delays = [10000, 10000, 10000, 10000]
     let currentStep = 0
     let timeoutId = null
     function scheduleNext() {

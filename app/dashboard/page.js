@@ -174,7 +174,9 @@ function DashboardContent() {
 
   useEffect(() => {
     const interval = setInterval(() => setShowTip(prev => {
-      if (prev) setTipIndex(i => (i + 1) % tips.length)
+      // Avancer le conseil pendant qu'il est invisible (avant le fondu d'entrée),
+      // sinon le texte change sous les yeux de l'utilisateur pendant le fondu de sortie
+      if (!prev) setTipIndex(i => (i + 1) % tips.length)
       return !prev
     }), 10000)
     return () => clearInterval(interval)

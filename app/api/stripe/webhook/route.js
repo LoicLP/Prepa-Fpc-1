@@ -28,6 +28,8 @@ export async function POST(req) {
         const userId = session.metadata?.userId
         const plan = session.metadata?.plan
 
+        // Compte Stripe partagé (ATSEM, PASS/LAS…) : les paiements des autres sites portent metadata.site
+        if (session.metadata?.site) break
         if (!userId) { console.error('checkout.session.completed - no userId'); break }
 
         if (plan === 'monthly' && session.subscription) {
@@ -65,6 +67,7 @@ export async function POST(req) {
         const userId = paymentIntent.metadata?.userId
         const plan = paymentIntent.metadata?.plan
 
+        if (paymentIntent.metadata?.site) break
         if (!userId || plan !== 'yearly') break
 
         const expiresAt = new Date()
@@ -90,6 +93,7 @@ export async function POST(req) {
         const subscription = await stripe.subscriptions.retrieve(subId)
         const userId = subscription.metadata?.userId
 
+        if (subscription.metadata?.site) break
         if (!userId) {
           console.error('Missing userId in subscription metadata. Sub ID:', subId)
           break

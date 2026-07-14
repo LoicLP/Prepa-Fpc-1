@@ -33,6 +33,9 @@ export default function RedactionPage() {
   const [timeLeft, setTimeLeft] = useState(30 * 60) // 30 min en secondes
   const [timerActive, setTimerActive] = useState(false)
   const timerRef = useRef(null)
+  // Réf mise à jour à chaque rendu : l'interval du chrono capture sinon une version
+  // périmée de handleSubmit (rédaction vide) au moment où le timer démarre
+  const submitRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -46,7 +49,7 @@ export default function RedactionPage() {
       setAuthLoading(false)
       const skipPopup = localStorage.getItem('redaction_skip_info') === 'true'
       if (skipPopup) {
-        genererSujet()
+        genererSujet(session.user)
       } else {
         setShowInfoPopup(true)
         setStep(null)
@@ -81,7 +84,7 @@ export default function RedactionPage() {
         if (prev <= 1) {
           clearInterval(timerRef.current)
           setTimerActive(false)
-          handleSubmit()
+          submitRef.current?.()
           return 0
         }
         return prev - 1
@@ -89,6 +92,8 @@ export default function RedactionPage() {
     }, 1000)
     return () => clearInterval(timerRef.current)
   }, [timerActive])
+
+  useEffect(() => { submitRef.current = handleSubmit })
 
   async function handleLogout() { await supabase.auth.signOut(); window.location.href = '/' }
 
@@ -98,7 +103,8 @@ export default function RedactionPage() {
     genererSujet()
   }
 
-  async function genererSujet() {
+  // currentUser en paramètre : au premier chargement (skip popup), le state `user` n'est pas encore rempli
+  async function genererSujet(currentUser = user) {
     setError('')
     setLoadingStep(0)
     setStep('loading')
@@ -106,7 +112,7 @@ export default function RedactionPage() {
     try {
       const startTime = Date.now()
       // Récupérer les thèmes déjà travaillés pour varier
-      const { data: pastSessions } = await supabase.from('historique').select('label').eq('user_id', user.id).eq('type', 'Rédaction').order('created_at', { ascending: false }).limit(20)
+      const { data: pastSessions } = await supabase.from('historique').select('label').eq('user_id', currentUser.id).eq('type', 'Rédaction').order('created_at', { ascending: false }).limit(20)
       const history = pastSessions?.map(s => ({ theme: s.label })) || []
 
       const res = await fetch('/api/redaction', {

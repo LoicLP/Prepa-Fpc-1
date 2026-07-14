@@ -42,6 +42,9 @@ export default function ExamenPage() {
   const [timerActive, setTimerActive] = useState(false)
   const timerRef = useRef(null)
   const [currentPart, setCurrentPart] = useState('maths') // maths or redaction
+  // Réf mise à jour à chaque rendu : l'interval du chrono capture sinon une version
+  // périmée des handlers (copie/réponses vides) au moment où le timer démarre
+  const submitRef = useRef(null)
 
   // Track time spent on each part
   const [mathsTimeUsed, setMathsTimeUsed] = useState(0)
@@ -59,7 +62,7 @@ export default function ExamenPage() {
       setAuthLoading(false)
       const skipPopup = localStorage.getItem('examen_skip_info') === 'true'
       if (skipPopup) {
-        genererSujets()
+        genererSujets(session.user)
       } else {
         setShowInfoPopup(true)
         setStep(null)
@@ -94,11 +97,7 @@ export default function ExamenPage() {
         if (prev <= 1) {
           clearInterval(timerRef.current)
           setTimerActive(false)
-          if (currentPart === 'maths') {
-            handleSubmitMaths(true)
-          } else {
-            handleSubmitRedaction(true)
-          }
+          submitRef.current?.()
           return 0
         }
         return prev - 1
@@ -106,6 +105,10 @@ export default function ExamenPage() {
     }, 1000)
     return () => clearInterval(timerRef.current)
   }, [timerActive, currentPart])
+
+  useEffect(() => {
+    submitRef.current = () => currentPart === 'maths' ? handleSubmitMaths(true) : handleSubmitRedaction(true)
+  })
 
   async function handleLogout() { await supabase.auth.signOut(); window.location.href = '/' }
 
@@ -115,7 +118,8 @@ export default function ExamenPage() {
     genererSujets()
   }
 
-  async function genererSujets() {
+  // currentUser en paramètre : au premier chargement (skip popup), le state `user` n'est pas encore rempli
+  async function genererSujets(currentUser = user) {
     setError('')
     setLoadingStep(0)
     setStep('loading')
@@ -123,8 +127,8 @@ export default function ExamenPage() {
     try {
       const startTime = Date.now()
       const [{ data: pastRedac }, { data: pastMaths }] = await Promise.all([
-        supabase.from('historique').select('label').eq('user_id', user.id).eq('type', 'Rédaction').order('created_at', { ascending: false }).limit(20),
-        supabase.from('historique').select('label, note, note_max').eq('user_id', user.id).eq('type', 'Maths').order('created_at', { ascending: false }).limit(20)
+        supabase.from('historique').select('label').eq('user_id', currentUser.id).eq('type', 'Rédaction').order('created_at', { ascending: false }).limit(20),
+        supabase.from('historique').select('label, note, note_max').eq('user_id', currentUser.id).eq('type', 'Maths').order('created_at', { ascending: false }).limit(20)
       ])
       const historyRedac = pastRedac?.map(s => ({ theme: s.label })) || []
       const historyMaths = pastMaths?.map(s => ({ famille: s.label, score: s.note })) || []

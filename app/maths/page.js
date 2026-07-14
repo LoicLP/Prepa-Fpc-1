@@ -32,6 +32,9 @@ export default function MathsPage() {
   const [timeLeft, setTimeLeft] = useState(30 * 60)
   const [timerActive, setTimerActive] = useState(false)
   const timerRef = useRef(null)
+  // Réf mise à jour à chaque rendu : l'interval du chrono capture sinon une version
+  // périmée de handleSubmit (réponses vides) au moment où le timer démarre
+  const submitRef = useRef(null)
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -47,7 +50,7 @@ export default function MathsPage() {
       setAuthLoading(false)
       const skipPopup = localStorage.getItem('maths_skip_info') === 'true'
       if (skipPopup) {
-        genererSujet()
+        genererSujet(session.user)
       } else {
         setShowInfoPopup(true)
         setStep(null)
@@ -82,7 +85,7 @@ export default function MathsPage() {
         if (prev <= 1) {
           clearInterval(timerRef.current)
           setTimerActive(false)
-          handleSubmit()
+          submitRef.current?.()
           return 0
         }
         return prev - 1
@@ -90,6 +93,8 @@ export default function MathsPage() {
     }, 1000)
     return () => clearInterval(timerRef.current)
   }, [timerActive])
+
+  useEffect(() => { submitRef.current = handleSubmit })
 
   async function handleLogout() { await supabase.auth.signOut(); window.location.href = '/' }
 
@@ -99,7 +104,8 @@ export default function MathsPage() {
     genererSujet()
   }
 
-  async function genererSujet() {
+  // currentUser en paramètre : au premier chargement (skip popup), le state `user` n'est pas encore rempli
+  async function genererSujet(currentUser = user) {
     setError('')
     setLoadingStep(0)
     setStep('loading')
@@ -107,7 +113,7 @@ export default function MathsPage() {
     try {
       const startTime = Date.now()
       // Récupérer l'historique pour adapter la difficulté et varier
-      const { data: pastSessions } = await supabase.from('historique').select('label, note, note_max').eq('user_id', user.id).eq('type', 'Maths').order('created_at', { ascending: false }).limit(20)
+      const { data: pastSessions } = await supabase.from('historique').select('label, note, note_max').eq('user_id', currentUser.id).eq('type', 'Maths').order('created_at', { ascending: false }).limit(20)
       const history = pastSessions?.map(s => ({ famille: s.label, score: s.note })) || []
       const res = await fetch('/api/maths', {
         method: 'POST',

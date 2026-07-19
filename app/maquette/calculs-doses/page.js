@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react'
 
 // Les 4 thèmes du sélecteur
 const THEMES = [
-  { court: 'Produit en croix', titre: 'Le produit en croix', couleur: '#dc2626', clair: 'rgba(239,68,68,0.06)', grad: 'linear-gradient(145deg, #ef4444, #dc2626)' },
-  { court: 'Débit gouttes/min', titre: 'Débit en gouttes / min', couleur: '#2563eb', clair: 'rgba(59,130,246,0.06)', grad: 'linear-gradient(145deg, #3b82f6, #2563eb)' },
-  { court: 'Conversions', titre: 'Conversions de masse', couleur: '#ca8a04', clair: 'rgba(234,179,8,0.08)', grad: 'linear-gradient(145deg, #eab308, #ca8a04)' },
-  { court: 'Concentration %', titre: 'Concentration en %', couleur: '#7c3aed', clair: 'rgba(139,92,246,0.06)', grad: 'linear-gradient(145deg, #8b5cf6, #7c3aed)' },
+  { court: 'Produit en croix', titre: 'Le produit en croix', couleur: '#dc2626', marqueur: '#ef4444', clair: 'rgba(239,68,68,0.06)', grad: 'linear-gradient(145deg, #ef4444, #dc2626)' },
+  { court: 'Débit gouttes/min', titre: 'Débit en gouttes / min', couleur: '#2563eb', marqueur: '#3b82f6', clair: 'rgba(59,130,246,0.06)', grad: 'linear-gradient(145deg, #3b82f6, #2563eb)' },
+  { court: 'Conversions', titre: 'Conversions de masse', couleur: '#ca8a04', marqueur: '#eab308', clair: 'rgba(234,179,8,0.08)', grad: 'linear-gradient(145deg, #eab308, #ca8a04)' },
+  { court: 'Concentration %', titre: 'Concentration en %', couleur: '#7c3aed', marqueur: '#8b5cf6', clair: 'rgba(139,92,246,0.06)', grad: 'linear-gradient(145deg, #8b5cf6, #7c3aed)' },
 ]
 
 // Petit intitulé de section coloré
@@ -463,7 +463,7 @@ export default function MaquetteCalculsDosesPage() {
       <section className="relative px-5 pt-[110px] md:pt-[150px] pb-4 text-center">
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-[2.4rem] sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.035em] leading-[1.08]">
-            Maîtrisez les <span className="surligne">calculs du concours</span>
+            Maîtrisez les <span className="surligne" style={{background: `linear-gradient(100deg, ${theme.marqueur}00 0.8%, ${theme.marqueur}61 2.8%, ${theme.marqueur}4d 50%, ${theme.marqueur}61 97%, ${theme.marqueur}00 99.2%)`}}>calculs du concours</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-black/55 font-medium leading-relaxed">
             Les 4 notions indispensables pour l&apos;épreuve de calculs, expliquées simplement.

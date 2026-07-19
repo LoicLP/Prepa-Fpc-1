@@ -59,6 +59,10 @@ const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat, unite,
     const v = parseFloat(String(reponse).replace(/[^\d,.-]/g, '').replace(',', '.'))
     setStatut(Math.abs(v - bonneReponse) <= tolerance ? 'bravo' : 'rate')
   }
+  const refaire = () => {
+    setReponse('')
+    setStatut('attente')
+  }
 
   return (
     <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
@@ -89,8 +93,11 @@ const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat, unite,
       {fini && (
         <div className="slide-in mt-4">
           {children}
-          <div className="mt-5 text-center sm:text-left">
+          <div className="mt-5 flex items-center justify-center sm:justify-start gap-2.5">
             <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
+            <button onClick={refaire} title="Refaire l'exercice" aria-label="Refaire l'exercice" className="group w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-all hover:-translate-y-0.5 active:scale-[0.95] cursor-pointer" style={{color: theme.couleur, boxShadow: `inset 0 0 0 1.5px ${theme.couleur}55`}}>
+              <svg className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            </button>
           </div>
         </div>
       )}
@@ -126,6 +133,11 @@ function ExerciceCroix({ theme, num, titre, niveau, enonce, avant, attendus, uni
     const ok = Math.abs(parse(reponse) - bonneReponse) <= tolerance
     setCellules(attendus.map(String))
     setStatut(ok ? 'bravo' : 'rate')
+  }
+  const refaire = () => {
+    setCellules(['', '', ''])
+    setReponse('')
+    setStatut('attente')
   }
 
   const caseInput = (i) => (
@@ -183,9 +195,12 @@ function ExerciceCroix({ theme, num, titre, niveau, enonce, avant, attendus, uni
           {statut === 'rate' && <p className="mt-2.5 text-sm font-bold text-red-600 text-center sm:text-left">Pas tout à fait — voici la correction :</p>}
           {statut === 'bravo' && <p className="mt-2.5 text-sm font-bold text-emerald-600 text-center sm:text-left">Bonne réponse !</p>}
           {fini && (
-            <div className="slide-in mt-3 flex flex-col sm:flex-row items-center sm:items-baseline gap-2.5">
+            <div className="slide-in mt-3 flex flex-col sm:flex-row items-center gap-2.5">
               <Ligne>{calcul}</Ligne>
               <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
+              <button onClick={refaire} title="Refaire l'exercice" aria-label="Refaire l'exercice" className="group w-9 h-9 shrink-0 rounded-full flex items-center justify-center transition-all hover:-translate-y-0.5 active:scale-[0.95] cursor-pointer" style={{color: theme.couleur, boxShadow: `inset 0 0 0 1.5px ${theme.couleur}55`}}>
+                <svg className="w-4 h-4 transition-transform duration-300 group-hover:-rotate-180" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+              </button>
             </div>
           )}
         </div>

@@ -68,7 +68,7 @@ const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat, unite,
       <div className="flex items-center gap-2.5 mb-3">
         <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exercice {num}</span>
         <span className="text-sm font-extrabold text-black/80">{titre}</span>
-        {niveau && <Difficulte niveau={niveau} />}
+        {niveau && <Difficulte niveau={niveau} theme={theme} />}
       </div>
       <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed mb-5">{enonce}</p>
 
@@ -106,20 +106,16 @@ const Ligne = ({ children }) => (
   <p className="text-sm text-black/55 font-semibold">{children}</p>
 )
 
-// Badge de niveau de difficulté (Facile / Moyen / Difficile)
-const NIVEAUX = {
-  1: { label: 'Facile', couleur: '#059669', fond: 'rgba(16,185,129,0.10)' },
-  2: { label: 'Moyen', couleur: '#d97706', fond: 'rgba(245,158,11,0.12)' },
-  3: { label: 'Difficile', couleur: '#e11d48', fond: 'rgba(244,63,94,0.10)' },
-}
-const Difficulte = ({ niveau }) => (
-  <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: NIVEAUX[niveau].couleur, background: NIVEAUX[niveau].fond }}>
+// Badge de niveau de difficulté (Facile / Moyen / Difficile), aux couleurs du thème
+const NIVEAUX = { 1: 'Facile', 2: 'Moyen', 3: 'Difficile' }
+const Difficulte = ({ niveau, theme }) => (
+  <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>
     <span className="flex gap-0.5">
       {[1, 2, 3].map(i => (
-        <span key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i <= niveau ? NIVEAUX[niveau].couleur : 'rgba(0,0,0,0.12)' }}></span>
+        <span key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i <= niveau ? theme.couleur : 'rgba(0,0,0,0.12)' }}></span>
       ))}
     </span>
-    {NIVEAUX[niveau].label}
+    {NIVEAUX[niveau]}
   </span>
 )
 
@@ -156,7 +152,7 @@ function ExerciceCroix({ theme, num, titre, niveau, enonce, avant, attendus, uni
       <div className="flex items-center gap-2.5 mb-3">
         <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exercice {num}</span>
         <span className="text-sm font-extrabold text-black/80">{titre}</span>
-        {niveau && <Difficulte niveau={niveau} />}
+        {niveau && <Difficulte niveau={niveau} theme={theme} />}
       </div>
       <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed mb-5">{enonce}</p>
       {avant && <p className="text-sm text-black/50 font-semibold mb-4">{avant}</p>}

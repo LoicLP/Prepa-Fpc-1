@@ -36,7 +36,6 @@ export default function MaquetteTarifsPage() {
     <>
       {/* ===================== EN-TÊTE ===================== */}
       <section className="relative px-5 pt-[110px] md:pt-[150px] pb-4 text-center">
-        <div aria-hidden="true" className="hero-grid absolute inset-0 pointer-events-none"></div>
         <div className="relative z-10 max-w-3xl mx-auto">
           <h1 className="text-[2.4rem] sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.035em] leading-[1.08]">
             Aborder le concours FPC <span className="surligne">sereinement</span>

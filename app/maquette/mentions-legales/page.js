@@ -34,7 +34,9 @@ const SECTIONS = [
 </ul>
 <p>Ces données sont <strong>nécessaires à la fourniture du service</strong> et ne sont jamais vendues à des tiers.</p>
 <p>Vous disposez d'un <strong>droit d'accès, de rectification, de suppression et de portabilité</strong> de vos données en contactant <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong>.</p>
-<p>Durée de conservation : les données sont conservées pendant la durée du compte et supprimées <strong>12 mois</strong> après la dernière connexion.</p>`
+<p>Durée de conservation : les données sont conservées pendant la durée du compte et supprimées <strong>12 mois</strong> après la dernière connexion.</p>
+<p>Pour fournir le service, LP Labs fait appel à des <strong>sous-traitants</strong> : <strong>Supabase</strong> (hébergement des données et authentification), <strong>Vercel</strong> (hébergement du site), <strong>Stripe</strong> (paiement sécurisé) et <strong>Anthropic (Claude)</strong> pour l'analyse du CV dans le cadre de la préparation à l'oral. Certains de ces prestataires sont situés hors de l'Union européenne ; ces transferts sont encadrés par des <strong>clauses contractuelles types</strong>.</p>
+<p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez introduire une <strong>réclamation auprès de la CNIL</strong> (<strong>www.cnil.fr</strong>).</p>`
   },
   {
     title: "Cookies",

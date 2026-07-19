@@ -18,7 +18,8 @@ const SECTIONS = [
   {
     title: "Article 4 — Création de compte",
     html: `<p>L'inscription est ouverte à toute personne physique <strong>âgée d'au moins 17 ans</strong>. L'utilisateur s'engage à fournir des informations exactes et à maintenir la <strong>confidentialité de ses identifiants</strong>.</p>
-<p>Chaque utilisateur est responsable de toute activité réalisée depuis son compte. En cas d'utilisation non autorisée, contactez immédiatement <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong>.</p>`
+<p>Chaque utilisateur est responsable de toute activité réalisée depuis son compte. En cas d'utilisation non autorisée, contactez immédiatement <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong>.</p>
+<p>La souscription d'un abonnement payant par un <strong>mineur</strong> requiert le consentement préalable du <strong>titulaire de l'autorité parentale</strong>.</p>`
   },
   {
     title: "Article 5 — Utilisation de la Plateforme",
@@ -43,26 +44,31 @@ const SECTIONS = [
   },
   {
     title: "Article 8 — Abonnements et paiements (CGV)",
-    html: `<p>La Plateforme propose deux formules payantes dont les tarifs sont indiqués sur la page <strong><a href="/maquette/tarifs" class="text-red-600 hover:underline">Tarifs</a></strong>. Les paiements sont sécurisés par <strong>Stripe</strong>.</p>
+    html: `<p>La Plateforme propose deux formules payantes dont les tarifs sont indiqués sur la page <strong><a href="/maquette/tarifs" class="text-red-600 hover:underline">Tarifs</a></strong>. Les prix sont indiqués en <strong>euros, toutes taxes comprises (TTC)</strong>. Les paiements sont sécurisés par <strong>Stripe</strong>.</p>
 <ul>
 <li><strong>Abonnement mensuel — 12,99 €/mois</strong> : renouvellement automatique chaque mois, résiliable à tout moment depuis votre espace personnel</li>
 <li><strong>Pack annuel — 89,99 € (paiement unique)</strong> : accès pour 12 mois, sans renouvellement automatique</li>
 </ul>
 <br/>
-<p>Pour l'abonnement mensuel, la résiliation prend effet à la <strong>fin de la période en cours</strong>. Aucun remboursement au prorata ne sera effectué pour la période restante.</p>
+<p>Pour l'abonnement mensuel, la résiliation prend effet à la <strong>fin de la période en cours</strong>. Aucun remboursement au prorata ne sera effectué pour la période restante. La résiliation s'effectue directement <strong>en ligne</strong>, depuis votre espace personnel, conformément à la réglementation sur la résiliation en ligne des contrats.</p>
 <p>Le pack annuel n'est <strong>pas renouvelé automatiquement</strong>. À l'issue des 12 mois, l'accès premium est désactivé sauf nouvelle souscription.</p>
-<p>Conformément à l'article <strong>L221-28 du Code de la consommation</strong>, le droit de rétractation ne s'applique pas aux contenus numériques fournis immédiatement après l'achat.</p>`
+<p>Conformément à l'article <strong>L221-28 du Code de la consommation</strong>, le droit de rétractation ne s'applique pas aux contenus numériques fournis immédiatement après l'achat : en souscrivant, vous <strong>consentez expressément à l'exécution immédiate du service</strong> et <strong>renoncez expressément à votre droit de rétractation</strong>. Ce consentement est recueilli au moment du paiement.</p>`
   },
   {
-    title: "Article 9 — Suspension et résiliation",
+    title: "Article 9 — Garantie légale de conformité",
+    html: `<p>Conformément aux articles <strong>L224-25-1 et suivants du Code de la consommation</strong>, LP Labs est tenue de la <strong>garantie légale de conformité</strong> pour les contenus et services numériques fournis.</p>
+<p>En cas de défaut de conformité, l'utilisateur peut obtenir la <strong>mise en conformité</strong> du service ou, à défaut, une <strong>réduction du prix</strong> ou la <strong>résolution du contrat</strong>, dans les conditions prévues par la loi. Ces droits s'exercent <strong>sans frais</strong> en contactant <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong>.</p>`
+  },
+  {
+    title: "Article 10 — Suspension et résiliation",
     html: `<p>LP Labs se réserve le droit de <strong>suspendre ou supprimer</strong> un compte utilisateur, <strong>sans préavis ni indemnité</strong>, en cas de violation des présentes CGU/CGV, notamment en cas de fraude, d'utilisation abusive ou de comportement nuisible.</p>`
   },
   {
-    title: "Article 10 — Droit applicable et litiges",
+    title: "Article 11 — Droit applicable et litiges",
     html: `<p>Les présentes CGU/CGV sont soumises au <strong>droit français</strong>. En cas de litige, les parties s'engagent à rechercher une <strong>solution amiable</strong>. À défaut, les <strong>tribunaux compétents de Coutances (Manche)</strong> seront seuls compétents.</p>`
   },
   {
-    title: "Article 11 — Contact",
+    title: "Article 12 — Contact",
     html: `<ul>
 <li>Email : <strong><a href="mailto:support@prepa-fpc.fr" class="text-red-600 hover:underline">support@prepa-fpc.fr</a></strong></li>
 <li>Adresse : <strong>LP Labs, 20 route de la Rousserie, 50200 Monthuchon</strong></li>

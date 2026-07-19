@@ -26,13 +26,27 @@ const Etapes = ({ theme, items }) => (
   </div>
 )
 
-// Pièges (encarts d'avertissement)
+// Pièges : post-it de papier teinté, inclinés, scotchés en haut
 const Pieges = ({ theme, items }) => (
-  <div className="space-y-2.5 max-w-2xl mx-auto">
-    {items.map((contenu, i) => (
-      <div key={i} className="flex items-start gap-3 rounded-2xl px-5 py-4" style={{ background: theme.clair, boxShadow: `inset 0 0 0 1px ${theme.couleur}22` }}>
-        <svg className="w-4 h-4 shrink-0 mt-1" style={{ color: theme.couleur }} fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed">{contenu}</p>
+  <div className="grid sm:grid-cols-2 gap-x-5 gap-y-7 max-w-2xl mx-auto pt-3">
+    {items.map((p, i) => (
+      <div
+        key={i}
+        className="relative rounded-lg p-5 pt-6"
+        style={{
+          backgroundColor: '#fffdf6',
+          backgroundImage: `linear-gradient(${theme.couleur}10, ${theme.couleur}10)`,
+          boxShadow: '0 14px 28px rgba(0,0,0,0.09), 0 2px 6px rgba(0,0,0,0.05)',
+          transform: `rotate(${[-1.4, 1.1, -0.8, 1.5][i % 4]}deg)`
+        }}
+      >
+        {/* Morceau de scotch */}
+        <div aria-hidden="true" className="absolute -top-2.5 left-1/2 w-16 h-5" style={{transform: 'translateX(-50%) rotate(-2.5deg)', background: 'rgba(255,255,255,0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.10)', backdropFilter: 'blur(1px)'}}></div>
+        <p className="flex items-center gap-2 font-extrabold text-[15px] text-black/80 mb-1.5">
+          <svg className="w-4 h-4 shrink-0" style={{ color: theme.couleur }} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          {p.titre}
+        </p>
+        <p className="text-sm text-black/55 font-medium leading-relaxed">{p.texte}</p>
       </div>
     ))}
   </div>
@@ -283,9 +297,9 @@ function ThemeCroix({ theme }) {
 
       <Eyebrow couleur={theme.couleur}>Pièges fréquents</Eyebrow>
       <Pieges theme={theme} items={[
-        <span key="a"><strong className="font-bold text-black/85">Unités différentes</strong> — Si la prescription est en g et le flacon en mg, convertis d&apos;abord ! (1 g = 1 000 mg)</span>,
-        <span key="b"><strong className="font-bold text-black/85">Valeurs inversées</strong> — Assure-toi que mg est avec mg et ml avec ml, sur la même colonne.</span>,
-        <span key="c"><strong className="font-bold text-black/85">Résultat aberrant ?</strong> — Si tu trouves 75 ml de sirop pour un enfant, c&apos;est probablement faux. Vérifie toujours !</span>,
+        { titre: 'Unités différentes', texte: "Si la prescription est en g et le flacon en mg, convertis d'abord ! (1 g = 1 000 mg)" },
+        { titre: 'Valeurs inversées', texte: 'Assure-toi que mg est avec mg et ml avec ml, sur la même colonne.' },
+        { titre: 'Résultat aberrant ?', texte: "Si tu trouves 75 ml de sirop pour un enfant, c'est probablement faux. Vérifie toujours !" },
       ]} />
     </>
   )
@@ -407,10 +421,10 @@ function ThemeDebit({ theme }) {
 
       <Eyebrow couleur={theme.couleur}>Pièges fréquents</Eyebrow>
       <Pieges theme={theme} items={[
-        <span key="a"><strong className="font-bold text-black/85">Standard ou pédiatrique ?</strong> — Confondre ×20 et ×60 change complètement le résultat.</span>,
-        <span key="b"><strong className="font-bold text-black/85">Heures ≠ minutes</strong> — Si on te donne 6h, convertis : 6 × 60 = 360 min. Si c&apos;est déjà en minutes, ne multiplie pas !</span>,
-        <span key="c"><strong className="font-bold text-black/85">Toujours arrondir à l&apos;entier</strong> — Une goutte ne se coupe pas en deux. 41,6 → 42 gouttes/min.</span>,
-        <span key="d"><strong className="font-bold text-black/85">Résultat aberrant ?</strong> — Un débit &gt; 150 ou &lt; 5 gttes/min devrait te mettre la puce à l&apos;oreille.</span>,
+        { titre: 'Standard ou pédiatrique ?', texte: 'Confondre ×20 et ×60 change complètement le résultat.' },
+        { titre: 'Heures ≠ minutes', texte: "Si on te donne 6h, convertis : 6 × 60 = 360 min. Si c'est déjà en minutes, ne multiplie pas !" },
+        { titre: "Toujours arrondir à l'entier", texte: 'Une goutte ne se coupe pas en deux. 41,6 → 42 gouttes/min.' },
+        { titre: 'Résultat aberrant ?', texte: "Un débit > 150 ou < 5 gttes/min devrait te mettre la puce à l'oreille." },
       ]} />
     </>
   )
@@ -505,10 +519,10 @@ function ThemeConversions({ theme }) {
 
       <Eyebrow couleur={theme.couleur}>Pièges fréquents</Eyebrow>
       <Pieges theme={theme} items={[
-        <span key="a"><strong className="font-bold text-black/85">Virgule dans le mauvais sens</strong> — Plus petit = droite (×), plus grand = gauche (÷). Pense à l&apos;escalier.</span>,
-        <span key="b"><strong className="font-bold text-black/85">Convertir AVANT de calculer</strong> — Si la prescription est en g et le flacon en mg, convertis d&apos;abord. Puis fais le produit en croix.</span>,
-        <span key="c"><strong className="font-bold text-black/85">mg ≠ µg → facteur 1 000 !</strong> — Confondre = donner 1 000 fois trop ou pas assez. Risque de surdosage.</span>,
-        <span key="d"><strong className="font-bold text-black/85">Zéros manquants</strong> — Si la virgule se déplace au-delà des chiffres, ajoute des zéros ! 5 mg → µg = 5 000 µg.</span>,
+        { titre: 'Virgule dans le mauvais sens', texte: "Plus petit = droite (×), plus grand = gauche (÷). Pense à l'escalier." },
+        { titre: 'Convertir AVANT de calculer', texte: "Si la prescription est en g et le flacon en mg, convertis d'abord. Puis fais le produit en croix." },
+        { titre: 'mg ≠ µg → facteur 1 000 !', texte: 'Confondre = donner 1 000 fois trop ou pas assez. Risque de surdosage.' },
+        { titre: 'Zéros manquants', texte: 'Si la virgule se déplace au-delà des chiffres, ajoute des zéros ! 5 mg → µg = 5 000 µg.' },
       ]} />
     </>
   )
@@ -606,10 +620,10 @@ function ThemeConcentration({ theme }) {
 
       <Eyebrow couleur={theme.couleur}>Pièges fréquents</Eyebrow>
       <Pieges theme={theme} items={[
-        <span key="a"><strong className="font-bold text-black/85">0,9% ≠ 9 g pour 100 ml</strong> — Le chiffre du % EST le nombre de grammes. 0,9% = 0,9 g. Lis tel quel !</span>,
-        <span key="b"><strong className="font-bold text-black/85">Litres → millilitres</strong> — Le % est défini pour 100 ml. Si l&apos;énoncé donne des litres, convertis d&apos;abord.</span>,
-        <span key="c"><strong className="font-bold text-black/85">% ≠ g/L</strong> — 5% = 5 g pour 100 ml = 50 g/L. Ne confonds pas, le facteur est de 10 !</span>,
-        <span key="d"><strong className="font-bold text-black/85">100 ml pile ?</strong> — Pas besoin de calcul ! G5% en 100 ml = 5 g, point.</span>,
+        { titre: '0,9% ≠ 9 g pour 100 ml', texte: 'Le chiffre du % EST le nombre de grammes. 0,9% = 0,9 g. Lis tel quel !' },
+        { titre: 'Litres → millilitres', texte: "Le % est défini pour 100 ml. Si l'énoncé donne des litres, convertis d'abord." },
+        { titre: '% ≠ g/L', texte: '5% = 5 g pour 100 ml = 50 g/L. Ne confonds pas, le facteur est de 10 !' },
+        { titre: '100 ml pile ?', texte: 'Pas besoin de calcul ! G5% en 100 ml = 5 g, point.' },
       ]} />
     </>
   )

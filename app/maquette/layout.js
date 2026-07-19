@@ -1,6 +1,11 @@
+'use client'
 // Layout partagé de la maquette (partie non connectée) : nav pilule, nav
 // mobile, footer et styles communs. Toutes les pages de app/maquette/ en héritent.
+// Sur l'accueil la nav suit le défilement ; sur les autres pages elle reste en haut.
+import { usePathname } from 'next/navigation'
+
 export default function MaquetteLayout({ children }) {
+  const surAccueil = usePathname() === '/maquette'
   return (
     <div className="min-h-screen bg-white text-[#0d0d0d] antialiased" style={{fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
@@ -107,7 +112,7 @@ export default function MaquetteLayout({ children }) {
       `}</style>
 
       {/* ===================== NAVIGATION (pilule flottante) ===================== */}
-      <nav className="hidden md:flex fixed left-1/2 top-6 -translate-x-1/2 z-50 h-[60px] w-[min(880px,calc(100vw-40px))] items-center gap-x-6 rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl px-6 py-2">
+      <nav className={`hidden md:flex ${surAccueil ? 'fixed' : 'absolute'} left-1/2 top-6 -translate-x-1/2 z-50 h-[60px] w-[min(880px,calc(100vw-40px))] items-center gap-x-6 rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl px-6 py-2`}>
         <a href="/maquette" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 shrink-0">
           <div className="bg-red-600 text-white p-1.5 rounded-xl shadow-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
@@ -127,7 +132,7 @@ export default function MaquetteLayout({ children }) {
       </nav>
 
       {/* Nav mobile (la pilule est masquée sous 720px) */}
-      <nav className="md:hidden sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-black/5 px-5 h-14 flex items-center justify-between">
+      <nav className={`md:hidden ${surAccueil ? 'sticky top-0' : 'relative'} z-50 bg-white/90 backdrop-blur-xl border-b border-black/5 px-5 h-14 flex items-center justify-between`}>
         <a href="/maquette" className="flex items-center gap-2">
           <div className="bg-red-600 text-white p-1 rounded-lg">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>

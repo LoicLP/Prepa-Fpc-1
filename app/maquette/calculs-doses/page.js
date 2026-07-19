@@ -81,10 +81,7 @@ function ThemeCroix({ theme }) {
               <div className="py-6 rounded-2xl font-extrabold text-lg shadow-[0_10px_28px_rgba(0,0,0,0.05)]" style={{background: '#ffffff', boxShadow: `inset 0 0 0 2px ${theme.couleur}55, 0 10px 28px rgba(0,0,0,0.05)`, color: theme.couleur}}>750 mg</div>
               <div className="py-6 rounded-2xl font-black text-xl text-white" style={{background: theme.grad, boxShadow: `0 14px 30px ${theme.couleur}45`}}>? ml</div>
             </div>
-            {/* Diagonale animée 750 → 5, avec le × à l'intersection */}
-            <svg aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <line className="fourmis" x1="26" y1="76" x2="74" y2="40" stroke={theme.couleur} strokeWidth="2.5" strokeDasharray="7 6" strokeLinecap="round" opacity="0.8" vectorEffect="non-scaling-stroke"/>
-            </svg>
+            {/* Le × à l'intersection de la diagonale */}
             <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white flex items-center justify-center font-extrabold text-lg shadow-md" style={{top: '58%', color: theme.couleur, boxShadow: `0 0 0 2.5px ${theme.couleur}, 0 6px 16px rgba(0,0,0,0.12)`}}>×</div>
           </div>
           <div className="mt-7 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-5 py-2.5 text-base font-bold text-black/70 shadow-sm">
@@ -460,9 +457,6 @@ export default function MaquetteCalculsDosesPage() {
         /* Goutte du compte-gouttes : chute puis fondu dans le liquide */
         @keyframes goutte-chute { 0% { top: 8%; opacity: 0; transform: translateX(-50%) scale(0.6); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 70% { top: 58%; opacity: 1; } 82% { top: 64%; opacity: 0; } 100% { top: 64%; opacity: 0; } }
         .goutte { animation: goutte-chute 1.6s cubic-bezier(0.45, 0, 0.9, 0.6) infinite; }
-        /* Pointillés de la diagonale qui défilent le long du trait */
-        @keyframes fourmis-marche { to { stroke-dashoffset: -13; } }
-        .fourmis { animation: fourmis-marche 0.9s linear infinite; }
       `}</style>
 
       {/* ===================== EN-TÊTE ===================== */}

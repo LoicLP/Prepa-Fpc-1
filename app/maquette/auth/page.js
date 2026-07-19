@@ -182,7 +182,7 @@ export default function MaquetteAuthPage() {
             {mode === 'login' ? 'Ravis de vous revoir !' : 'Débutez votre essai de 7 jours'}
           </h1>
           <p className="text-black/50 font-medium text-lg mb-8">
-            {mode === 'login' ? 'Connectez-vous pour reprendre votre entraînement.' : 'Commencez votre entraînement pour le concours FPC.'}
+            {mode === 'login' ? 'Connectez-vous pour reprendre votre entraînement.' : 'Commencez votre entraînement pour le concours FPC, sans frais.'}
           </p>
 
           <div className="relative">

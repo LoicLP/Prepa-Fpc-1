@@ -121,8 +121,8 @@ export default function MaquetteLayout({ children }) {
           <a href="/maquette/tarifs" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Tarifs</a>
         </div>
         <div className="flex items-center gap-x-5 shrink-0">
-          <a href="/login" className="w-fit text-[0.95rem] font-bold text-[#0d0d0d] transition-opacity hover:opacity-80">Connexion</a>
-          <a href="/signup" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Inscription</a>
+          <a href="/maquette/auth" className="w-fit text-[0.95rem] font-bold text-[#0d0d0d] transition-opacity hover:opacity-80">Connexion</a>
+          <a href="/maquette/auth?mode=signup" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Inscription</a>
         </div>
       </nav>
 
@@ -134,7 +134,7 @@ export default function MaquetteLayout({ children }) {
           </div>
           <span className="font-black text-base tracking-tight">Prépa <span className="text-red-600">FPC</span></span>
         </a>
-        <a href="/signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
+        <a href="/maquette/auth?mode=signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
       </nav>
 
       {children}

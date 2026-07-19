@@ -414,7 +414,7 @@ function ThemeDebit({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" niveau={2} titre="Formule simplifiée"
-            enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> doit passer en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong> avec une tubulure standard (×20). Calculez le débit — et gagnez du temps avec l&apos;astuce 20 / 60 = 1/3.</>}
+            enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> doit passer en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong> avec une tubulure standard (×20). Calculez le débit.</>}
             unite="gouttes/min" bonneReponse={42} tolerance={0.7} resultat="≈ 42 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '250 ml'], ['Temps', '120 min'], ['Tubulure', '×20']]} />
@@ -808,7 +808,7 @@ export default function MaquetteCalculsDosesPage() {
         <div aria-hidden="true" className="absolute -top-24 -right-24 w-[28rem] h-[20rem] rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div className="relative max-w-2xl mx-auto text-center">
           <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.couleur}}>Prêt à passer à la pratique&nbsp;?</p>
-          <h2 className="text-2xl sm:text-[2.1rem] font-extrabold tracking-[-0.02em] leading-snug mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
+          <h2 className="text-xl sm:text-2xl font-extrabold tracking-[-0.02em] leading-snug mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
           <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full transition-all hover:-translate-y-0.5 hover:brightness-110 group" style={{background: theme.grad, boxShadow: `0 10px 24px ${theme.couleur}45`}}>
             Commencer à m&apos;entraîner
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>

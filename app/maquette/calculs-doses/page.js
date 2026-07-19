@@ -550,11 +550,13 @@ function ThemeConversions({ theme }) {
 
 // ==================== 4. CONCENTRATION EN % ====================
 function ThemeConcentration({ theme }) {
-  const Flacon = ({ pct, remplissage }) => (
+  // Flacon plein de solution ; la couche foncée au fond = la part réelle de principe actif
+  const Flacon = ({ pct, part }) => (
     <div className="relative w-10 h-14 shrink-0">
       <div className="absolute left-1/2 -translate-x-1/2 top-0 w-3.5 h-2.5 rounded-t bg-black/15"></div>
       <div className="absolute inset-x-0 top-2 bottom-0 rounded-xl ring-1 ring-black/10 bg-white overflow-hidden">
-        <div className="absolute bottom-0 inset-x-0" style={{height: remplissage, background: `${theme.couleur}30`}}></div>
+        <div className="absolute bottom-0 inset-x-0" style={{height: '88%', background: `${theme.couleur}16`}}></div>
+        <div className="absolute bottom-0 inset-x-0" style={{height: part, background: `${theme.couleur}66`}}></div>
         <p className="absolute inset-0 flex items-center justify-center text-[9px] font-extrabold" style={{color: theme.couleur}}>{pct}</p>
       </div>
     </div>
@@ -577,12 +579,12 @@ function ThemeConcentration({ theme }) {
         <Eyebrow couleur={theme.couleur}>Traduction concrète</Eyebrow>
         <div className="space-y-3 max-w-xl mx-auto">
           {[
-            ['G5%', '65%', <><strong className="font-bold" style={{color: theme.couleur}}>5 g</strong> de glucose dans 100 ml</>],
-            ['10%', '80%', <><strong className="font-bold" style={{color: theme.couleur}}>10 g</strong> de povidone iodée dans 100 ml (Bétadine)</>],
-            ['0,9%', '35%', <><strong className="font-bold" style={{color: theme.couleur}}>0,9 g</strong> de chlorure de sodium dans 100 ml (NaCl)</>],
-          ].map(([pct, remplissage, texte], i) => (
+            ['G5%', '5%', <><strong className="font-bold" style={{color: theme.couleur}}>5 g</strong> de glucose dans 100 ml</>],
+            ['10%', '10%', <><strong className="font-bold" style={{color: theme.couleur}}>10 g</strong> de povidone iodée dans 100 ml (Bétadine)</>],
+            ['0,9%', '2px', <><strong className="font-bold" style={{color: theme.couleur}}>0,9 g</strong> de chlorure de sodium dans 100 ml (NaCl)</>],
+          ].map(([pct, part, texte], i) => (
             <div key={i} className="flex items-center gap-4 bg-white ring-1 ring-black/[0.06] rounded-2xl px-5 py-3.5 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-              <Flacon pct={pct} remplissage={remplissage} />
+              <Flacon pct={pct} part={part} />
               <p className="text-sm sm:text-[15px] font-medium text-black/60">{texte}</p>
             </div>
           ))}

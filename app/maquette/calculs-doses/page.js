@@ -70,23 +70,24 @@ function ThemeCroix({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>Le geste à retenir</Eyebrow>
         <div className="flex flex-col items-center">
-          <div className="relative w-full max-w-[340px]">
+          <div className="relative w-full max-w-[380px]">
             <p aria-hidden="true" className="absolute -right-4 sm:-right-32 -top-10 sm:-top-3 text-[1.4rem] text-red-500 whitespace-nowrap" style={{fontFamily: "'Caveat', cursive", fontWeight: 700, transform: 'rotate(-5deg)'}}>en diagonale&nbsp;!</p>
-            <div className="grid grid-cols-2 rounded-3xl overflow-hidden ring-1 ring-black/10 bg-white text-center shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
-              <div className="py-3 text-[11px] font-extrabold uppercase tracking-wider text-black/35 bg-black/[0.03] border-b border-black/[0.06]">Quantité</div>
-              <div className="py-3 text-[11px] font-extrabold uppercase tracking-wider text-black/35 bg-black/[0.03] border-b border-l border-black/[0.06]">Volume</div>
-              <div className="py-5 font-bold text-lg text-black/80">500 mg</div>
-              <div className="py-5 font-extrabold text-lg border-l border-black/[0.06]" style={{color: theme.couleur}}>5 ml</div>
-              <div className="py-5 font-extrabold text-lg border-t border-black/[0.06]" style={{color: theme.couleur}}>750 mg</div>
-              <div className="py-5 font-black text-xl border-t border-l border-black/[0.06]" style={{color: theme.couleur, background: theme.clair}}>? ml</div>
+            {/* Cellules flottantes 2×2 */}
+            <div className="grid grid-cols-2 gap-3.5 text-center">
+              <div className="text-[11px] font-extrabold uppercase tracking-widest text-black/35 pb-0.5">Quantité</div>
+              <div className="text-[11px] font-extrabold uppercase tracking-widest text-black/35 pb-0.5">Volume</div>
+              <div className="py-6 rounded-2xl bg-white ring-1 ring-black/[0.08] shadow-[0_10px_28px_rgba(0,0,0,0.05)] font-bold text-lg text-black/75">500 mg</div>
+              <div className="py-6 rounded-2xl font-extrabold text-lg shadow-[0_10px_28px_rgba(0,0,0,0.05)]" style={{background: '#ffffff', boxShadow: `inset 0 0 0 2px ${theme.couleur}55, 0 10px 28px rgba(0,0,0,0.05)`, color: theme.couleur}}>5 ml</div>
+              <div className="py-6 rounded-2xl font-extrabold text-lg shadow-[0_10px_28px_rgba(0,0,0,0.05)]" style={{background: '#ffffff', boxShadow: `inset 0 0 0 2px ${theme.couleur}55, 0 10px 28px rgba(0,0,0,0.05)`, color: theme.couleur}}>750 mg</div>
+              <div className="py-6 rounded-2xl font-black text-xl text-white" style={{background: theme.grad, boxShadow: `0 14px 30px ${theme.couleur}45`}}>? ml</div>
             </div>
+            {/* Diagonale animée 750 → 5, avec le × à l'intersection */}
             <svg aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
-              <line x1="25" y1="79" x2="75" y2="48" stroke={theme.couleur} strokeWidth="2" strokeDasharray="4 3" opacity="0.75" vectorEffect="non-scaling-stroke"/>
-              <circle cx="25" cy="79" r="2.4" fill={theme.couleur} vectorEffect="non-scaling-stroke"/>
-              <circle cx="75" cy="48" r="2.4" fill={theme.couleur} vectorEffect="non-scaling-stroke"/>
+              <line className="fourmis" x1="26" y1="76" x2="74" y2="40" stroke={theme.couleur} strokeWidth="2.5" strokeDasharray="7 6" strokeLinecap="round" opacity="0.8" vectorEffect="non-scaling-stroke"/>
             </svg>
+            <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white flex items-center justify-center font-extrabold text-lg shadow-md" style={{top: '58%', color: theme.couleur, boxShadow: `0 0 0 2.5px ${theme.couleur}, 0 6px 16px rgba(0,0,0,0.12)`}}>×</div>
           </div>
-          <div className="mt-6 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-5 py-2.5 text-base font-bold text-black/70 shadow-sm">
+          <div className="mt-7 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-5 py-2.5 text-base font-bold text-black/70 shadow-sm">
             <span style={{color: theme.couleur}}>750 × 5</span><span className="text-black/30">puis</span><span>÷ 500</span><span className="text-black/30">=</span><span style={{color: theme.couleur}}>7,5 ml</span>
           </div>
         </div>
@@ -459,6 +460,9 @@ export default function MaquetteCalculsDosesPage() {
         /* Goutte du compte-gouttes : chute puis fondu dans le liquide */
         @keyframes goutte-chute { 0% { top: 8%; opacity: 0; transform: translateX(-50%) scale(0.6); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 70% { top: 58%; opacity: 1; } 82% { top: 64%; opacity: 0; } 100% { top: 64%; opacity: 0; } }
         .goutte { animation: goutte-chute 1.6s cubic-bezier(0.45, 0, 0.9, 0.6) infinite; }
+        /* Pointillés de la diagonale qui défilent le long du trait */
+        @keyframes fourmis-marche { to { stroke-dashoffset: -13; } }
+        .fourmis { animation: fourmis-marche 0.9s linear infinite; }
       `}</style>
 
       {/* ===================== EN-TÊTE ===================== */}

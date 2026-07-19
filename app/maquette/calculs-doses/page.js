@@ -805,7 +805,6 @@ export default function MaquetteCalculsDosesPage() {
 
       {/* ===================== APPEL À L'ACTION ===================== */}
       <section className="relative overflow-hidden py-16 sm:py-20 px-5 fade-in-up" style={{background: `linear-gradient(to bottom, ${theme.couleur}0b 0%, #ffffff 100%)`}}>
-        <div aria-hidden="true" className="absolute -top-24 -right-24 w-[28rem] h-[20rem] rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div className="relative max-w-2xl mx-auto text-center">
           <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.couleur}}>Prêt à passer à la pratique&nbsp;?</p>
           <h2 className="text-xl sm:text-2xl font-extrabold tracking-[-0.02em] leading-snug mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>

@@ -74,6 +74,96 @@ const Ligne = ({ children }) => (
   <p className="text-sm text-black/55 font-semibold">{children}</p>
 )
 
+// Exercice interactif du produit en croix : tableau à remplir + case réponse
+function ExerciceCroix({ theme, num, titre, enonce, avant, attendus, unite, bonneReponse, tolerance = 0.01, calcul, resultat }) {
+  const [cellules, setCellules] = useState(['', '', ''])
+  const [reponse, setReponse] = useState('')
+  const [statut, setStatut] = useState('attente') // attente | bravo | revele
+  const [erreur, setErreur] = useState(false)
+
+  const parse = (s) => parseFloat(String(s).replace(/[^\d,.-]/g, '').replace(',', '.'))
+  const celluleOk = (i) => Math.abs(parse(cellules[i]) - attendus[i]) < 0.001
+  const fini = statut !== 'attente'
+
+  const verifier = () => {
+    if (Math.abs(parse(reponse) - bonneReponse) <= tolerance) { setStatut('bravo'); setErreur(false) }
+    else setErreur(true)
+  }
+  const reveler = () => {
+    setCellules(attendus.map(String))
+    setReponse(String(bonneReponse).replace('.', ','))
+    setStatut('revele')
+    setErreur(false)
+  }
+
+  const caseInput = (i) => (
+    <div className={`border-t ${i === 1 ? 'border-l' : ''} border-black/[0.06] flex items-center justify-center transition-colors`} style={fini || celluleOk(i) ? {background: 'rgba(16,185,129,0.10)'} : {}}>
+      <input
+        type="text" inputMode="decimal" placeholder="…" value={cellules[i]} disabled={fini}
+        onChange={(e) => setCellules(c => c.map((v, j) => j === i ? e.target.value : v))}
+        className="w-20 py-2.5 text-center text-sm font-bold bg-transparent outline-none placeholder:text-black/25"
+        aria-label={`Case ${i + 1} du tableau`}
+      />
+    </div>
+  )
+
+  return (
+    <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-2.5 mb-3">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exercice {num}</span>
+        <span className="text-sm font-extrabold text-black/80">{titre}</span>
+      </div>
+      <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed mb-5">{enonce}</p>
+      {avant && <p className="text-sm text-black/50 font-semibold mb-4">{avant}</p>}
+
+      <div className="flex flex-col sm:flex-row sm:items-center gap-5">
+        {/* Tableau à remplir */}
+        <div className="grid grid-cols-3 rounded-xl overflow-hidden ring-1 ring-black/[0.08] bg-white text-center shrink-0 w-max mx-auto sm:mx-0">
+          <div className="bg-black/[0.03] p-2 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35"></div>
+          <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">Quantité</div>
+          <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">Volume</div>
+          <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je sais</div>
+          {caseInput(0)}
+          {caseInput(1)}
+          <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je cherche</div>
+          {caseInput(2)}
+          <div className="p-2.5 px-4 font-black border-t border-l border-black/[0.06]" style={{color: theme.couleur, background: theme.clair}}>?</div>
+        </div>
+
+        {/* Case réponse */}
+        <div className="flex-1">
+          <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+            <span className="text-sm font-bold text-black/60">Ma réponse :</span>
+            <input
+              type="text" inputMode="decimal" placeholder="…" value={reponse} disabled={fini}
+              onChange={(e) => { setReponse(e.target.value); setErreur(false) }}
+              onKeyDown={(e) => { if (e.key === 'Enter' && !fini) verifier() }}
+              className="w-24 px-3 py-2.5 text-center font-extrabold rounded-xl bg-black/[0.03] outline-none transition-all placeholder:text-black/25"
+              style={statut !== 'attente' ? {boxShadow: 'inset 0 0 0 2px #10b981', background: 'rgba(16,185,129,0.08)'} : erreur ? {boxShadow: 'inset 0 0 0 2px #dc2626', background: 'rgba(220,38,38,0.05)'} : {boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)'}}
+              aria-label="Votre réponse"
+            />
+            <span className="text-sm font-bold text-black/60">{unite}</span>
+            {!fini && (
+              <button onClick={verifier} className="ml-1 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer" style={{background: theme.grad, boxShadow: `0 6px 14px ${theme.couleur}40`}}>Vérifier</button>
+            )}
+          </div>
+          {erreur && <p className="mt-2.5 text-sm font-bold text-red-600 text-center sm:text-left">Pas tout à fait — réessayez !</p>}
+          {statut === 'bravo' && <p className="mt-2.5 text-sm font-bold text-emerald-600 text-center sm:text-left">Bonne réponse !</p>}
+          {fini && (
+            <div className="slide-in mt-3 flex flex-col sm:flex-row items-center sm:items-baseline gap-2.5">
+              <Ligne>{calcul}</Ligne>
+              <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
+            </div>
+          )}
+          {!fini && (
+            <button onClick={reveler} className="mt-3 block mx-auto sm:mx-0 text-xs font-bold text-black/35 hover:text-black/60 underline underline-offset-2 transition cursor-pointer">Voir la correction</button>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Mini tableau « Je sais / Je cherche » (la case ? prend la couleur du thème)
 const MiniTableau = ({ theme, c1, c2, sais, cherche }) => {
   const cellule = (v, bordG) => v === '?'
@@ -161,33 +251,22 @@ function ThemeCroix({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
-          <Exemple theme={theme} num="1" titre="Amoxicilline"
+          <ExerciceCroix theme={theme} num="1" titre="Amoxicilline"
             enonce={<>Le médecin prescrit <strong className="font-bold" style={{color: theme.couleur}}>750 mg</strong> d&apos;amoxicilline à votre patient. Vous disposez de flacons dosés à <strong className="font-bold" style={{color: theme.couleur}}>500 mg pour 5 ml</strong>. Quel volume devez-vous prélever&nbsp;?</>}
-            resultat="= 7,5 ml">
-            <div className="flex flex-col sm:flex-row items-center gap-5">
-              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['500 mg', '5 ml']} cherche={['750 mg', '?']} />
-              <Ligne>(750 × 5) / 500 = 3 750 / 500</Ligne>
-            </div>
-          </Exemple>
-          <Exemple theme={theme} num="2" titre="Paracétamol"
+            attendus={[500, 5, 750]} unite="ml" bonneReponse={7.5}
+            calcul="(750 × 5) ÷ 500 = 3 750 ÷ 500" resultat="= 7,5 ml"
+          />
+          <ExerciceCroix theme={theme} num="2" titre="Paracétamol"
             enonce={<>Un enfant doit recevoir <strong className="font-bold" style={{color: theme.couleur}}>200 mg</strong> de paracétamol. Le sirop disponible est dosé à <strong className="font-bold" style={{color: theme.couleur}}>120 mg pour 5 ml</strong>. Quelle quantité de sirop faut-il administrer&nbsp;?</>}
-            resultat="≈ 8,3 ml">
-            <div className="flex flex-col sm:flex-row items-center gap-5">
-              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['120 mg', '5 ml']} cherche={['200 mg', '?']} />
-              <Ligne>(200 × 5) / 120 = 1 000 / 120</Ligne>
-            </div>
-          </Exemple>
-          <Exemple theme={theme} num="3" titre="Piège unités !"
+            attendus={[120, 5, 200]} unite="ml" bonneReponse={8.33} tolerance={0.06}
+            calcul="(200 × 5) ÷ 120 = 1 000 ÷ 120" resultat="≈ 8,3 ml"
+          />
+          <ExerciceCroix theme={theme} num="3" titre="Piège unités !"
             enonce={<>La prescription indique <strong className="font-bold" style={{color: theme.couleur}}>0,5 g</strong> d&apos;un médicament, mais vous ne disposez que d&apos;ampoules de <strong className="font-bold" style={{color: theme.couleur}}>250 mg pour 2 ml</strong>. Quel volume devez-vous injecter&nbsp;?</>}
-            resultat="= 4 ml">
-            <div className="flex flex-col sm:flex-row items-center gap-5">
-              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['250 mg', '2 ml']} cherche={['500 mg', '?']} />
-              <div className="space-y-1.5">
-                <Ligne>Je convertis d&apos;abord : 0,5 g = <strong className="text-black/80">500 mg</strong></Ligne>
-                <Ligne>(500 × 2) / 250 = 1 000 / 250</Ligne>
-              </div>
-            </div>
-          </Exemple>
+            avant={<>Indice : convertissez d&apos;abord les grammes en milligrammes avant de poser le tableau.</>}
+            attendus={[250, 2, 500]} unite="ml" bonneReponse={4}
+            calcul="0,5 g = 500 mg, puis (500 × 2) ÷ 250 = 1 000 ÷ 250" resultat="= 4 ml"
+          />
         </div>
       </div>
 

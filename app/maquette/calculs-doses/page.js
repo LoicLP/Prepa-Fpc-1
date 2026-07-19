@@ -142,8 +142,8 @@ function ThemeCroix({ theme }) {
           </div>
           {/* Le calcul s'écrit au rythme des phases de l'animation */}
           <div className="mt-7 flex items-center justify-center gap-2.5 text-lg font-bold text-black/70 h-7" aria-hidden="true">
-            <span className="pc-txt1" style={{color: theme.couleur}}>750 × 5</span>
-            <span className="pc-txt2 inline-flex items-center gap-2.5"><span className="text-black/30 font-semibold">puis</span><span>÷ 500</span></span>
+            <span className="pc-txt1" style={{color: theme.couleur}}>(750 × 5)</span>
+            <span className="pc-txt2">÷ 500</span>
             <span className="pc-txt3 inline-flex items-center gap-2.5"><span className="text-black/30">=</span><span style={{color: theme.couleur}}>7,5 ml</span></span>
           </div>
         </div>

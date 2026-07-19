@@ -173,6 +173,13 @@ export default function MaquetteAuthPage() {
         .glisse-sortie-d { animation: glisseSortieD .3s cubic-bezier(.55,.06,.68,.19) forwards }
         .glisse-entree-d { animation: glisseEntreeD .4s cubic-bezier(.22,1,.36,1) forwards }
         .glisse-entree-g { animation: glisseEntreeG .4s cubic-bezier(.22,1,.36,1) forwards }
+        /* Neutralise le fond bleu du remplissage automatique de Chrome */
+        input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+          -webkit-box-shadow: 0 0 0 1000px #f7f7f7 inset;
+          -webkit-text-fill-color: #0d0d0d;
+          caret-color: #0d0d0d;
+          transition: background-color 9999s ease-in-out 0s;
+        }
       `}</style>
 
       {/* ===================== COLONNE GAUCHE : FORMULAIRE ===================== */}

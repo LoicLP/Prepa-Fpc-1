@@ -109,12 +109,7 @@ const Ligne = ({ children }) => (
 // Badge de niveau de difficulté (Facile / Moyen / Difficile), aux couleurs du thème
 const NIVEAUX = { 1: 'Facile', 2: 'Moyen', 3: 'Difficile' }
 const Difficulte = ({ niveau, theme }) => (
-  <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>
-    <span className="flex gap-0.5">
-      {[1, 2, 3].map(i => (
-        <span key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i <= niveau ? theme.couleur : 'rgba(0,0,0,0.12)' }}></span>
-      ))}
-    </span>
+  <span className="ml-auto inline-flex items-center text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>
     {NIVEAUX[niveau]}
   </span>
 )

@@ -477,10 +477,6 @@ export default function MaquetteCalculsDosesPage() {
         <div aria-hidden="true" className="absolute top-40 -left-24 w-96 h-72 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div aria-hidden="true" className="absolute top-[45%] -right-28 w-80 h-64 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}10`}}></div>
         <div aria-hidden="true" className="absolute bottom-32 -left-20 w-72 h-56 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}0d`}}></div>
-        <svg aria-hidden="true" className="absolute top-[16%] left-[9%] w-6 h-6 hidden lg:block pointer-events-none" style={{color: `${theme.couleur}45`, transform: 'rotate(-10deg)'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        <svg aria-hidden="true" className="absolute top-[34%] right-[7%] w-4 h-4 hidden lg:block pointer-events-none" style={{color: `${theme.couleur}38`, transform: 'rotate(18deg)'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        <svg aria-hidden="true" className="absolute top-[58%] left-[6%] w-5 h-5 hidden lg:block pointer-events-none" style={{color: `${theme.couleur}30`, transform: 'rotate(-14deg)'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
-        <svg aria-hidden="true" className="absolute bottom-[14%] right-[10%] w-5 h-5 hidden lg:block pointer-events-none" style={{color: `${theme.couleur}40`, transform: 'rotate(12deg)'}} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M12 5v14M5 12h14"/></svg>
 
         <div className="relative max-w-3xl mx-auto">
           {/* Les 4 interrupteurs de thème (collants au défilement) */}

@@ -52,33 +52,50 @@ const Pieges = ({ theme, items }) => (
   </div>
 )
 
-// Carte d'exemple générique : l'énoncé est visible, la réponse se révèle au clic
-const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat }) => {
-  const [revele, setRevele] = useState(false)
+// Carte d'exercice générique : l'utilisateur répond, « Vérifier » mène à la correction
+const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat, unite, bonneReponse, tolerance = 0.01 }) => {
+  const [reponse, setReponse] = useState('')
+  const [statut, setStatut] = useState('attente') // attente | bravo | rate
+  const fini = statut !== 'attente'
+
+  const verifier = () => {
+    const v = parseFloat(String(reponse).replace(/[^\d,.-]/g, '').replace(',', '.'))
+    setStatut(Math.abs(v - bonneReponse) <= tolerance ? 'bravo' : 'rate')
+  }
+
   return (
     <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
       <div className="flex items-center gap-2.5 mb-3">
-        <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exemple {num}</span>
+        <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exercice {num}</span>
         <span className="text-sm font-extrabold text-black/80">{titre}</span>
         {niveau && <Difficulte niveau={niveau} />}
       </div>
-      <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed">{enonce}</p>
-      {revele ? (
-        <div className="slide-in mt-5">
+      <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed mb-5">{enonce}</p>
+
+      <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+        <span className="text-sm font-bold text-black/60">Ma réponse :</span>
+        <input
+          type="text" inputMode="decimal" placeholder="…" value={reponse} disabled={fini}
+          onChange={(e) => setReponse(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter' && !fini) verifier() }}
+          className="w-24 px-3 py-2.5 text-center font-extrabold rounded-xl bg-black/[0.03] outline-none transition-all placeholder:text-black/25"
+          style={statut === 'bravo' ? {boxShadow: 'inset 0 0 0 2px #10b981', background: 'rgba(16,185,129,0.08)'} : statut === 'rate' ? {boxShadow: 'inset 0 0 0 2px #dc2626', background: 'rgba(220,38,38,0.05)'} : {boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)'}}
+          aria-label="Votre réponse"
+        />
+        <span className="text-sm font-bold text-black/60">{unite}</span>
+        {!fini && (
+          <button onClick={verifier} className="ml-1 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer" style={{background: theme.grad, boxShadow: `0 6px 14px ${theme.couleur}40`}}>Vérifier</button>
+        )}
+      </div>
+      {statut === 'rate' && <p className="mt-2.5 text-sm font-bold text-red-600 text-center sm:text-left">Pas tout à fait — voici la correction :</p>}
+      {statut === 'bravo' && <p className="mt-2.5 text-sm font-bold text-emerald-600 text-center sm:text-left">Bonne réponse !</p>}
+      {fini && (
+        <div className="slide-in mt-4">
           {children}
           <div className="mt-5 text-center sm:text-left">
             <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
           </div>
         </div>
-      ) : (
-        <button
-          onClick={() => setRevele(true)}
-          className="mt-5 inline-flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer"
-          style={{ color: theme.couleur, boxShadow: `inset 0 0 0 1.5px ${theme.couleur}55` }}
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          Voir la réponse
-        </button>
       )}
     </div>
   )
@@ -383,7 +400,7 @@ function ThemeDebit({ theme }) {
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" niveau={1} titre="Perfusion standard"
             enonce={<>Vous devez perfuser <strong className="font-bold" style={{color: theme.couleur}}>1 000 ml</strong> de NaCl sur <strong className="font-bold" style={{color: theme.couleur}}>6 heures</strong> avec une tubulure standard (×20). À quel débit devez-vous régler la perfusion&nbsp;?</>}
-            resultat="≈ 56 gouttes/min">
+            unite="gouttes/min" bonneReponse={56} tolerance={0.7} resultat="≈ 56 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '1 000 ml'], ['Temps', '360 min'], ['Tubulure', '×20']]} />
               <div className="space-y-1.5">
@@ -395,7 +412,7 @@ function ThemeDebit({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="2" niveau={2} titre="Formule simplifiée"
             enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> doit passer en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong> avec une tubulure standard (×20). Calculez le débit — et gagnez du temps avec l&apos;astuce 20 / 60 = 1/3.</>}
-            resultat="≈ 42 gouttes/min">
+            unite="gouttes/min" bonneReponse={42} tolerance={0.7} resultat="≈ 42 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '250 ml'], ['Temps', '120 min'], ['Tubulure', '×20']]} />
               <div className="space-y-1.5">
@@ -406,7 +423,7 @@ function ThemeDebit({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="3" niveau={3} titre="Perfusion pédiatrique"
             enonce={<>En pédiatrie, vous devez administrer <strong className="font-bold" style={{color: theme.couleur}}>100 ml</strong> de G5% sur <strong className="font-bold" style={{color: theme.couleur}}>4 heures</strong> avec une tubulure pédiatrique (×60). Quel débit régler&nbsp;?</>}
-            resultat="= 25 gouttes/min">
+            unite="gouttes/min" bonneReponse={25} resultat="= 25 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '100 ml'], ['Temps', '240 min'], ['Tubulure', '×60']]} />
               <div className="space-y-1.5">
@@ -489,7 +506,7 @@ function ThemeConversions({ theme }) {
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" niveau={1} titre="Gramme vers milligramme"
             enonce={<>La prescription est rédigée en grammes — <strong className="font-bold" style={{color: theme.couleur}}>0,075 g</strong> — mais votre matériel est gradué en <strong className="font-bold" style={{color: theme.couleur}}>milligrammes</strong>. Convertissez pour préparer la dose.</>}
-            resultat="= 75 mg">
+            unite="mg" bonneReponse={75} resultat="= 75 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">0<span style={{color: theme.couleur}}>,</span>075</p>
               <p className="text-xs font-bold my-1.5" style={{color: theme.couleur}}>virgule → 3 rangs vers la droite</p>
@@ -498,7 +515,7 @@ function ThemeConversions({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="2" niveau={2} titre="Microgramme vers milligramme"
             enonce={<>Le flacon affiche <strong className="font-bold" style={{color: theme.couleur}}>2 500 µg</strong>, mais la feuille de prescription parle en <strong className="font-bold" style={{color: theme.couleur}}>mg</strong>. Combien cela fait-il&nbsp;?</>}
-            resultat="= 2,5 mg">
+            unite="mg" bonneReponse={2.5} resultat="= 2,5 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">2500<span style={{color: theme.couleur}}>,</span>0</p>
               <p className="text-xs font-bold my-1.5" style={{color: theme.couleur}}>virgule ← 3 rangs vers la gauche</p>
@@ -507,7 +524,7 @@ function ThemeConversions({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="3" niveau={3} titre="Double saut : g vers µg"
             enonce={<>Un traitement très concentré indique <strong className="font-bold" style={{color: theme.couleur}}>0,003 g</strong> de principe actif. Exprimez cette dose en <strong className="font-bold" style={{color: theme.couleur}}>microgrammes</strong> — attention, il y a deux paliers à franchir.</>}
-            resultat="= 3 000 µg">
+            unite="µg" bonneReponse={3000} resultat="= 3 000 µg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">0<span style={{color: theme.couleur}}>,</span>003000</p>
               <p className="text-xs font-bold my-1.5" style={{color: theme.couleur}}>virgule → 6 rangs vers la droite</p>
@@ -583,7 +600,7 @@ function ThemeConcentration({ theme }) {
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" niveau={1} titre="G5%, flacon 500 ml"
             enonce={<>Vous posez un flacon de <strong className="font-bold" style={{color: theme.couleur}}>G5%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>500 ml</strong> à votre patient. Quelle quantité de glucose va-t-il recevoir au total&nbsp;?</>}
-            resultat="= 25 g de glucose">
+            unite="g" bonneReponse={25} resultat="= 25 g de glucose">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['5 g', '100 ml']} cherche={['?', '500 ml']} />
               <div className="space-y-1.5">
@@ -594,7 +611,7 @@ function ThemeConcentration({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="2" niveau={2} titre="Bétadine 10%, flacon 125 ml"
             enonce={<>Vous préparez un pansement avec un flacon de <strong className="font-bold" style={{color: theme.couleur}}>Bétadine 10%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>125 ml</strong>. Quelle masse de povidone iodée contient-il&nbsp;?</>}
-            resultat="= 12,5 g">
+            unite="g" bonneReponse={12.5} resultat="= 12,5 g">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['10 g', '100 ml']} cherche={['?', '125 ml']} />
               <div className="space-y-1.5">
@@ -605,7 +622,7 @@ function ThemeConcentration({ theme }) {
           </Exemple>
           <Exemple theme={theme} num="3" niveau={3} titre="NaCl 0,9%, poche 1 L (piège !)"
             enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>NaCl 0,9%</strong> d&apos;<strong className="font-bold" style={{color: theme.couleur}}>1 litre</strong> est posée dans la chambre 12. Quelle quantité de chlorure de sodium contient-elle&nbsp;? Attention au piège du litre&nbsp;!</>}
-            resultat="= 9 g de NaCl">
+            unite="g" bonneReponse={9} resultat="= 9 g de NaCl">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['0,9 g', '100 ml']} cherche={['?', '1 000 ml']} />
               <div className="space-y-1.5">

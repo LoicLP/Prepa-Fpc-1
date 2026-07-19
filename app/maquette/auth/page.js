@@ -1,52 +1,67 @@
 'use client'
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 
-// Nuage de petits points qui flottent derrière la carte (repris du hero)
-function ParticleField() {
-  const canvasRef = useRef(null)
-  useEffect(() => {
-    const canvas = canvasRef.current
-    const ctx = canvas.getContext('2d')
-    let raf, w, h
-    const dots = []
-    const resize = () => {
-      w = canvas.width = canvas.offsetWidth * devicePixelRatio
-      h = canvas.height = canvas.offsetHeight * devicePixelRatio
-    }
-    resize()
-    window.addEventListener('resize', resize)
-    const N = Math.round((canvas.offsetWidth * canvas.offsetHeight) / 14000)
-    for (let i = 0; i < N; i++) {
-      dots.push({
-        x: Math.random() * w, y: Math.random() * h,
-        r: (Math.random() * 1.6 + 0.8) * devicePixelRatio,
-        vx: (Math.random() - 0.5) * 0.35 * devicePixelRatio,
-        vy: (Math.random() - 0.5) * 0.3 * devicePixelRatio,
-        red: Math.random() < 0.12,
-        phase: Math.random() * Math.PI * 2,
-      })
-    }
-    const draw = () => {
-      ctx.clearRect(0, 0, w, h)
-      const t = performance.now() / 1000
-      for (const d of dots) {
-        d.x += d.vx + Math.sin(t * 0.6 + d.phase) * 0.12 * devicePixelRatio
-        d.y += d.vy + Math.cos(t * 0.5 + d.phase) * 0.1 * devicePixelRatio
-        if (d.x < -10) d.x = w + 10; if (d.x > w + 10) d.x = -10
-        if (d.y < -10) d.y = h + 10; if (d.y > h + 10) d.y = -10
-        const tw = 0.5 + 0.5 * Math.sin(t * 1.2 + d.phase * 2)
-        ctx.beginPath()
-        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
-        ctx.fillStyle = d.red ? `rgba(220,38,38,${0.25 + tw * 0.3})` : `rgba(13,13,13,${0.10 + tw * 0.14})`
-        ctx.fill()
-      }
-      raf = requestAnimationFrame(draw)
-    }
-    draw()
-    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
-  }, [])
-  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" style={{maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)'}} />
+// Carte démo du panneau droit (façon Partielo) : CV téléversé → questions générées
+function DemoOral() {
+  return (
+    <div className="relative bg-white rounded-[22px] shadow-[0_24px_70px_rgba(0,0,0,0.10)] ring-1 ring-black/[0.05] w-[440px] max-w-full p-7">
+      {/* Badge incliné */}
+      <span className="absolute -top-4 -right-3 bg-red-600 text-white text-xs font-extrabold uppercase tracking-widest px-4 py-2 rounded-full shadow-lg shadow-red-600/30" style={{transform: 'rotate(12deg)'}}>Nouveau</span>
+
+      <p className="text-[11px] font-extrabold uppercase tracking-widest text-red-600 mb-4">Préparation à l&apos;oral</p>
+
+      {/* CV téléversé */}
+      <div className="flex items-center gap-3 bg-black/[0.03] ring-1 ring-black/[0.06] rounded-2xl px-4 py-3.5 mb-4">
+        <div className="w-9 h-9 rounded-xl bg-red-600/10 text-red-600 flex items-center justify-center shrink-0">
+          <svg className="w-4.5 h-4.5 w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/></svg>
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-bold truncate">cv_marie_dupont.pdf</p>
+          <p className="text-xs font-semibold text-black/40">1,2 MB · Téléversé</p>
+        </div>
+        <svg className="w-5 h-5 text-emerald-500 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4 12 14.01l-3-3"/></svg>
+      </div>
+
+      {/* Infos extraites */}
+      <div className="grid grid-cols-3 gap-2.5 mb-5">
+        <div className="bg-black/[0.03] rounded-xl px-3 py-2.5">
+          <p className="text-[9px] font-extrabold uppercase tracking-widest text-black/35">Poste</p>
+          <p className="text-[13px] font-bold truncate">Aide-soignante</p>
+        </div>
+        <div className="bg-black/[0.03] rounded-xl px-3 py-2.5">
+          <p className="text-[9px] font-extrabold uppercase tracking-widest text-black/35">Expérience</p>
+          <p className="text-[13px] font-bold truncate">8 ans</p>
+        </div>
+        <div className="bg-black/[0.03] rounded-xl px-3 py-2.5">
+          <p className="text-[9px] font-extrabold uppercase tracking-widest text-black/35">Projet</p>
+          <p className="text-[13px] font-bold truncate">IFSI 2026</p>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-2.5 mb-4">
+        <span className="text-[10px] font-extrabold uppercase tracking-widest bg-red-600 text-white px-2 py-0.5 rounded-md">IA</span>
+        <p className="text-sm font-bold">10 questions de jury personnalisées prêtes</p>
+      </div>
+
+      {/* Questions générées */}
+      <div className="grid grid-cols-2 gap-2.5">
+        {[
+          ['Parcours', 'Racontez votre reconversion'],
+          ['Motivation', 'Pourquoi infirmière ?'],
+          ['Métier IDE', 'Le rôle au quotidien'],
+          ['Expérience', 'Une situation marquante'],
+          ['Projet', 'Vous, après l’IFSI'],
+          ['Jury', 'Vos points forts'],
+        ].map(([cat, q], i) => (
+          <div key={i} className="ring-1 ring-black/[0.07] rounded-xl px-3 py-2.5">
+            <p className="text-[9px] font-extrabold uppercase tracking-widest text-red-600">{cat}</p>
+            <p className="text-[13px] font-semibold text-black/70 leading-snug">{q}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
 }
 
 export default function MaquetteAuthPage() {
@@ -138,7 +153,7 @@ export default function MaquetteAuthPage() {
   const inputClass = "w-full pl-11 pr-4 py-3.5 bg-black/[0.03] ring-1 ring-black/[0.08] rounded-2xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none transition font-medium placeholder:text-black/25"
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-5 pt-[96px] pb-16 overflow-hidden" style={{background: 'linear-gradient(to bottom, #ffffff 0%, #f7f6f4 160px, #f7f6f4 calc(100% - 120px), #ffffff 100%)'}}>
+    <section className="relative lg:grid lg:grid-cols-2 min-h-screen">
       <style>{`
         @keyframes glisseSortieG { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(-80px) scale(.96) } }
         @keyframes glisseSortieD { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(80px) scale(.96) } }
@@ -149,131 +164,127 @@ export default function MaquetteAuthPage() {
         .glisse-entree-d { animation: glisseEntreeD .4s cubic-bezier(.22,1,.36,1) forwards }
         .glisse-entree-g { animation: glisseEntreeG .4s cubic-bezier(.22,1,.36,1) forwards }
       `}</style>
-      {/* Décorations */}
-      <ParticleField />
-      <div aria-hidden="true" className="absolute top-24 -left-24 w-80 h-64 bg-red-500/[0.09] rounded-full blur-3xl pointer-events-none"></div>
-      <div aria-hidden="true" className="absolute bottom-16 -right-20 w-72 h-56 bg-indigo-500/[0.07] rounded-full blur-3xl pointer-events-none"></div>
-      <svg aria-hidden="true" className="absolute top-[24%] left-[13%] w-6 h-6 text-black/[0.12] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-10deg)'}}><path d="M12 5v14M5 12h14"/></svg>
-      <svg aria-hidden="true" className="absolute bottom-[20%] left-[19%] w-4 h-4 text-red-500/30 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(18deg)'}}><path d="M12 5v14M5 12h14"/></svg>
-      <svg aria-hidden="true" className="absolute top-[30%] right-[14%] w-5 h-5 text-black/[0.1] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-14deg)'}}><path d="M12 5v14M5 12h14"/></svg>
-      <svg aria-hidden="true" className="absolute bottom-[26%] right-[10%] w-4 h-4 text-red-500/25 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(12deg)'}}><path d="M12 5v14M5 12h14"/></svg>
 
-      {signupSuccess ? (
-        <div className="relative max-w-md w-full bg-white rounded-[28px] ring-1 ring-black/[0.07] shadow-[0_24px_60px_rgba(0,0,0,0.08)] p-8 sm:p-10 text-center">
-          <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-          </div>
-          <h2 className="text-2xl font-extrabold tracking-tight mb-2">Vérifiez votre email</h2>
-          <p className="text-black/50 font-medium">Un lien de confirmation a été envoyé à <strong className="font-bold text-black/80">{signupEmail}</strong>.</p>
-          <button onClick={() => { setSignupSuccess(false); switchTo('login') }} className="inline-block mt-7 bg-[#0d0d0d] hover:bg-black/85 text-white font-bold px-7 py-3.5 rounded-full transition cursor-pointer">Aller à la connexion</button>
-        </div>
-      ) : (
-      <div className={`relative max-w-md w-full bg-white rounded-[28px] ring-1 ring-black/[0.07] shadow-[0_24px_60px_rgba(0,0,0,0.08)] p-8 sm:p-10 ${sliding}`}>
-        <div className="flex flex-col items-center mb-8">
-          <div className="bg-red-600 text-white p-3 rounded-2xl shadow-lg shadow-red-600/25 mb-5">
-            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
-          </div>
-          <h1 className="text-2xl font-extrabold tracking-tight mb-1.5 text-center">
-            {mode === 'login' ? 'Connectez-vous' : 'Débutez votre essai de 7 jours'}
-          </h1>
-          <p className="text-black/50 font-medium text-center">
-            {mode === 'login' ? "pour accéder à votre espace d'entraînement." : 'Commencez votre entraînement pour le concours FPC.'}
-          </p>
-        </div>
-
-        <button type="button" onClick={handleGoogle} className="w-full bg-white ring-1 ring-black/10 hover:bg-black/[0.03] font-bold text-base py-3.5 rounded-full transition flex items-center justify-center gap-3 mb-6 cursor-pointer">
-          {GoogleIcon} {mode === 'login' ? 'Continuer avec Google' : "S'inscrire avec Google"}
-        </button>
-
-        <div className="relative flex items-center mb-6">
-          <div className="flex-grow border-t border-black/[0.08]"></div>
-          <span className="flex-shrink-0 mx-4 text-black/35 text-xs font-extrabold uppercase tracking-widest">ou par email</span>
-          <div className="flex-grow border-t border-black/[0.08]"></div>
-        </div>
-
-        {mode === 'login' ? (
-          <>
-            {loginError && <div className="bg-red-500/[0.06] ring-1 ring-red-500/20 text-red-600 text-sm font-bold p-3.5 rounded-2xl mb-4">{loginError}</div>}
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                  <input type="email" required placeholder="marie.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass}/>
-                </div>
-              </div>
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-sm font-bold text-black/70">Mot de passe</label>
-                  <a href="/forgot-password" className="text-xs font-bold text-red-600 hover:text-red-500 transition">Oublié&nbsp;?</a>
-                </div>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                  <input type={showLoginPass?"text":"password"} required placeholder="••••••••" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} className={inputClass + ' pr-12'}/>
-                  <button type="button" onClick={()=>setShowLoginPass(!showLoginPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showLoginPass?EyeClosed:EyeOpen}</button>
-                </div>
-              </div>
-              <button type="submit" disabled={loginLoading} className="btn-shine w-full bg-[#0d0d0d] hover:bg-black/85 text-white font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 group cursor-pointer">
-                {loginLoading?'Connexion en cours...':'Se connecter'}
-                {!loginLoading && <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>}
-              </button>
-            </form>
-            <div className="mt-8 text-center border-t border-black/[0.06] pt-6">
-              <p className="text-black/50 font-medium text-sm">Pas encore de compte&nbsp;? <button onClick={()=>switchTo('signup')} className="text-red-600 font-bold hover:text-red-500 transition ml-1 cursor-pointer">S&apos;inscrire gratuitement</button></p>
+      {/* ===================== COLONNE GAUCHE : FORMULAIRE ===================== */}
+      <div className="flex items-center justify-center px-6 pt-[110px] pb-14 min-h-screen">
+        {signupSuccess ? (
+          <div className="max-w-[420px] w-full text-center">
+            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-5">
+              <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
             </div>
-          </>
+            <h2 className="text-3xl font-extrabold tracking-tight mb-2">Vérifiez votre email</h2>
+            <p className="text-black/50 font-medium">Un lien de confirmation a été envoyé à <strong className="font-bold text-black/80">{signupEmail}</strong>.</p>
+            <button onClick={() => { setSignupSuccess(false); switchTo('login') }} className="inline-block mt-7 bg-[#0d0d0d] hover:bg-black/85 text-white font-bold px-7 py-3.5 rounded-full transition cursor-pointer">Aller à la connexion</button>
+          </div>
         ) : (
-          <>
-            {signupError && <div className="bg-red-500/[0.06] ring-1 ring-red-500/20 text-red-600 text-sm font-bold p-3.5 rounded-2xl mb-4">{signupError}</div>}
-            <form onSubmit={handleSignup} className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold text-black/70 mb-1.5">Prénom</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{UserIcon}</div>
-                  <input type="text" required placeholder="Marie" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass}/>
+        <div className={`max-w-[420px] w-full ${sliding}`}>
+          <h1 className="text-4xl sm:text-[2.9rem] font-extrabold tracking-[-0.03em] leading-[1.05] mb-3">
+            {mode === 'login' ? 'Bon retour !' : 'Débutez votre essai de 7 jours'}
+          </h1>
+          <p className="text-black/50 font-medium text-lg mb-8">
+            {mode === 'login' ? 'Connectez-vous pour reprendre votre entraînement.' : 'Commencez votre entraînement pour le concours FPC.'}
+          </p>
+
+          <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-2.5">Encore plus rapide avec votre compte Google</p>
+          <button type="button" onClick={handleGoogle} className="w-full bg-white ring-1 ring-black/10 hover:bg-black/[0.03] font-bold text-base py-3.5 rounded-full transition flex items-center justify-center gap-3 mb-6 cursor-pointer">
+            {GoogleIcon} {mode === 'login' ? 'Continuer avec Google' : "S'inscrire avec Google"}
+          </button>
+
+          <div className="relative flex items-center mb-6">
+            <div className="flex-grow border-t border-black/[0.08]"></div>
+            <span className="flex-shrink-0 mx-4 text-black/35 text-xs font-extrabold uppercase tracking-widest">ou par email</span>
+            <div className="flex-grow border-t border-black/[0.08]"></div>
+          </div>
+
+          {mode === 'login' ? (
+            <>
+              {loginError && <div className="bg-red-500/[0.06] ring-1 ring-red-500/20 text-red-600 text-sm font-bold p-3.5 rounded-2xl mb-4">{loginError}</div>}
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
+                    <input type="email" required placeholder="marie.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass}/>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                  <input type="email" required placeholder="marie.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass}/>
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-sm font-bold text-black/70">Mot de passe</label>
+                    <a href="/forgot-password" className="text-xs font-bold text-red-600 hover:text-red-500 transition">Oublié&nbsp;?</a>
+                  </div>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
+                    <input type={showLoginPass?"text":"password"} required placeholder="••••••••" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <button type="button" onClick={()=>setShowLoginPass(!showLoginPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showLoginPass?EyeClosed:EyeOpen}</button>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-black/70 mb-1.5">Mot de passe</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                  <input type={showSignupPass?"text":"password"} required placeholder="••••••••" value={signupPassword} onChange={e=>setSignupPassword(e.target.value)} className={inputClass + ' pr-12'}/>
-                  <button type="button" onClick={()=>setShowSignupPass(!showSignupPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showSignupPass?EyeClosed:EyeOpen}</button>
+                <button type="submit" disabled={loginLoading} className="btn-shine w-full bg-[#0d0d0d] hover:bg-black/85 text-white font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 group cursor-pointer">
+                  {loginLoading?'Connexion en cours...':'Se connecter'}
+                  {!loginLoading && <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>}
+                </button>
+              </form>
+              <p className="mt-7 text-center text-black/50 font-medium text-sm">Pas encore de compte&nbsp;? <button onClick={()=>switchTo('signup')} className="text-red-600 font-bold hover:text-red-500 transition ml-1 cursor-pointer">S&apos;inscrire gratuitement</button></p>
+            </>
+          ) : (
+            <>
+              {signupError && <div className="bg-red-500/[0.06] ring-1 ring-red-500/20 text-red-600 text-sm font-bold p-3.5 rounded-2xl mb-4">{signupError}</div>}
+              <form onSubmit={handleSignup} className="space-y-4">
+                <div>
+                  <label className="block text-sm font-bold text-black/70 mb-1.5">Prénom</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{UserIcon}</div>
+                    <input type="text" required placeholder="Marie" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass}/>
+                  </div>
                 </div>
-                <div className="mt-3 grid grid-cols-2 gap-y-1.5 text-xs font-bold">
-                  <div className={`flex items-center gap-1.5 transition-colors ${checks.len?'text-red-600':'text-black/30'}`}>{CheckCircle} 8+ caractères</div>
-                  <div className={`flex items-center gap-1.5 transition-colors ${checks.upper?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Majuscule</div>
-                  <div className={`flex items-center gap-1.5 transition-colors ${checks.num?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Chiffre</div>
-                  <div className={`flex items-center gap-1.5 transition-colors ${checks.spec?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Caractère spécial</div>
+                <div>
+                  <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
+                    <input type="email" required placeholder="marie.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass}/>
+                  </div>
                 </div>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-black/70 mb-1.5">Confirmer le mot de passe</label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                  <input type={showConfirm?"text":"password"} required placeholder="••••••••" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className={inputClass + ' pr-12'}/>
-                  <button type="button" onClick={()=>setShowConfirm(!showConfirm)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showConfirm?EyeClosed:EyeOpen}</button>
+                <div>
+                  <label className="block text-sm font-bold text-black/70 mb-1.5">Mot de passe</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
+                    <input type={showSignupPass?"text":"password"} required placeholder="••••••••" value={signupPassword} onChange={e=>setSignupPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <button type="button" onClick={()=>setShowSignupPass(!showSignupPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showSignupPass?EyeClosed:EyeOpen}</button>
+                  </div>
+                  <div className="mt-3 grid grid-cols-2 gap-y-1.5 text-xs font-bold">
+                    <div className={`flex items-center gap-1.5 transition-colors ${checks.len?'text-red-600':'text-black/30'}`}>{CheckCircle} 8+ caractères</div>
+                    <div className={`flex items-center gap-1.5 transition-colors ${checks.upper?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Majuscule</div>
+                    <div className={`flex items-center gap-1.5 transition-colors ${checks.num?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Chiffre</div>
+                    <div className={`flex items-center gap-1.5 transition-colors ${checks.spec?'text-red-600':'text-black/30'}`}>{CheckCircle} 1 Caractère spécial</div>
+                  </div>
                 </div>
-                {confirmPassword && !matches && <p className="text-xs text-red-600 font-bold mt-1.5">Les mots de passe ne correspondent pas.</p>}
-              </div>
-              <button type="submit" disabled={!canSubmit||signupLoading} className={`w-full font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 ${canSubmit&&!signupLoading?'btn-shine bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/25 cursor-pointer':'bg-black/[0.05] text-black/30 cursor-not-allowed'}`}>
-                {signupLoading?'Création en cours...':'Créer mon compte'}
-              </button>
-            </form>
-            <div className="mt-8 text-center border-t border-black/[0.06] pt-6">
-              <p className="text-black/50 font-medium text-sm">Déjà un compte&nbsp;? <button onClick={()=>switchTo('login')} className="text-red-600 font-bold hover:text-red-500 transition ml-1 cursor-pointer">Se connecter</button></p>
-            </div>
-          </>
+                <div>
+                  <label className="block text-sm font-bold text-black/70 mb-1.5">Confirmer le mot de passe</label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
+                    <input type={showConfirm?"text":"password"} required placeholder="••••••••" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <button type="button" onClick={()=>setShowConfirm(!showConfirm)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showConfirm?EyeClosed:EyeOpen}</button>
+                  </div>
+                  {confirmPassword && !matches && <p className="text-xs text-red-600 font-bold mt-1.5">Les mots de passe ne correspondent pas.</p>}
+                </div>
+                <button type="submit" disabled={!canSubmit||signupLoading} className={`w-full font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 ${canSubmit&&!signupLoading?'btn-shine bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/25 cursor-pointer':'bg-black/[0.05] text-black/30 cursor-not-allowed'}`}>
+                  {signupLoading?'Création en cours...':'Créer mon compte'}
+                </button>
+              </form>
+              <p className="mt-7 text-center text-black/50 font-medium text-sm">Déjà un compte&nbsp;? <button onClick={()=>switchTo('login')} className="text-red-600 font-bold hover:text-red-500 transition ml-1 cursor-pointer">Se connecter</button></p>
+            </>
+          )}
+
+          <p className="mt-8 text-center text-xs text-black/35 font-medium leading-relaxed">En continuant sur Prépa FPC, vous acceptez nos <a href="/cgu" className="underline hover:text-black/60 transition">Conditions Générales d&apos;Utilisation</a>.</p>
+        </div>
         )}
       </div>
-      )}
+
+      {/* ===================== COLONNE DROITE : DÉMO PRODUIT ===================== */}
+      <div className="hidden lg:flex items-center justify-center relative pt-[96px] pb-14 px-10 overflow-hidden">
+        {/* Halos dégradés façon Partielo */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{backgroundImage: 'radial-gradient(55% 45% at 22% 24%, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0) 70%), radial-gradient(50% 42% at 78% 72%, rgba(99,102,241,0.09) 0%, rgba(99,102,241,0) 70%), radial-gradient(40% 35% at 70% 20%, rgba(245,158,11,0.07) 0%, rgba(245,158,11,0) 70%)'}}></div>
+        <DemoOral />
+      </div>
     </section>
   )
 }

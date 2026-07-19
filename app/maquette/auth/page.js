@@ -186,9 +186,16 @@ export default function MaquetteAuthPage() {
           </p>
 
           <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-2.5">Encore plus rapide avec votre compte Google</p>
-          <button type="button" onClick={handleGoogle} className="w-full bg-white ring-1 ring-black/10 hover:bg-black/[0.03] font-bold text-base py-3.5 rounded-full transition flex items-center justify-center gap-3 mb-6 cursor-pointer">
-            {GoogleIcon} {mode === 'login' ? 'Continuer avec Google' : "S'inscrire avec Google"}
-          </button>
+          <div className="relative">
+            {/* Annotation manuscrite vers le bouton Google */}
+            <div aria-hidden="true" className="absolute hidden lg:block pointer-events-none" style={{left: 'calc(100% + 18px)', top: '-44px', width: '170px'}}>
+              <p className="text-[1.45rem] text-red-500 whitespace-nowrap" style={{fontFamily: "'Caveat', cursive", fontWeight: 700, transform: 'rotate(6deg)'}}>Privilégiez Google&nbsp;!</p>
+              <svg className="w-12 h-12 text-red-500/80 mt-0.5 ml-2" viewBox="0 0 60 50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M52 5 C 42 22, 30 34, 14 40"/><path d="M24 43 14 40 17 30"/></svg>
+            </div>
+            <button type="button" onClick={handleGoogle} className="w-full bg-white ring-1 ring-black/10 hover:bg-black/[0.03] font-bold text-base py-3.5 rounded-full transition flex items-center justify-center gap-3 mb-6 cursor-pointer">
+              {GoogleIcon} {mode === 'login' ? 'Continuer avec Google' : "S'inscrire avec Google"}
+            </button>
+          </div>
 
           <div className="relative flex items-center mb-6">
             <div className="flex-grow border-t border-black/[0.08]"></div>

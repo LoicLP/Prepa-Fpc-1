@@ -11,114 +11,128 @@ const QUADRILLAGE = {
 function FicheProduitEnCroix() {
   return (
     <>
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Le principe en une phrase</p>
-      <div className="bg-red-50 border border-slate-200 rounded-2xl p-5 mb-7 text-sm text-slate-700 leading-relaxed">
-        Tu connais <strong className="text-red-600">3 valeurs sur 4</strong> dans un tableau. Tu veux trouver la 4e.<br/>Tu <strong className="text-red-600">multiplies en diagonale</strong>, puis tu <strong className="text-red-600">divises par la valeur restante</strong>.
+      {/* Principe */}
+      <div className="flex items-start gap-4 rounded-2xl p-5 mb-8" style={{background: 'rgba(239,68,68,0.05)', boxShadow: 'inset 0 0 0 1px rgba(239,68,68,0.14)'}}>
+        <div className="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-red-600/25" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>
+          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M21 3 3 21"/><path d="m3 3 18 18"/></svg>
+        </div>
+        <p className="text-[15px] text-black/65 font-medium leading-relaxed">Tu connais <strong className="font-bold text-red-600">3 valeurs sur 4</strong> dans un tableau, tu veux trouver la 4e : tu <strong className="font-bold text-black/85">multiplies en diagonale</strong>, puis tu <strong className="font-bold text-black/85">divises par la valeur restante</strong>.</p>
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">La méthode en 3 étapes</p>
-      <div className="space-y-3 mb-7">
-        <div className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">1</div>
-          <p className="text-sm text-slate-700"><strong className="text-slate-900">Pose ton tableau</strong> — à gauche ce que tu as, à droite ce que tu cherches. Vérifie que les <mark className="bg-red-100 text-inherit px-1 rounded">unités correspondent</mark> ligne par ligne.</p>
+      {/* Tableau en croix, la diagonale dessinée dessus */}
+      <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-4">Le geste à retenir</p>
+      <div className="flex flex-col items-center mb-8">
+        <div className="relative w-full max-w-[300px]">
+          {/* Annotation manuscrite */}
+          <p aria-hidden="true" className="absolute -right-2 sm:-right-28 -top-9 sm:-top-2 text-[1.3rem] text-red-500 whitespace-nowrap" style={{fontFamily: "'Caveat', cursive", fontWeight: 700, transform: 'rotate(-5deg)'}}>en diagonale&nbsp;!</p>
+          <div className="grid grid-cols-2 rounded-2xl overflow-hidden ring-1 ring-black/10 bg-white text-center">
+            <div className="py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-black/35 bg-black/[0.03] border-b border-black/[0.06]">Quantité</div>
+            <div className="py-2.5 text-[10px] font-extrabold uppercase tracking-wider text-black/35 bg-black/[0.03] border-b border-l border-black/[0.06]">Volume</div>
+            <div className="py-4 font-bold text-black/80">500 mg</div>
+            <div className="py-4 font-extrabold text-black border-l border-black/[0.06]" style={{color: '#dc2626'}}>5 ml</div>
+            <div className="py-4 font-extrabold border-t border-black/[0.06]" style={{color: '#dc2626'}}>750 mg</div>
+            <div className="py-4 font-black text-lg border-t border-l border-black/[0.06] text-red-600" style={{background: 'rgba(239,68,68,0.07)'}}>? ml</div>
+          </div>
+          {/* Diagonale rouge 750 → 5 */}
+          <svg aria-hidden="true" className="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <line x1="25" y1="79" x2="75" y2="48" stroke="#dc2626" strokeWidth="2" strokeDasharray="4 3" opacity="0.75" vectorEffect="non-scaling-stroke"/>
+            <circle cx="25" cy="79" r="2.4" fill="#dc2626" vectorEffect="non-scaling-stroke"/>
+            <circle cx="75" cy="48" r="2.4" fill="#dc2626" vectorEffect="non-scaling-stroke"/>
+          </svg>
         </div>
-        <div className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">2</div>
-          <p className="text-sm text-slate-700"><strong className="text-slate-900">Multiplie en diagonale</strong> — les deux valeurs qui se font face (celles que tu connais).</p>
-        </div>
-        <div className="flex items-start gap-3">
-          <div className="w-7 h-7 rounded-full bg-red-600 text-white flex items-center justify-center font-extrabold text-xs shrink-0 mt-0.5">3</div>
-          <p className="text-sm text-slate-700"><strong className="text-slate-900">Divise par la valeur restante</strong> — celle qui est seule dans son coin.</p>
-        </div>
-      </div>
-
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Le tableau en croix</p>
-      <div className="flex flex-col items-center gap-3 mb-7">
-        <div className="grid grid-cols-2 rounded-2xl overflow-hidden border-2 border-slate-200 w-full max-w-72 bg-white">
-          <div className="bg-slate-50 p-2.5 text-center text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border border-slate-200">Quantité</div>
-          <div className="bg-slate-50 p-2.5 text-center text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border border-slate-200">Volume</div>
-          <div className="p-4 text-center font-bold text-slate-900 border border-slate-200">500 mg</div>
-          <div className="p-4 text-center font-bold text-slate-900 border border-slate-200">5 ml</div>
-          <div className="p-4 text-center font-bold text-slate-900 border border-slate-200">750 mg</div>
-          <div className="p-4 text-center font-black text-red-700 text-lg bg-slate-50 border border-slate-200">? ml</div>
-        </div>
-        <p className="text-xs text-slate-500 font-semibold text-center">On multiplie <span className="text-red-600 font-extrabold">750 × 5</span> (diagonale connue) puis on divise par <span className="text-slate-900 font-extrabold">500</span></p>
-      </div>
-
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Exemple 1 — Amoxicilline</p>
-      <div className="bg-red-50 border border-slate-200 rounded-2xl p-5 mb-4">
-        <p className="text-sm font-bold text-slate-900 mb-4 pb-3 border-b border-dashed border-slate-200">Prescription : <span className="text-red-700 font-extrabold">750 mg</span> d&apos;amoxicilline. Disponible : flacon de <span className="text-red-700 font-extrabold">500 mg / 5 ml</span>.</p>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 1 — Je pose mon tableau</p>
-        <div className="grid grid-cols-3 rounded-xl overflow-hidden border border-slate-200 w-full max-w-fit mx-auto mb-4 bg-white">
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200"></div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Quantité</div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Volume</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je sais</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">500 mg</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">5 ml</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je cherche</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">750 mg</div>
-          <div className="p-2.5 px-4 text-center font-black text-red-700 bg-red-100 border border-slate-200">?</div>
-        </div>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 2 &amp; 3 — Diagonale / restante</p>
-        <div className="bg-white border border-slate-200 rounded-xl p-3 text-center font-bold text-sm text-slate-700">
-          (750 × 5) / 500 = 3 750 / 500 = <span className="text-red-700 font-black text-base">7,5 ml</span>
+        <div className="mt-4 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-4 py-2 text-sm font-bold text-black/70">
+          <span className="text-red-600">750 × 5</span><span className="text-black/30">puis</span><span>÷ 500</span><span className="text-black/30">=</span><span className="text-red-600">7,5 ml</span>
         </div>
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Exemple 2 — Paracétamol</p>
-      <div className="bg-red-50 border border-slate-200 rounded-2xl p-5 mb-4">
-        <p className="text-sm font-bold text-slate-900 mb-4 pb-3 border-b border-dashed border-slate-200">Prescription : <span className="text-red-700 font-extrabold">200 mg</span> de paracétamol. Disponible : sirop <span className="text-red-700 font-extrabold">120 mg / 5 ml</span>.</p>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 1 — Je pose mon tableau</p>
-        <div className="grid grid-cols-3 rounded-xl overflow-hidden border border-slate-200 w-full max-w-fit mx-auto mb-4 bg-white">
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200"></div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Quantité</div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Volume</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je sais</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">120 mg</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">5 ml</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je cherche</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">200 mg</div>
-          <div className="p-2.5 px-4 text-center font-black text-red-700 bg-red-100 border border-slate-200">?</div>
-        </div>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 2 &amp; 3 — Diagonale / restante</p>
-        <div className="bg-white border border-slate-200 rounded-xl p-3 text-center font-bold text-sm text-slate-700">
-          (200 × 5) / 120 = 1 000 / 120 ≈ <span className="text-red-700 font-black text-base">8,3 ml</span>
-        </div>
+      {/* Méthode */}
+      <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-4">La méthode en 3 étapes</p>
+      <div className="space-y-4 mb-8">
+        {[
+          [<span key="1"><strong className="font-bold text-black/85">Pose ton tableau</strong> — à gauche ce que tu as, à droite ce que tu cherches. Vérifie que les <mark className="bg-red-100 text-inherit px-1 rounded">unités correspondent</mark> ligne par ligne.</span>],
+          [<span key="2"><strong className="font-bold text-black/85">Multiplie en diagonale</strong> — les deux valeurs qui se font face (celles que tu connais).</span>],
+          [<span key="3"><strong className="font-bold text-black/85">Divise par la valeur restante</strong> — celle qui est seule dans son coin.</span>],
+        ].map(([contenu], i) => (
+          <div key={i} className="flex items-start gap-3.5">
+            <div className="w-8 h-8 rounded-full text-white flex items-center justify-center font-extrabold text-[13px] shrink-0 shadow-md shadow-red-600/25" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>{i + 1}</div>
+            <p className="text-[15px] text-black/60 font-medium leading-relaxed pt-1">{contenu}</p>
+          </div>
+        ))}
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Exemple 3 — Piège unités !</p>
-      <div className="bg-red-50 border border-slate-200 rounded-2xl p-5 mb-7">
-        <p className="text-sm font-bold text-slate-900 mb-4 pb-3 border-b border-dashed border-slate-200">Prescription : <span className="text-red-700 font-extrabold">0,5 g</span> de médicament. Disponible : ampoule de <span className="text-red-700 font-extrabold">250 mg / 2 ml</span>.</p>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 1 — Je convertis d&apos;abord !</p>
-        <div className="bg-white border border-slate-200 rounded-xl p-3 mb-3 text-sm text-slate-600">
-          <p><span className="text-slate-400 mr-1">.</span> 0,5 g = 0,5 x 1 000 = <strong>500 mg</strong></p>
-        </div>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 2 — Je pose mon tableau</p>
-        <div className="grid grid-cols-3 rounded-xl overflow-hidden border border-slate-200 w-full max-w-fit mx-auto mb-4 bg-white">
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200"></div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Quantité</div>
-          <div className="bg-slate-50 p-2 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Volume</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je sais</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">250 mg</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">2 ml</div>
-          <div className="bg-slate-50 p-2 px-3 text-center text-[9px] font-extrabold uppercase text-slate-400 border border-slate-200">Je cherche</div>
-          <div className="p-2.5 px-4 text-center font-bold text-sm border border-slate-200">500 mg</div>
-          <div className="p-2.5 px-4 text-center font-black text-red-700 bg-red-100 border border-slate-200">?</div>
-        </div>
-        <p className="text-[10px] font-extrabold uppercase tracking-wider text-red-500 mb-2">Étape 3 — Diagonale / restante</p>
-        <div className="bg-white border border-slate-200 rounded-xl p-3 text-center font-bold text-sm text-slate-700">
-          (500 x 2) / 250 = 1 000 / 250 = <span className="text-red-700 font-black text-base">4 ml</span>
-        </div>
+      <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-4">On s&apos;entraîne</p>
+      <div className="space-y-4 mb-8">
+        <ExempleCroix
+          num="1" titre="Amoxicilline"
+          prescription={<>Prescription : <strong className="font-bold text-red-600">750 mg</strong>. Disponible : flacon de <strong className="font-bold text-red-600">500 mg / 5 ml</strong>.</>}
+          sais={['500 mg', '5 ml']} cherche="750 mg"
+          calcul="(750 × 5) / 500 = 3 750 / 500" resultat="= 7,5 ml"
+        />
+        <ExempleCroix
+          num="2" titre="Paracétamol"
+          prescription={<>Prescription : <strong className="font-bold text-red-600">200 mg</strong>. Disponible : sirop <strong className="font-bold text-red-600">120 mg / 5 ml</strong>.</>}
+          sais={['120 mg', '5 ml']} cherche="200 mg"
+          calcul="(200 × 5) / 120 = 1 000 / 120" resultat="≈ 8,3 ml"
+        />
+        <ExempleCroix
+          num="3" titre="Piège unités !"
+          prescription={<>Prescription : <strong className="font-bold text-red-600">0,5 g</strong>. Disponible : ampoule de <strong className="font-bold text-red-600">250 mg / 2 ml</strong>.</>}
+          avant={<>Je convertis d&apos;abord : 0,5 g = 0,5 × 1 000 = <strong className="font-bold text-black/85">500 mg</strong></>}
+          sais={['250 mg', '2 ml']} cherche="500 mg"
+          calcul="(500 × 2) / 250 = 1 000 / 250" resultat="= 4 ml"
+        />
       </div>
 
-      <p className="text-xs font-extrabold uppercase tracking-widest text-slate-400 mb-3">Pièges fréquents</p>
-      <div className="bg-red-50 border border-slate-200 rounded-2xl p-5 space-y-2">
-        <div className="flex items-start gap-2.5 text-sm text-slate-700"><span className="shrink-0 font-bold">.</span><span><strong>Unités différentes</strong> — Si la prescription est en g et le flacon en mg, convertis d&apos;abord ! (1 g = 1 000 mg)</span></div>
-        <div className="flex items-start gap-2.5 text-sm text-slate-700"><span className="shrink-0 font-bold">.</span><span><strong>Valeurs inversées</strong> — Assure-toi que mg est avec mg et ml avec ml, sur la même colonne.</span></div>
-        <div className="flex items-start gap-2.5 text-sm text-slate-700"><span className="shrink-0 font-bold">.</span><span><strong>Résultat aberrant ?</strong> — Si tu trouves 75 ml de sirop pour un enfant, c&apos;est probablement faux. Vérifie toujours !</span></div>
+      <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-4">Pièges fréquents</p>
+      <div className="space-y-2.5">
+        {[
+          [<span key="a"><strong className="font-bold text-black/85">Unités différentes</strong> — Si la prescription est en g et le flacon en mg, convertis d&apos;abord ! (1 g = 1 000 mg)</span>],
+          [<span key="b"><strong className="font-bold text-black/85">Valeurs inversées</strong> — Assure-toi que mg est avec mg et ml avec ml, sur la même colonne.</span>],
+          [<span key="c"><strong className="font-bold text-black/85">Résultat aberrant ?</strong> — Si tu trouves 75 ml de sirop pour un enfant, c&apos;est probablement faux. Vérifie toujours !</span>],
+        ].map(([contenu], i) => (
+          <div key={i} className="flex items-start gap-3 rounded-2xl px-4 py-3.5" style={{background: 'rgba(239,68,68,0.05)', boxShadow: 'inset 0 0 0 1px rgba(239,68,68,0.12)'}}>
+            <svg className="w-4 h-4 shrink-0 mt-0.5 text-red-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p className="text-sm text-black/60 font-medium leading-relaxed">{contenu}</p>
+          </div>
+        ))}
       </div>
     </>
+  )
+}
+
+// Carte d'exemple de la fiche produit en croix : pilule numérotée, tableau, résultat
+function ExempleCroix({ num, titre, prescription, avant, sais, cherche, calcul, resultat }) {
+  return (
+    <div className="bg-white ring-1 ring-black/[0.07] rounded-2xl p-5">
+      <div className="flex items-center gap-2.5 mb-3">
+        <span className="bg-red-600/10 text-red-600 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full">Exemple {num}</span>
+        <span className="text-sm font-extrabold text-black/80">{titre}</span>
+      </div>
+      <p className="text-sm text-black/60 font-medium mb-4">{prescription}</p>
+      {avant && (
+        <div className="flex items-center gap-2 bg-black/[0.03] rounded-xl px-3.5 py-2.5 mb-4 text-sm text-black/60 font-medium">
+          <svg className="w-4 h-4 shrink-0 text-red-500" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path strokeLinecap="round" strokeLinejoin="round" d="M3 3v5h5"/></svg>
+          <span>{avant}</span>
+        </div>
+      )}
+      <div className="flex flex-col sm:flex-row items-center gap-4">
+        <div className="grid grid-cols-3 rounded-xl overflow-hidden ring-1 ring-black/[0.08] bg-white text-center shrink-0">
+          <div className="bg-black/[0.03] p-2 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35"></div>
+          <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">Quantité</div>
+          <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">Volume</div>
+          <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je sais</div>
+          <div className="p-2.5 px-4 font-bold text-sm text-black/80 border-t border-black/[0.06]">{sais[0]}</div>
+          <div className="p-2.5 px-4 font-bold text-sm text-black/80 border-t border-l border-black/[0.06]">{sais[1]}</div>
+          <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je cherche</div>
+          <div className="p-2.5 px-4 font-bold text-sm text-black/80 border-t border-black/[0.06]">{cherche}</div>
+          <div className="p-2.5 px-4 font-black text-red-600 border-t border-l border-black/[0.06]" style={{background: 'rgba(239,68,68,0.07)'}}>?</div>
+        </div>
+        <div className="flex-1 text-center sm:text-left">
+          <p className="text-[13px] font-semibold text-black/45 mb-1.5">{calcul}</p>
+          <span className="inline-flex items-center gap-1.5 bg-red-600 text-white font-extrabold text-base px-4 py-1.5 rounded-full shadow-md shadow-red-600/25">{resultat}</span>
+        </div>
+      </div>
+    </div>
   )
 }
 

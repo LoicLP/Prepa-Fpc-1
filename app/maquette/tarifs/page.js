@@ -41,7 +41,7 @@ export default function MaquetteTarifsPage() {
             Aborder le concours FPC <span className="surligne">sereinement</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-black/55 font-medium leading-relaxed">
-            Accédez à tous les outils spécifiques pour réussir votre épreuve de sélection FPC.
+            Accédez à tous les outils spécifiques en illimité pour réussir votre épreuve de sélection FPC.
           </p>
         </div>
       </section>

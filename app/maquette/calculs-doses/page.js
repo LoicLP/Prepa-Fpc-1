@@ -619,11 +619,12 @@ export default function MaquetteCalculsDosesPage() {
   const [actif, setActif] = useState(0)
   const contenuRef = useRef(null)
 
-  // Au changement de thème, on amène le sélecteur en haut de l'écran (pas le header)
+  // Au changement de thème, on remonte jusqu'au titre de la page (visible en haut d'écran)
   const choisirTheme = (i) => {
     setActif(i)
-    if (contenuRef.current) {
-      window.scrollTo({ top: contenuRef.current.getBoundingClientRect().top + window.scrollY - 10 })
+    const titre = document.querySelector('h1')
+    if (titre) {
+      window.scrollTo({ top: titre.getBoundingClientRect().top + window.scrollY - 40 })
     }
   }
 

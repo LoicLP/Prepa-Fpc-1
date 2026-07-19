@@ -39,13 +39,14 @@ const Pieges = ({ theme, items }) => (
 )
 
 // Carte d'exemple générique : l'énoncé est visible, la réponse se révèle au clic
-const Exemple = ({ theme, num, titre, enonce, children, resultat }) => {
+const Exemple = ({ theme, num, titre, niveau, enonce, children, resultat }) => {
   const [revele, setRevele] = useState(false)
   return (
     <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
       <div className="flex items-center gap-2.5 mb-3">
         <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exemple {num}</span>
         <span className="text-sm font-extrabold text-black/80">{titre}</span>
+        {niveau && <Difficulte niveau={niveau} />}
       </div>
       <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed">{enonce}</p>
       {revele ? (
@@ -74,26 +75,38 @@ const Ligne = ({ children }) => (
   <p className="text-sm text-black/55 font-semibold">{children}</p>
 )
 
-// Exercice interactif du produit en croix : tableau à remplir + case réponse
-function ExerciceCroix({ theme, num, titre, enonce, avant, attendus, unite, bonneReponse, tolerance = 0.01, calcul, resultat }) {
+// Badge de niveau de difficulté (Facile / Moyen / Difficile)
+const NIVEAUX = {
+  1: { label: 'Facile', couleur: '#059669', fond: 'rgba(16,185,129,0.10)' },
+  2: { label: 'Moyen', couleur: '#d97706', fond: 'rgba(245,158,11,0.12)' },
+  3: { label: 'Difficile', couleur: '#e11d48', fond: 'rgba(244,63,94,0.10)' },
+}
+const Difficulte = ({ niveau }) => (
+  <span className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: NIVEAUX[niveau].couleur, background: NIVEAUX[niveau].fond }}>
+    <span className="flex gap-0.5">
+      {[1, 2, 3].map(i => (
+        <span key={i} className="w-1.5 h-1.5 rounded-full" style={{ background: i <= niveau ? NIVEAUX[niveau].couleur : 'rgba(0,0,0,0.12)' }}></span>
+      ))}
+    </span>
+    {NIVEAUX[niveau].label}
+  </span>
+)
+
+// Exercice interactif du produit en croix : tableau à remplir + case réponse.
+// « Vérifier » affiche directement la correction, bonne réponse ou non.
+function ExerciceCroix({ theme, num, titre, niveau, enonce, avant, attendus, unite, bonneReponse, tolerance = 0.01, calcul, resultat }) {
   const [cellules, setCellules] = useState(['', '', ''])
   const [reponse, setReponse] = useState('')
-  const [statut, setStatut] = useState('attente') // attente | bravo | revele
-  const [erreur, setErreur] = useState(false)
+  const [statut, setStatut] = useState('attente') // attente | bravo | rate
 
   const parse = (s) => parseFloat(String(s).replace(/[^\d,.-]/g, '').replace(',', '.'))
   const celluleOk = (i) => Math.abs(parse(cellules[i]) - attendus[i]) < 0.001
   const fini = statut !== 'attente'
 
   const verifier = () => {
-    if (Math.abs(parse(reponse) - bonneReponse) <= tolerance) { setStatut('bravo'); setErreur(false) }
-    else setErreur(true)
-  }
-  const reveler = () => {
+    const ok = Math.abs(parse(reponse) - bonneReponse) <= tolerance
     setCellules(attendus.map(String))
-    setReponse(String(bonneReponse).replace('.', ','))
-    setStatut('revele')
-    setErreur(false)
+    setStatut(ok ? 'bravo' : 'rate')
   }
 
   const caseInput = (i) => (
@@ -112,6 +125,7 @@ function ExerciceCroix({ theme, num, titre, enonce, avant, attendus, unite, bonn
       <div className="flex items-center gap-2.5 mb-3">
         <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exercice {num}</span>
         <span className="text-sm font-extrabold text-black/80">{titre}</span>
+        {niveau && <Difficulte niveau={niveau} />}
       </div>
       <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed mb-5">{enonce}</p>
       {avant && <p className="text-sm text-black/50 font-semibold mb-4">{avant}</p>}
@@ -136,10 +150,10 @@ function ExerciceCroix({ theme, num, titre, enonce, avant, attendus, unite, bonn
             <span className="text-sm font-bold text-black/60">Ma réponse :</span>
             <input
               type="text" inputMode="decimal" placeholder="…" value={reponse} disabled={fini}
-              onChange={(e) => { setReponse(e.target.value); setErreur(false) }}
+              onChange={(e) => setReponse(e.target.value)}
               onKeyDown={(e) => { if (e.key === 'Enter' && !fini) verifier() }}
               className="w-24 px-3 py-2.5 text-center font-extrabold rounded-xl bg-black/[0.03] outline-none transition-all placeholder:text-black/25"
-              style={statut !== 'attente' ? {boxShadow: 'inset 0 0 0 2px #10b981', background: 'rgba(16,185,129,0.08)'} : erreur ? {boxShadow: 'inset 0 0 0 2px #dc2626', background: 'rgba(220,38,38,0.05)'} : {boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)'}}
+              style={statut === 'bravo' ? {boxShadow: 'inset 0 0 0 2px #10b981', background: 'rgba(16,185,129,0.08)'} : statut === 'rate' ? {boxShadow: 'inset 0 0 0 2px #dc2626', background: 'rgba(220,38,38,0.05)'} : {boxShadow: 'inset 0 0 0 1px rgba(0,0,0,0.1)'}}
               aria-label="Votre réponse"
             />
             <span className="text-sm font-bold text-black/60">{unite}</span>
@@ -147,16 +161,13 @@ function ExerciceCroix({ theme, num, titre, enonce, avant, attendus, unite, bonn
               <button onClick={verifier} className="ml-1 text-white font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer" style={{background: theme.grad, boxShadow: `0 6px 14px ${theme.couleur}40`}}>Vérifier</button>
             )}
           </div>
-          {erreur && <p className="mt-2.5 text-sm font-bold text-red-600 text-center sm:text-left">Pas tout à fait — réessayez !</p>}
+          {statut === 'rate' && <p className="mt-2.5 text-sm font-bold text-red-600 text-center sm:text-left">Pas tout à fait — voici la correction :</p>}
           {statut === 'bravo' && <p className="mt-2.5 text-sm font-bold text-emerald-600 text-center sm:text-left">Bonne réponse !</p>}
           {fini && (
             <div className="slide-in mt-3 flex flex-col sm:flex-row items-center sm:items-baseline gap-2.5">
               <Ligne>{calcul}</Ligne>
               <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
             </div>
-          )}
-          {!fini && (
-            <button onClick={reveler} className="mt-3 block mx-auto sm:mx-0 text-xs font-bold text-black/35 hover:text-black/60 underline underline-offset-2 transition cursor-pointer">Voir la correction</button>
           )}
         </div>
       </div>
@@ -251,17 +262,17 @@ function ThemeCroix({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
-          <ExerciceCroix theme={theme} num="1" titre="Amoxicilline"
+          <ExerciceCroix theme={theme} num="1" niveau={1} titre="Amoxicilline"
             enonce={<>Le médecin prescrit <strong className="font-bold" style={{color: theme.couleur}}>750 mg</strong> d&apos;amoxicilline à votre patient. Vous disposez de flacons dosés à <strong className="font-bold" style={{color: theme.couleur}}>500 mg pour 5 ml</strong>. Quel volume devez-vous prélever&nbsp;?</>}
             attendus={[500, 5, 750]} unite="ml" bonneReponse={7.5}
             calcul="(750 × 5) ÷ 500 = 3 750 ÷ 500" resultat="= 7,5 ml"
           />
-          <ExerciceCroix theme={theme} num="2" titre="Paracétamol"
+          <ExerciceCroix theme={theme} num="2" niveau={2} titre="Paracétamol"
             enonce={<>Un enfant doit recevoir <strong className="font-bold" style={{color: theme.couleur}}>200 mg</strong> de paracétamol. Le sirop disponible est dosé à <strong className="font-bold" style={{color: theme.couleur}}>120 mg pour 5 ml</strong>. Quelle quantité de sirop faut-il administrer&nbsp;?</>}
             attendus={[120, 5, 200]} unite="ml" bonneReponse={8.33} tolerance={0.06}
             calcul="(200 × 5) ÷ 120 = 1 000 ÷ 120" resultat="≈ 8,3 ml"
           />
-          <ExerciceCroix theme={theme} num="3" titre="Piège unités !"
+          <ExerciceCroix theme={theme} num="3" niveau={3} titre="Piège unités !"
             enonce={<>La prescription indique <strong className="font-bold" style={{color: theme.couleur}}>0,5 g</strong> d&apos;un médicament, mais vous ne disposez que d&apos;ampoules de <strong className="font-bold" style={{color: theme.couleur}}>250 mg pour 2 ml</strong>. Quel volume devez-vous injecter&nbsp;?</>}
             avant={<>Indice : convertissez d&apos;abord les grammes en milligrammes avant de poser le tableau.</>}
             attendus={[250, 2, 500]} unite="ml" bonneReponse={4}
@@ -354,7 +365,7 @@ function ThemeDebit({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
-          <Exemple theme={theme} num="1" titre="Perfusion standard"
+          <Exemple theme={theme} num="1" niveau={1} titre="Perfusion standard"
             enonce={<>Vous devez perfuser <strong className="font-bold" style={{color: theme.couleur}}>1 000 ml</strong> de NaCl sur <strong className="font-bold" style={{color: theme.couleur}}>6 heures</strong> avec une tubulure standard (×20). À quel débit devez-vous régler la perfusion&nbsp;?</>}
             resultat="≈ 56 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -366,7 +377,7 @@ function ThemeDebit({ theme }) {
               </div>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="2" titre="Formule simplifiée"
+          <Exemple theme={theme} num="2" niveau={2} titre="Formule simplifiée"
             enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> doit passer en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong> avec une tubulure standard (×20). Calculez le débit — et gagnez du temps avec l&apos;astuce 20 / 60 = 1/3.</>}
             resultat="≈ 42 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -377,7 +388,7 @@ function ThemeDebit({ theme }) {
               </div>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="3" titre="Perfusion pédiatrique"
+          <Exemple theme={theme} num="3" niveau={3} titre="Perfusion pédiatrique"
             enonce={<>En pédiatrie, vous devez administrer <strong className="font-bold" style={{color: theme.couleur}}>100 ml</strong> de G5% sur <strong className="font-bold" style={{color: theme.couleur}}>4 heures</strong> avec une tubulure pédiatrique (×60). Quel débit régler&nbsp;?</>}
             resultat="= 25 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -460,7 +471,7 @@ function ThemeConversions({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
-          <Exemple theme={theme} num="1" titre="Gramme vers milligramme"
+          <Exemple theme={theme} num="1" niveau={1} titre="Gramme vers milligramme"
             enonce={<>La prescription est rédigée en grammes — <strong className="font-bold" style={{color: theme.couleur}}>0,075 g</strong> — mais votre matériel est gradué en <strong className="font-bold" style={{color: theme.couleur}}>milligrammes</strong>. Convertissez pour préparer la dose.</>}
             resultat="= 75 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
@@ -469,7 +480,7 @@ function ThemeConversions({ theme }) {
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">0<span style={{color: theme.couleur}}>75,</span>0</p>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="2" titre="Microgramme vers milligramme"
+          <Exemple theme={theme} num="2" niveau={2} titre="Microgramme vers milligramme"
             enonce={<>Le flacon affiche <strong className="font-bold" style={{color: theme.couleur}}>2 500 µg</strong>, mais la feuille de prescription parle en <strong className="font-bold" style={{color: theme.couleur}}>mg</strong>. Combien cela fait-il&nbsp;?</>}
             resultat="= 2,5 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
@@ -478,7 +489,7 @@ function ThemeConversions({ theme }) {
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">2<span style={{color: theme.couleur}}>,500</span></p>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="3" titre="Double saut : g vers µg"
+          <Exemple theme={theme} num="3" niveau={3} titre="Double saut : g vers µg"
             enonce={<>Un traitement très concentré indique <strong className="font-bold" style={{color: theme.couleur}}>0,003 g</strong> de principe actif. Exprimez cette dose en <strong className="font-bold" style={{color: theme.couleur}}>microgrammes</strong> — attention, il y a deux paliers à franchir.</>}
             resultat="= 3 000 µg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
@@ -554,7 +565,7 @@ function ThemeConcentration({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
-          <Exemple theme={theme} num="1" titre="G5%, flacon 500 ml"
+          <Exemple theme={theme} num="1" niveau={1} titre="G5%, flacon 500 ml"
             enonce={<>Vous posez un flacon de <strong className="font-bold" style={{color: theme.couleur}}>G5%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>500 ml</strong> à votre patient. Quelle quantité de glucose va-t-il recevoir au total&nbsp;?</>}
             resultat="= 25 g de glucose">
             <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -565,7 +576,7 @@ function ThemeConcentration({ theme }) {
               </div>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="2" titre="Bétadine 10%, flacon 125 ml"
+          <Exemple theme={theme} num="2" niveau={2} titre="Bétadine 10%, flacon 125 ml"
             enonce={<>Vous préparez un pansement avec un flacon de <strong className="font-bold" style={{color: theme.couleur}}>Bétadine 10%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>125 ml</strong>. Quelle masse de povidone iodée contient-il&nbsp;?</>}
             resultat="= 12,5 g">
             <div className="flex flex-col sm:flex-row items-center gap-5">
@@ -576,7 +587,7 @@ function ThemeConcentration({ theme }) {
               </div>
             </div>
           </Exemple>
-          <Exemple theme={theme} num="3" titre="NaCl 0,9%, poche 1 L (piège !)"
+          <Exemple theme={theme} num="3" niveau={3} titre="NaCl 0,9%, poche 1 L (piège !)"
             enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>NaCl 0,9%</strong> d&apos;<strong className="font-bold" style={{color: theme.couleur}}>1 litre</strong> est posée dans la chambre 12. Quelle quantité de chlorure de sodium contient-elle&nbsp;? Attention au piège du litre&nbsp;!</>}
             resultat="= 9 g de NaCl">
             <div className="flex flex-col sm:flex-row items-center gap-5">

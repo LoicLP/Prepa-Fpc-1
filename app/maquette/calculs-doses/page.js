@@ -38,20 +38,36 @@ const Pieges = ({ theme, items }) => (
   </div>
 )
 
-// Carte d'exemple générique
-const Exemple = ({ theme, num, titre, enonce, children, resultat }) => (
-  <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
-    <div className="flex items-center gap-2.5 mb-3">
-      <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exemple {num}</span>
-      <span className="text-sm font-extrabold text-black/80">{titre}</span>
+// Carte d'exemple générique : l'énoncé est visible, la réponse se révèle au clic
+const Exemple = ({ theme, num, titre, enonce, children, resultat }) => {
+  const [revele, setRevele] = useState(false)
+  return (
+    <div className="bg-white ring-1 ring-black/[0.06] rounded-[24px] p-6 sm:p-7 shadow-[0_10px_30px_rgba(0,0,0,0.04)]">
+      <div className="flex items-center gap-2.5 mb-3">
+        <span className="text-[11px] font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-full" style={{ color: theme.couleur, background: theme.clair }}>Exemple {num}</span>
+        <span className="text-sm font-extrabold text-black/80">{titre}</span>
+      </div>
+      <p className="text-sm sm:text-[15px] text-black/60 font-medium leading-relaxed">{enonce}</p>
+      {revele ? (
+        <div className="slide-in mt-5">
+          {children}
+          <div className="mt-5 text-center sm:text-left">
+            <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
+          </div>
+        </div>
+      ) : (
+        <button
+          onClick={() => setRevele(true)}
+          className="mt-5 inline-flex items-center gap-2 font-bold text-sm px-5 py-2.5 rounded-full transition-all hover:-translate-y-0.5 active:scale-[0.97] cursor-pointer"
+          style={{ color: theme.couleur, boxShadow: `inset 0 0 0 1.5px ${theme.couleur}55` }}
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          Voir la réponse
+        </button>
+      )}
     </div>
-    <p className="text-sm sm:text-[15px] text-black/60 font-medium mb-5 leading-relaxed">{enonce}</p>
-    {children}
-    <div className="mt-5 text-center sm:text-left">
-      <span className="inline-flex items-center gap-1.5 text-white font-extrabold text-base px-5 py-2 rounded-full shadow-md" style={{ background: theme.couleur, boxShadow: `0 8px 18px ${theme.couleur}35` }}>{resultat}</span>
-    </div>
-  </div>
-)
+  )
+}
 
 // Ligne de calcul intermédiaire
 const Ligne = ({ children }) => (

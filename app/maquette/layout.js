@@ -8,6 +8,8 @@ export default function MaquetteLayout({ children }) {
   const surAccueil = usePathname() === '/maquette'
   return (
     <div className="min-h-screen bg-white text-[#0d0d0d] antialiased" style={{fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
+      {/* Maquette non référencée tant que la bascule n'a pas eu lieu (contenu dupliqué) */}
+      <meta name="robots" content="noindex, nofollow" />
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Caveat:wght@600;700&display=swap" rel="stylesheet" />
       <style>{`
         html { scroll-behavior: smooth; }

@@ -769,7 +769,7 @@ export default function MaquetteCalculsDosesPage() {
       </section>
 
       {/* ===================== SÉLECTEUR + CONTENU ===================== */}
-      <section className="relative px-5 pt-8 pb-5 sm:pb-8 overflow-hidden" style={{background: `linear-gradient(to bottom, #ffffff 0%, ${theme.couleur}0b 160px, ${theme.couleur}0b calc(100% - 90px), #ffffff 100%)`}}>
+      <section className="relative px-5 pt-8 pb-5 sm:pb-8 overflow-hidden" style={{background: `linear-gradient(to bottom, #ffffff 0%, ${theme.couleur}0b 160px, ${theme.couleur}0b 100%)`}}>
         {/* Décorations au ton du thème */}
         <div aria-hidden="true" className="absolute top-40 -left-24 w-96 h-72 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div aria-hidden="true" className="absolute top-[45%] -right-28 w-80 h-64 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}10`}}></div>
@@ -804,11 +804,11 @@ export default function MaquetteCalculsDosesPage() {
       </section>
 
       {/* ===================== APPEL À L'ACTION ===================== */}
-      <section className="relative overflow-hidden bg-[#0d0d0d] py-16 sm:py-20 px-5 fade-in-up">
-        <div aria-hidden="true" className="absolute -top-24 -right-24 w-[28rem] h-[20rem] bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
+      <section className="relative overflow-hidden py-16 sm:py-20 px-5 fade-in-up" style={{background: `linear-gradient(to bottom, ${theme.couleur}0b 0%, #ffffff 100%)`}}>
+        <div aria-hidden="true" className="absolute -top-24 -right-24 w-[28rem] h-[20rem] rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div className="relative max-w-2xl mx-auto text-center">
-          <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.marqueur}}>Prêt à passer à la pratique&nbsp;?</p>
-          <h2 className="text-2xl sm:text-[2.1rem] font-extrabold tracking-[-0.02em] leading-snug text-white mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
+          <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.couleur}}>Prêt à passer à la pratique&nbsp;?</p>
+          <h2 className="text-2xl sm:text-[2.1rem] font-extrabold tracking-[-0.02em] leading-snug mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
           <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full transition-all hover:-translate-y-0.5 hover:brightness-110 group" style={{background: theme.grad, boxShadow: `0 10px 24px ${theme.couleur}45`}}>
             Commencer à m&apos;entraîner
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>

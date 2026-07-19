@@ -185,7 +185,6 @@ export default function MaquetteAuthPage() {
             {mode === 'login' ? 'Connectez-vous pour reprendre votre entraînement.' : 'Commencez votre entraînement pour le concours FPC.'}
           </p>
 
-          <p className="text-xs font-extrabold uppercase tracking-widest text-black/35 mb-2.5">Encore plus rapide avec votre compte Google</p>
           <div className="relative">
             {/* Annotation manuscrite vers le bouton Google */}
             <div aria-hidden="true" className="absolute hidden lg:block pointer-events-none" style={{left: 'calc(100% + 18px)', top: '-44px', width: '170px'}}>

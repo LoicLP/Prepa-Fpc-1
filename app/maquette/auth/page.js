@@ -150,7 +150,17 @@ export default function MaquetteAuthPage() {
   const UserIcon = <svg className="w-5 h-5 text-black/30" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
   const CheckCircle = <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path strokeLinecap="round" strokeLinejoin="round" d="M22 4 12 14.01l-3-3"/></svg>
 
-  const inputClass = "w-full pl-11 pr-4 py-3.5 bg-black/[0.03] ring-1 ring-black/[0.08] rounded-2xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none transition font-medium placeholder:text-black/25"
+  const inputClass = "w-full pl-11 py-3.5 bg-black/[0.03] ring-1 ring-black/[0.08] rounded-2xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none transition font-medium placeholder:text-black/25"
+
+  const emailValide = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)
+  // Coche verte qui « pop » quand le champ est correctement rempli
+  const FieldCheck = ({ show, decale }) => show ? (
+    <div className={`absolute inset-y-0 ${decale ? 'right-11' : 'right-0 pr-3.5'} flex items-center pointer-events-none`}>
+      <span className="pop w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center">
+        <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+      </span>
+    </div>
+  ) : null
 
   return (
     <section className="relative lg:grid lg:grid-cols-2 min-h-screen">
@@ -210,7 +220,8 @@ export default function MaquetteAuthPage() {
                   <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                    <input type="email" required placeholder="marie.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass}/>
+                    <input type="email" required placeholder="marie.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <FieldCheck show={emailValide(loginEmail)} />
                   </div>
                 </div>
                 <div>
@@ -220,7 +231,8 @@ export default function MaquetteAuthPage() {
                   </div>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                    <input type={showLoginPass?"text":"password"} required placeholder="••••••••" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type={showLoginPass?"text":"password"} required placeholder="••••••••" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} className={inputClass + ' pr-20'}/>
+                    <FieldCheck show={loginPassword.length > 0} decale />
                     <button type="button" onClick={()=>setShowLoginPass(!showLoginPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showLoginPass?EyeClosed:EyeOpen}</button>
                   </div>
                 </div>
@@ -239,21 +251,24 @@ export default function MaquetteAuthPage() {
                   <label className="block text-sm font-bold text-black/70 mb-1.5">Prénom</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{UserIcon}</div>
-                    <input type="text" required placeholder="Marie" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass}/>
+                    <input type="text" required placeholder="Marie" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <FieldCheck show={firstname.trim().length >= 2} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-black/70 mb-1.5">Adresse email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                    <input type="email" required placeholder="marie.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass}/>
+                    <input type="email" required placeholder="marie.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <FieldCheck show={emailValide(signupEmail)} />
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-black/70 mb-1.5">Mot de passe</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                    <input type={showSignupPass?"text":"password"} required placeholder="••••••••" value={signupPassword} onChange={e=>setSignupPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type={showSignupPass?"text":"password"} required placeholder="••••••••" value={signupPassword} onChange={e=>setSignupPassword(e.target.value)} className={inputClass + ' pr-20'}/>
+                    <FieldCheck show={allValid} decale />
                     <button type="button" onClick={()=>setShowSignupPass(!showSignupPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showSignupPass?EyeClosed:EyeOpen}</button>
                   </div>
                   <div className="mt-3 grid grid-cols-2 gap-y-1.5 text-xs font-bold">
@@ -267,7 +282,8 @@ export default function MaquetteAuthPage() {
                   <label className="block text-sm font-bold text-black/70 mb-1.5">Confirmer le mot de passe</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{LockIcon}</div>
-                    <input type={showConfirm?"text":"password"} required placeholder="••••••••" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type={showConfirm?"text":"password"} required placeholder="••••••••" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} className={inputClass + ' pr-20'}/>
+                    <FieldCheck show={matches} decale />
                     <button type="button" onClick={()=>setShowConfirm(!showConfirm)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showConfirm?EyeClosed:EyeOpen}</button>
                   </div>
                   {confirmPassword && !matches && <p className="text-xs text-red-600 font-bold mt-1.5">Les mots de passe ne correspondent pas.</p>}

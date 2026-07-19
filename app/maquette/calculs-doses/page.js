@@ -805,8 +805,8 @@ export default function MaquetteCalculsDosesPage() {
       <section className="relative overflow-hidden bg-[#0d0d0d] py-16 sm:py-20 px-5 fade-in-up">
         <div aria-hidden="true" className="absolute -top-24 -right-24 w-[28rem] h-[20rem] bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative max-w-2xl mx-auto text-center">
-          <h2 className="text-2xl sm:text-4xl font-extrabold tracking-[-0.03em] text-white mb-4">Prêt à passer à la pratique&nbsp;?</h2>
-          <p className="text-white/55 font-medium leading-relaxed mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</p>
+          <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.marqueur}}>Prêt à passer à la pratique&nbsp;?</p>
+          <h2 className="text-2xl sm:text-[2.1rem] font-extrabold tracking-[-0.02em] leading-snug text-white mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
           <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full transition shadow-lg shadow-red-600/25 group">
             Commencer à m&apos;entraîner
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>

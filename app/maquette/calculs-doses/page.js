@@ -159,7 +159,7 @@ function ThemeCroix({ theme }) {
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" titre="Amoxicilline"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>750 mg</strong>. Disponible : flacon de <strong className="font-bold" style={{color: theme.couleur}}>500 mg / 5 ml</strong>.</>}
+            enonce={<>Le médecin prescrit <strong className="font-bold" style={{color: theme.couleur}}>750 mg</strong> d&apos;amoxicilline à votre patient. Vous disposez de flacons dosés à <strong className="font-bold" style={{color: theme.couleur}}>500 mg pour 5 ml</strong>. Quel volume devez-vous prélever&nbsp;?</>}
             resultat="= 7,5 ml">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['500 mg', '5 ml']} cherche={['750 mg', '?']} />
@@ -167,7 +167,7 @@ function ThemeCroix({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Paracétamol"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>200 mg</strong>. Disponible : sirop <strong className="font-bold" style={{color: theme.couleur}}>120 mg / 5 ml</strong>.</>}
+            enonce={<>Un enfant doit recevoir <strong className="font-bold" style={{color: theme.couleur}}>200 mg</strong> de paracétamol. Le sirop disponible est dosé à <strong className="font-bold" style={{color: theme.couleur}}>120 mg pour 5 ml</strong>. Quelle quantité de sirop faut-il administrer&nbsp;?</>}
             resultat="≈ 8,3 ml">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['120 mg', '5 ml']} cherche={['200 mg', '?']} />
@@ -175,7 +175,7 @@ function ThemeCroix({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="Piège unités !"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>0,5 g</strong>. Disponible : ampoule de <strong className="font-bold" style={{color: theme.couleur}}>250 mg / 2 ml</strong>.</>}
+            enonce={<>La prescription indique <strong className="font-bold" style={{color: theme.couleur}}>0,5 g</strong> d&apos;un médicament, mais vous ne disposez que d&apos;ampoules de <strong className="font-bold" style={{color: theme.couleur}}>250 mg pour 2 ml</strong>. Quel volume devez-vous injecter&nbsp;?</>}
             resultat="= 4 ml">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['250 mg', '2 ml']} cherche={['500 mg', '?']} />
@@ -273,7 +273,7 @@ function ThemeDebit({ theme }) {
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" titre="Perfusion standard"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>1 000 ml</strong> de NaCl en <strong className="font-bold" style={{color: theme.couleur}}>6 heures</strong>. Tubulure standard ×20.</>}
+            enonce={<>Vous devez perfuser <strong className="font-bold" style={{color: theme.couleur}}>1 000 ml</strong> de NaCl sur <strong className="font-bold" style={{color: theme.couleur}}>6 heures</strong> avec une tubulure standard (×20). À quel débit devez-vous régler la perfusion&nbsp;?</>}
             resultat="≈ 56 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '1 000 ml'], ['Temps', '360 min'], ['Tubulure', '×20']]} />
@@ -285,7 +285,7 @@ function ThemeDebit({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Formule simplifiée"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong>. Tubulure standard ×20. Astuce : 20 / 60 = 1/3.</>}
+            enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> doit passer en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong> avec une tubulure standard (×20). Calculez le débit — et gagnez du temps avec l&apos;astuce 20 / 60 = 1/3.</>}
             resultat="≈ 42 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '250 ml'], ['Temps', '120 min'], ['Tubulure', '×20']]} />
@@ -296,7 +296,7 @@ function ThemeDebit({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="Perfusion pédiatrique"
-            enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>100 ml</strong> de G5% en <strong className="font-bold" style={{color: theme.couleur}}>4 heures</strong>. Tubulure pédiatrique ×60.</>}
+            enonce={<>En pédiatrie, vous devez administrer <strong className="font-bold" style={{color: theme.couleur}}>100 ml</strong> de G5% sur <strong className="font-bold" style={{color: theme.couleur}}>4 heures</strong> avec une tubulure pédiatrique (×60). Quel débit régler&nbsp;?</>}
             resultat="= 25 gouttes/min">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <TableauDonnees theme={theme} donnees={[['Volume', '100 ml'], ['Temps', '240 min'], ['Tubulure', '×60']]} />
@@ -379,7 +379,7 @@ function ThemeConversions({ theme }) {
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" titre="Gramme vers milligramme"
-            enonce={<>Convertir <strong className="font-bold" style={{color: theme.couleur}}>0,075 g</strong> en <strong className="font-bold" style={{color: theme.couleur}}>mg</strong>. Unité plus petite → je multiplie par 1 000.</>}
+            enonce={<>La prescription est rédigée en grammes — <strong className="font-bold" style={{color: theme.couleur}}>0,075 g</strong> — mais votre matériel est gradué en <strong className="font-bold" style={{color: theme.couleur}}>milligrammes</strong>. Convertissez pour préparer la dose.</>}
             resultat="= 75 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">0<span style={{color: theme.couleur}}>,</span>075</p>
@@ -388,7 +388,7 @@ function ThemeConversions({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Microgramme vers milligramme"
-            enonce={<>Convertir <strong className="font-bold" style={{color: theme.couleur}}>2 500 µg</strong> en <strong className="font-bold" style={{color: theme.couleur}}>mg</strong>. Unité plus grande → je divise par 1 000.</>}
+            enonce={<>Le flacon affiche <strong className="font-bold" style={{color: theme.couleur}}>2 500 µg</strong>, mais la feuille de prescription parle en <strong className="font-bold" style={{color: theme.couleur}}>mg</strong>. Combien cela fait-il&nbsp;?</>}
             resultat="= 2,5 mg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">2500<span style={{color: theme.couleur}}>,</span>0</p>
@@ -397,7 +397,7 @@ function ThemeConversions({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="Double saut : g vers µg"
-            enonce={<>Convertir <strong className="font-bold" style={{color: theme.couleur}}>0,003 g</strong> en <strong className="font-bold" style={{color: theme.couleur}}>µg</strong>. Deux paliers → × 1 000 000, la virgule saute 6 rangs.</>}
+            enonce={<>Un traitement très concentré indique <strong className="font-bold" style={{color: theme.couleur}}>0,003 g</strong> de principe actif. Exprimez cette dose en <strong className="font-bold" style={{color: theme.couleur}}>microgrammes</strong> — attention, il y a deux paliers à franchir.</>}
             resultat="= 3 000 µg">
             <div className="bg-black/[0.03] rounded-2xl p-4 text-center">
               <p className="text-2xl font-extrabold tracking-[0.15em] text-black/85">0<span style={{color: theme.couleur}}>,</span>003000</p>
@@ -473,7 +473,7 @@ function ThemeConcentration({ theme }) {
         <Eyebrow couleur={theme.couleur}>On s&apos;entraîne</Eyebrow>
         <div className="space-y-5 max-w-2xl mx-auto">
           <Exemple theme={theme} num="1" titre="G5%, flacon 500 ml"
-            enonce={<>Combien de grammes de glucose dans un flacon de <strong className="font-bold" style={{color: theme.couleur}}>G5%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>500 ml</strong> ?</>}
+            enonce={<>Vous posez un flacon de <strong className="font-bold" style={{color: theme.couleur}}>G5%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>500 ml</strong> à votre patient. Quelle quantité de glucose va-t-il recevoir au total&nbsp;?</>}
             resultat="= 25 g de glucose">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['5 g', '100 ml']} cherche={['?', '500 ml']} />
@@ -484,7 +484,7 @@ function ThemeConcentration({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Bétadine 10%, flacon 125 ml"
-            enonce={<>Combien de grammes dans un flacon de <strong className="font-bold" style={{color: theme.couleur}}>Bétadine 10%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>125 ml</strong> ?</>}
+            enonce={<>Vous préparez un pansement avec un flacon de <strong className="font-bold" style={{color: theme.couleur}}>Bétadine 10%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>125 ml</strong>. Quelle masse de povidone iodée contient-il&nbsp;?</>}
             resultat="= 12,5 g">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['10 g', '100 ml']} cherche={['?', '125 ml']} />
@@ -495,7 +495,7 @@ function ThemeConcentration({ theme }) {
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="NaCl 0,9%, poche 1 L (piège !)"
-            enonce={<>Combien de grammes de NaCl dans une poche de <strong className="font-bold" style={{color: theme.couleur}}>NaCl 0,9%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>1 L</strong> ?</>}
+            enonce={<>Une poche de <strong className="font-bold" style={{color: theme.couleur}}>NaCl 0,9%</strong> d&apos;<strong className="font-bold" style={{color: theme.couleur}}>1 litre</strong> est posée dans la chambre 12. Quelle quantité de chlorure de sodium contient-elle&nbsp;? Attention au piège du litre&nbsp;!</>}
             resultat="= 9 g de NaCl">
             <div className="flex flex-col sm:flex-row items-center gap-5">
               <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['0,9 g', '100 ml']} cherche={['?', '1 000 ml']} />

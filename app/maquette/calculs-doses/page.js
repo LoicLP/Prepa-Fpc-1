@@ -72,17 +72,25 @@ function ThemeCroix({ theme }) {
         <div className="flex flex-col items-center">
           <div className="relative w-full max-w-[380px]">
             <p aria-hidden="true" className="absolute -right-4 sm:-right-32 -top-10 sm:-top-3 text-[1.4rem] text-red-500 whitespace-nowrap" style={{fontFamily: "'Caveat', cursive", fontWeight: 700, transform: 'rotate(-5deg)'}}>en diagonale&nbsp;!</p>
-            {/* Cellules flottantes 2×2 */}
-            <div className="grid grid-cols-2 gap-3.5 text-center">
+            {/* Cellules flottantes 2×2, chorégraphie : × diagonale → ÷ restante → = résultat */}
+            <div className="grid grid-cols-2 gap-3.5 text-center" style={{perspective: '700px'}}>
               <div className="text-[11px] font-extrabold uppercase tracking-widest text-black/35 pb-0.5">Quantité</div>
               <div className="text-[11px] font-extrabold uppercase tracking-widest text-black/35 pb-0.5">Volume</div>
-              <div className="py-6 rounded-2xl bg-white ring-1 ring-black/[0.08] shadow-[0_10px_28px_rgba(0,0,0,0.05)] font-bold text-lg text-black/75">500 mg</div>
-              <div className="py-6 rounded-2xl font-extrabold text-lg shadow-[0_10px_28px_rgba(0,0,0,0.05)]" style={{background: '#ffffff', boxShadow: `inset 0 0 0 2px ${theme.couleur}55, 0 10px 28px rgba(0,0,0,0.05)`, color: theme.couleur}}>5 ml</div>
-              <div className="py-6 rounded-2xl font-extrabold text-lg shadow-[0_10px_28px_rgba(0,0,0,0.05)]" style={{background: '#ffffff', boxShadow: `inset 0 0 0 2px ${theme.couleur}55, 0 10px 28px rgba(0,0,0,0.05)`, color: theme.couleur}}>750 mg</div>
-              <div className="py-6 rounded-2xl font-black text-xl text-white" style={{background: theme.grad, boxShadow: `0 14px 30px ${theme.couleur}45`}}>? ml</div>
+              <div className="pc-500 py-6 rounded-2xl bg-white font-bold text-lg text-black/75">500 mg</div>
+              <div className="pc-5 py-6 rounded-2xl bg-white font-extrabold text-lg" style={{color: theme.couleur}}>5 ml</div>
+              <div className="pc-750 py-6 rounded-2xl bg-white font-extrabold text-lg" style={{color: theme.couleur}}>750 mg</div>
+              <div className="pc-q relative py-6 rounded-2xl font-black text-xl text-white" style={{background: theme.grad}}>
+                <span className="invisible">? ml</span>
+                <span className="pc-q-face1 absolute inset-0 flex items-center justify-center">? ml</span>
+                <span className="pc-q-face2 absolute inset-0 flex items-center justify-center">7,5 ml</span>
+              </div>
             </div>
-            {/* Le × à l'intersection de la diagonale */}
-            <div aria-hidden="true" className="absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white flex items-center justify-center font-extrabold text-lg shadow-md" style={{top: '58%', color: theme.couleur, boxShadow: `0 0 0 2.5px ${theme.couleur}, 0 6px 16px rgba(0,0,0,0.12)`}}>×</div>
+            {/* Badge d'opération au centre : × puis ÷ puis = */}
+            <div aria-hidden="true" className="pc-badge absolute left-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white font-extrabold text-lg" style={{top: '58%', color: theme.couleur, boxShadow: `0 0 0 2.5px ${theme.couleur}, 0 6px 16px rgba(0,0,0,0.12)`}}>
+              <span className="pc-op1 absolute inset-0 flex items-center justify-center">×</span>
+              <span className="pc-op2 absolute inset-0 flex items-center justify-center">÷</span>
+              <span className="pc-op3 absolute inset-0 flex items-center justify-center">=</span>
+            </div>
           </div>
           <div className="mt-7 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-5 py-2.5 text-base font-bold text-black/70 shadow-sm">
             <span style={{color: theme.couleur}}>750 × 5</span><span className="text-black/30">puis</span><span>÷ 500</span><span className="text-black/30">=</span><span style={{color: theme.couleur}}>7,5 ml</span>
@@ -457,6 +465,54 @@ export default function MaquetteCalculsDosesPage() {
         /* Goutte du compte-gouttes : chute puis fondu dans le liquide */
         @keyframes goutte-chute { 0% { top: 8%; opacity: 0; transform: translateX(-50%) scale(0.6); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 70% { top: 58%; opacity: 1; } 82% { top: 64%; opacity: 0; } 100% { top: 64%; opacity: 0; } }
         .goutte { animation: goutte-chute 1.6s cubic-bezier(0.45, 0, 0.9, 0.6) infinite; }
+
+        /* ===== Chorégraphie du tableau en croix (boucle 7s) ===== */
+        /* Apparition en cascade des cellules */
+        @keyframes pc-pop { from { opacity: 0; transform: scale(0.85) translateY(10px); } to { opacity: 1; transform: none; } }
+        /* Phase 1 (×) : la diagonale 750 puis 5 s'illumine */
+        @keyframes pc-anim-750 {
+          0%, 4%, 36%, 100% { transform: none; box-shadow: inset 0 0 0 2px rgba(220,38,38,0.33), 0 10px 28px rgba(0,0,0,0.05); }
+          10%, 30% { transform: translateY(-5px) scale(1.05); box-shadow: inset 0 0 0 2.5px #dc2626, 0 18px 36px rgba(220,38,38,0.30); }
+        }
+        @keyframes pc-anim-5 {
+          0%, 8%, 38%, 100% { transform: none; box-shadow: inset 0 0 0 2px rgba(220,38,38,0.33), 0 10px 28px rgba(0,0,0,0.05); }
+          14%, 32% { transform: translateY(-5px) scale(1.05); box-shadow: inset 0 0 0 2.5px #dc2626, 0 18px 36px rgba(220,38,38,0.30); }
+        }
+        /* Phase 2 (÷) : la valeur restante */
+        @keyframes pc-anim-500 {
+          0%, 40%, 60%, 100% { transform: none; box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), 0 10px 28px rgba(0,0,0,0.05); }
+          46%, 56% { transform: translateY(-5px) scale(1.05); box-shadow: inset 0 0 0 2.5px #dc2626, 0 18px 36px rgba(220,38,38,0.30); }
+        }
+        /* Phase 3 (=) : la case résultat s'élève */
+        @keyframes pc-anim-q {
+          0%, 60%, 97%, 100% { transform: none; box-shadow: 0 14px 30px rgba(220,38,38,0.27); }
+          66%, 92% { transform: translateY(-5px) scale(1.06); box-shadow: 0 24px 46px rgba(220,38,38,0.45); }
+        }
+        .pc-500 { box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08), 0 10px 28px rgba(0,0,0,0.05); animation: pc-pop 0.5s cubic-bezier(0.2,1.2,0.4,1) both, pc-anim-500 7s 0.6s ease-in-out infinite; }
+        .pc-5 { box-shadow: inset 0 0 0 2px rgba(220,38,38,0.33), 0 10px 28px rgba(0,0,0,0.05); animation: pc-pop 0.5s cubic-bezier(0.2,1.2,0.4,1) 0.12s both, pc-anim-5 7s 0.6s ease-in-out infinite; }
+        .pc-750 { box-shadow: inset 0 0 0 2px rgba(220,38,38,0.33), 0 10px 28px rgba(0,0,0,0.05); animation: pc-pop 0.5s cubic-bezier(0.2,1.2,0.4,1) 0.24s both, pc-anim-750 7s 0.6s ease-in-out infinite; }
+        .pc-q { box-shadow: 0 14px 30px rgba(220,38,38,0.27); animation: pc-pop 0.5s cubic-bezier(0.2,1.2,0.4,1) 0.36s both, pc-anim-q 7s 0.6s ease-in-out infinite; }
+        /* La case « ? ml » se retourne pour révéler « 7,5 ml », puis revient */
+        @keyframes pc-face-q {
+          0%, 58% { transform: rotateX(0); opacity: 1; }
+          63%, 94% { transform: rotateX(88deg); opacity: 0; }
+          99%, 100% { transform: rotateX(0); opacity: 1; }
+        }
+        @keyframes pc-face-r {
+          0%, 60% { transform: rotateX(-88deg); opacity: 0; }
+          66%, 92% { transform: rotateX(0); opacity: 1; }
+          97%, 100% { transform: rotateX(-88deg); opacity: 0; }
+        }
+        .pc-q-face1 { animation: pc-face-q 7s 0.6s ease-in-out infinite; backface-visibility: hidden; }
+        .pc-q-face2 { animation: pc-face-r 7s 0.6s ease-in-out infinite; backface-visibility: hidden; }
+        /* Le badge central bascule × → ÷ → = au fil des phases */
+        .pc-badge { animation: pc-pop 0.5s cubic-bezier(0.2,1.2,0.4,1) 0.45s both; }
+        @keyframes pc-anim-op1 { 0%, 38% { opacity: 1; transform: scale(1); } 42%, 96% { opacity: 0; transform: scale(0.35); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes pc-anim-op2 { 0%, 40% { opacity: 0; transform: scale(0.35); } 44%, 58% { opacity: 1; transform: scale(1); } 62%, 100% { opacity: 0; transform: scale(0.35); } }
+        @keyframes pc-anim-op3 { 0%, 61% { opacity: 0; transform: scale(0.35); } 65%, 93% { opacity: 1; transform: scale(1); } 97%, 100% { opacity: 0; transform: scale(0.35); } }
+        .pc-op1 { animation: pc-anim-op1 7s 0.6s ease-in-out infinite; }
+        .pc-op2 { animation: pc-anim-op2 7s 0.6s ease-in-out infinite; }
+        .pc-op3 { animation: pc-anim-op3 7s 0.6s ease-in-out infinite; }
       `}</style>
 
       {/* ===================== EN-TÊTE ===================== */}

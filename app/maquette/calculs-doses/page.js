@@ -809,7 +809,7 @@ export default function MaquetteCalculsDosesPage() {
         <div className="relative max-w-2xl mx-auto text-center">
           <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.marqueur}}>Prêt à passer à la pratique&nbsp;?</p>
           <h2 className="text-2xl sm:text-[2.1rem] font-extrabold tracking-[-0.02em] leading-snug text-white mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
-          <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full transition shadow-lg shadow-red-600/25 group">
+          <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full transition-all hover:-translate-y-0.5 hover:brightness-110 group" style={{background: theme.grad, boxShadow: `0 10px 24px ${theme.couleur}45`}}>
             Commencer à m&apos;entraîner
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
           </a>

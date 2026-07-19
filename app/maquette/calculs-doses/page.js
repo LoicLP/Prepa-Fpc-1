@@ -42,10 +42,7 @@ const Pieges = ({ theme, items }) => (
       >
         {/* Morceau de scotch */}
         <div aria-hidden="true" className="absolute -top-2.5 left-1/2 w-16 h-5" style={{transform: 'translateX(-50%) rotate(-2.5deg)', background: 'rgba(255,255,255,0.6)', boxShadow: '0 1px 3px rgba(0,0,0,0.10)', backdropFilter: 'blur(1px)'}}></div>
-        <p className="flex items-center gap-2 font-extrabold text-[15px] text-black/80 mb-1.5">
-          <svg className="w-4 h-4 shrink-0" style={{ color: theme.couleur }} fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-          {p.titre}
-        </p>
+        <p className="font-extrabold text-[15px] text-black/80 mb-1.5">{p.titre}</p>
         <p className="text-sm text-black/55 font-medium leading-relaxed">{p.texte}</p>
       </div>
     ))}

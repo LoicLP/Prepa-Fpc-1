@@ -140,8 +140,11 @@ function ThemeCroix({ theme }) {
               <span className="pc-op3 absolute inset-0 flex items-center justify-center">=</span>
             </div>
           </div>
-          <div className="mt-7 inline-flex items-center gap-2 bg-white ring-1 ring-black/[0.08] rounded-full px-5 py-2.5 text-base font-bold text-black/70 shadow-sm">
-            <span style={{color: theme.couleur}}>750 × 5</span><span className="text-black/30">puis</span><span>÷ 500</span><span className="text-black/30">=</span><span style={{color: theme.couleur}}>7,5 ml</span>
+          {/* Le calcul s'écrit au rythme des phases de l'animation */}
+          <div className="mt-7 flex items-center justify-center gap-2.5 text-lg font-bold text-black/70 h-7" aria-hidden="true">
+            <span className="pc-txt1" style={{color: theme.couleur}}>750 × 5</span>
+            <span className="pc-txt2 inline-flex items-center gap-2.5"><span className="text-black/30 font-semibold">puis</span><span>÷ 500</span></span>
+            <span className="pc-txt3 inline-flex items-center gap-2.5"><span className="text-black/30">=</span><span style={{color: theme.couleur}}>7,5 ml</span></span>
           </div>
         </div>
       </div>
@@ -588,6 +591,13 @@ export default function MaquetteCalculsDosesPage() {
         .pc-op1 { animation: pc-anim-op1 7s 0.6s ease-in-out infinite; }
         .pc-op2 { animation: pc-anim-op2 7s 0.6s ease-in-out infinite; }
         .pc-op3 { animation: pc-anim-op3 7s 0.6s ease-in-out infinite; }
+        /* La ligne de calcul s'écrit morceau par morceau, en phase avec le tableau */
+        @keyframes pc-anim-txt1 { 0%, 7% { opacity: 0; transform: translateY(7px); } 12%, 94% { opacity: 1; transform: none; } 99%, 100% { opacity: 0; transform: translateY(7px); } }
+        @keyframes pc-anim-txt2 { 0%, 41% { opacity: 0; transform: translateY(7px); } 46%, 94% { opacity: 1; transform: none; } 99%, 100% { opacity: 0; transform: translateY(7px); } }
+        @keyframes pc-anim-txt3 { 0%, 62% { opacity: 0; transform: translateY(7px); } 67%, 94% { opacity: 1; transform: none; } 99%, 100% { opacity: 0; transform: translateY(7px); } }
+        .pc-txt1 { opacity: 0; animation: pc-anim-txt1 7s 0.6s ease-out infinite; }
+        .pc-txt2 { opacity: 0; animation: pc-anim-txt2 7s 0.6s ease-out infinite; }
+        .pc-txt3 { opacity: 0; animation: pc-anim-txt3 7s 0.6s ease-out infinite; }
       `}</style>
 
       {/* ===================== EN-TÊTE ===================== */}

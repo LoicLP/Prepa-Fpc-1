@@ -303,13 +303,15 @@ function ThemeDebit({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>La clé : le type de tubulure</Eyebrow>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12">
-          {/* Chambre compte-gouttes animée */}
+          {/* Chambre compte-gouttes animée : gouttes qui remplissent, puis vidange */}
           <div className="flex flex-col items-center shrink-0">
             <div className="w-1 h-8 bg-black/10 rounded-t"></div>
             <div className="relative w-20 h-32 rounded-b-[2rem] rounded-t-xl ring-1 ring-black/10 bg-white overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
-              <div className="goutte absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full" style={{background: theme.couleur}}></div>
-              <div className="absolute bottom-0 inset-x-0 h-9 rounded-b-[2rem]" style={{background: `${theme.couleur}26`}}>
-                <div className="absolute -top-0.5 inset-x-0 h-1 rounded-full opacity-40" style={{background: theme.couleur}}></div>
+              <div className="goutte absolute left-1/2 -translate-x-1/2 w-3 h-3">
+                <div className="w-full h-full" style={{background: theme.couleur, borderRadius: '0 50% 50% 50%', transform: 'rotate(45deg)'}}></div>
+              </div>
+              <div className="niveau-liquide absolute bottom-0 inset-x-0" style={{background: `${theme.couleur}26`}}>
+                <div className="absolute top-0 inset-x-0 h-1 rounded-full opacity-40" style={{background: theme.couleur}}></div>
               </div>
             </div>
             <div className="w-1 h-8 bg-black/10 rounded-b"></div>
@@ -630,9 +632,27 @@ export default function MaquetteCalculsDosesPage() {
   return (
     <>
       <style>{`
-        /* Goutte du compte-gouttes : chute puis fondu dans le liquide */
-        @keyframes goutte-chute { 0% { top: 8%; opacity: 0; transform: translateX(-50%) scale(0.6); } 12% { opacity: 1; transform: translateX(-50%) scale(1); } 70% { top: 58%; opacity: 1; } 82% { top: 64%; opacity: 0; } 100% { top: 64%; opacity: 0; } }
-        .goutte { animation: goutte-chute 1.6s cubic-bezier(0.45, 0, 0.9, 0.6) infinite; }
+        /* Compte-gouttes : 5 gouttes tombent (de moins en moins bas, le niveau monte),
+           puis la chambre pleine se vide et la boucle repart (8s) */
+        @keyframes goutte-chute {
+          0% { top: 6%; opacity: 0; } 1.5% { opacity: 1; } 9% { top: 64%; opacity: 1; } 10% { top: 66%; opacity: 0; }
+          13% { top: 6%; opacity: 0; } 14.5% { opacity: 1; } 22% { top: 61%; opacity: 1; } 23% { top: 63%; opacity: 0; }
+          26% { top: 6%; opacity: 0; } 27.5% { opacity: 1; } 35% { top: 57%; opacity: 1; } 36% { top: 59%; opacity: 0; }
+          39% { top: 6%; opacity: 0; } 40.5% { opacity: 1; } 48% { top: 53%; opacity: 1; } 49% { top: 55%; opacity: 0; }
+          52% { top: 6%; opacity: 0; } 53.5% { opacity: 1; } 61% { top: 49%; opacity: 1; } 62% { top: 51%; opacity: 0; }
+          63%, 100% { top: 6%; opacity: 0; }
+        }
+        .goutte { animation: goutte-chute 8s linear infinite; }
+        @keyframes niveau-monte {
+          0%, 9% { height: 14%; }
+          11%, 22% { height: 22%; }
+          24%, 35% { height: 30%; }
+          37%, 48% { height: 38%; }
+          50%, 61% { height: 46%; }
+          64%, 74% { height: 55%; }
+          86%, 100% { height: 14%; }
+        }
+        .niveau-liquide { animation: niveau-monte 8s linear infinite; }
 
         /* ===== Chorégraphie du tableau en croix (boucle 7s) ===== */
         /* Apparition en cascade des cellules */

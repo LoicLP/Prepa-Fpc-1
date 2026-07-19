@@ -236,7 +236,7 @@ export default function MaquetteAuthPage() {
                     <button type="button" onClick={()=>setShowLoginPass(!showLoginPass)} className="absolute inset-y-0 right-0 pr-4 flex items-center text-black/30 hover:text-black/60 transition cursor-pointer">{showLoginPass?EyeClosed:EyeOpen}</button>
                   </div>
                 </div>
-                <button type="submit" disabled={loginLoading} className="btn-shine w-full bg-[#0d0d0d] hover:bg-black/85 text-white font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 group cursor-pointer">
+                <button type="submit" disabled={!(emailValide(loginEmail) && loginPassword.length > 0)||loginLoading} className={`w-full font-bold text-lg py-4 rounded-full mt-2 transition flex items-center justify-center gap-2 group ${emailValide(loginEmail) && loginPassword.length > 0 && !loginLoading ? 'btn-shine bg-red-600 hover:bg-red-500 text-white shadow-lg shadow-red-600/25 cursor-pointer' : 'bg-black/[0.05] text-black/30 cursor-not-allowed'}`}>
                   {loginLoading?'Connexion en cours...':'Se connecter'}
                   {!loginLoading && <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>}
                 </button>

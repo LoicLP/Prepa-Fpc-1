@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 // Les 4 thèmes du sélecteur
 const THEMES = [
@@ -617,6 +617,15 @@ function ThemeConcentration({ theme }) {
 
 export default function MaquetteCalculsDosesPage() {
   const [actif, setActif] = useState(0)
+  const contenuRef = useRef(null)
+
+  // Au changement de thème, on amène le sélecteur en haut de l'écran (pas le header)
+  const choisirTheme = (i) => {
+    setActif(i)
+    if (contenuRef.current) {
+      window.scrollTo({ top: contenuRef.current.getBoundingClientRect().top + window.scrollY - 10 })
+    }
+  }
 
   // Fade-in au scroll (même mécanique que la page d'accueil)
   useEffect(() => {
@@ -729,14 +738,14 @@ export default function MaquetteCalculsDosesPage() {
         <div aria-hidden="true" className="absolute top-[45%] -right-28 w-80 h-64 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}10`}}></div>
         <div aria-hidden="true" className="absolute bottom-32 -left-20 w-72 h-56 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}0d`}}></div>
 
-        <div className="relative max-w-3xl mx-auto">
+        <div ref={contenuRef} className="relative max-w-3xl mx-auto">
           {/* Les 4 interrupteurs de thème (collants au défilement) */}
           <div className="sticky top-4 z-30 flex justify-center mb-14">
             <div className="grid grid-cols-2 sm:flex gap-1.5 bg-white/80 backdrop-blur-xl ring-1 ring-black/[0.07] rounded-3xl sm:rounded-full p-2 shadow-[0_10px_30px_rgba(0,0,0,0.08)]">
               {THEMES.map((t, i) => (
                 <button
                   key={i}
-                  onClick={() => { setActif(i); window.scrollTo({top: 0}) }}
+                  onClick={() => choisirTheme(i)}
                   className="px-4 py-2.5 rounded-full text-[13px] sm:text-sm font-bold transition-all cursor-pointer whitespace-nowrap"
                   style={actif === i
                     ? { background: t.grad, color: '#ffffff', boxShadow: `0 6px 16px ${t.couleur}50` }

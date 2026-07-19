@@ -189,8 +189,8 @@ export default function MaquetteLayout({ children }) {
               <h4 className="text-xs font-extrabold uppercase tracking-widest mb-4">Informations</h4>
               <ul className="space-y-3 text-[15px] text-white/85">
                 <li><a href="/maquette/tarifs" className="hover:text-white transition">Tarifs</a></li>
-                <li><a href="/mentions-legales" className="hover:text-white transition">Mentions légales</a></li>
-                <li><a href="/cgu" className="hover:text-white transition">CGV &amp; CGU</a></li>
+                <li><a href="/maquette/mentions-legales" className="hover:text-white transition">Mentions légales</a></li>
+                <li><a href="/maquette/cgu" className="hover:text-white transition">CGV &amp; CGU</a></li>
               </ul>
             </div>
           </div>

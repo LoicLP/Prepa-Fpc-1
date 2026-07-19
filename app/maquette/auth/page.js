@@ -303,7 +303,7 @@ export default function MaquetteAuthPage() {
             </>
           )}
 
-          <p className="mt-8 text-center text-xs text-black/35 font-medium leading-relaxed">En continuant sur Prépa FPC, vous acceptez nos <a href="/cgu" className="underline hover:text-black/60 transition">Conditions Générales d&apos;Utilisation</a>.</p>
+          <p className="mt-8 text-center text-xs text-black/35 font-medium leading-relaxed">En continuant sur Prépa FPC, vous acceptez nos <a href="/maquette/cgu" className="underline hover:text-black/60 transition">Conditions Générales d&apos;Utilisation</a>.</p>
         </div>
         )}
       </div>

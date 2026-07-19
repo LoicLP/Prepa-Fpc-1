@@ -1,6 +1,53 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../../lib/supabase'
+
+// Nuage de petits points qui flottent derrière la carte (repris du hero)
+function ParticleField() {
+  const canvasRef = useRef(null)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    let raf, w, h
+    const dots = []
+    const resize = () => {
+      w = canvas.width = canvas.offsetWidth * devicePixelRatio
+      h = canvas.height = canvas.offsetHeight * devicePixelRatio
+    }
+    resize()
+    window.addEventListener('resize', resize)
+    const N = Math.round((canvas.offsetWidth * canvas.offsetHeight) / 14000)
+    for (let i = 0; i < N; i++) {
+      dots.push({
+        x: Math.random() * w, y: Math.random() * h,
+        r: (Math.random() * 1.6 + 0.8) * devicePixelRatio,
+        vx: (Math.random() - 0.5) * 0.35 * devicePixelRatio,
+        vy: (Math.random() - 0.5) * 0.3 * devicePixelRatio,
+        red: Math.random() < 0.12,
+        phase: Math.random() * Math.PI * 2,
+      })
+    }
+    const draw = () => {
+      ctx.clearRect(0, 0, w, h)
+      const t = performance.now() / 1000
+      for (const d of dots) {
+        d.x += d.vx + Math.sin(t * 0.6 + d.phase) * 0.12 * devicePixelRatio
+        d.y += d.vy + Math.cos(t * 0.5 + d.phase) * 0.1 * devicePixelRatio
+        if (d.x < -10) d.x = w + 10; if (d.x > w + 10) d.x = -10
+        if (d.y < -10) d.y = h + 10; if (d.y > h + 10) d.y = -10
+        const tw = 0.5 + 0.5 * Math.sin(t * 1.2 + d.phase * 2)
+        ctx.beginPath()
+        ctx.arc(d.x, d.y, d.r, 0, Math.PI * 2)
+        ctx.fillStyle = d.red ? `rgba(220,38,38,${0.25 + tw * 0.3})` : `rgba(13,13,13,${0.10 + tw * 0.14})`
+        ctx.fill()
+      }
+      raf = requestAnimationFrame(draw)
+    }
+    draw()
+    return () => { cancelAnimationFrame(raf); window.removeEventListener('resize', resize) }
+  }, [])
+  return <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" style={{maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)', WebkitMaskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 30%, transparent 100%)'}} />
+}
 
 export default function MaquetteAuthPage() {
   const [mode, setMode] = useState('login')
@@ -91,7 +138,7 @@ export default function MaquetteAuthPage() {
   const inputClass = "w-full pl-11 pr-4 py-3.5 bg-black/[0.03] ring-1 ring-black/[0.08] rounded-2xl focus:ring-2 focus:ring-red-500 focus:bg-white outline-none transition font-medium placeholder:text-black/25"
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center px-5 pt-[96px] pb-16 overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center px-5 pt-[96px] pb-16 overflow-hidden" style={{background: 'linear-gradient(to bottom, #ffffff 0%, #f7f6f4 160px, #f7f6f4 calc(100% - 120px), #ffffff 100%)'}}>
       <style>{`
         @keyframes glisseSortieG { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(-80px) scale(.96) } }
         @keyframes glisseSortieD { from { opacity:1; transform:translateX(0) } to { opacity:0; transform:translateX(80px) scale(.96) } }
@@ -103,8 +150,13 @@ export default function MaquetteAuthPage() {
         .glisse-entree-g { animation: glisseEntreeG .4s cubic-bezier(.22,1,.36,1) forwards }
       `}</style>
       {/* Décorations */}
-      <div aria-hidden="true" className="absolute top-24 -left-24 w-80 h-64 bg-red-500/[0.07] rounded-full blur-3xl pointer-events-none"></div>
-      <div aria-hidden="true" className="absolute bottom-16 -right-20 w-72 h-56 bg-indigo-500/[0.06] rounded-full blur-3xl pointer-events-none"></div>
+      <ParticleField />
+      <div aria-hidden="true" className="absolute top-24 -left-24 w-80 h-64 bg-red-500/[0.09] rounded-full blur-3xl pointer-events-none"></div>
+      <div aria-hidden="true" className="absolute bottom-16 -right-20 w-72 h-56 bg-indigo-500/[0.07] rounded-full blur-3xl pointer-events-none"></div>
+      <svg aria-hidden="true" className="absolute top-[24%] left-[13%] w-6 h-6 text-black/[0.12] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-10deg)'}}><path d="M12 5v14M5 12h14"/></svg>
+      <svg aria-hidden="true" className="absolute bottom-[20%] left-[19%] w-4 h-4 text-red-500/30 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(18deg)'}}><path d="M12 5v14M5 12h14"/></svg>
+      <svg aria-hidden="true" className="absolute top-[30%] right-[14%] w-5 h-5 text-black/[0.1] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-14deg)'}}><path d="M12 5v14M5 12h14"/></svg>
+      <svg aria-hidden="true" className="absolute bottom-[26%] right-[10%] w-4 h-4 text-red-500/25 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(12deg)'}}><path d="M12 5v14M5 12h14"/></svg>
 
       {signupSuccess ? (
         <div className="relative max-w-md w-full bg-white rounded-[28px] ring-1 ring-black/[0.07] shadow-[0_24px_60px_rgba(0,0,0,0.08)] p-8 sm:p-10 text-center">

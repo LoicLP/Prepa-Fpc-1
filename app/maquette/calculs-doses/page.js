@@ -74,6 +74,38 @@ const Ligne = ({ children }) => (
   <p className="text-sm text-black/55 font-semibold">{children}</p>
 )
 
+// Mini tableau « Je sais / Je cherche » (la case ? prend la couleur du thème)
+const MiniTableau = ({ theme, c1, c2, sais, cherche }) => {
+  const cellule = (v, bordG) => v === '?'
+    ? <div key={v + bordG} className={`p-2.5 px-4 font-black border-t ${bordG ? 'border-l' : ''} border-black/[0.06]`} style={{color: theme.couleur, background: theme.clair}}>?</div>
+    : <div key={v + bordG} className={`p-2.5 px-4 font-bold text-sm text-black/80 border-t ${bordG ? 'border-l' : ''} border-black/[0.06]`}>{v}</div>
+  return (
+    <div className="grid grid-cols-3 rounded-xl overflow-hidden ring-1 ring-black/[0.08] bg-white text-center shrink-0 w-max">
+      <div className="bg-black/[0.03] p-2 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35"></div>
+      <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">{c1}</div>
+      <div className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">{c2}</div>
+      <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je sais</div>
+      {cellule(sais[0], false)}
+      {cellule(sais[1], true)}
+      <div className="bg-black/[0.03] p-2.5 px-3 text-[9px] font-extrabold uppercase tracking-wider text-black/35 flex items-center justify-center">Je cherche</div>
+      {cellule(cherche[0], false)}
+      {cellule(cherche[1], true)}
+    </div>
+  )
+}
+
+// Tableau de données du débit (Volume / Temps / Tubulure)
+const TableauDonnees = ({ theme, donnees }) => (
+  <div className="grid grid-cols-3 rounded-xl overflow-hidden ring-1 ring-black/[0.08] bg-white text-center shrink-0 w-max">
+    {donnees.map(([label]) => (
+      <div key={label} className="bg-black/[0.03] p-2 px-4 text-[9px] font-extrabold uppercase tracking-wider text-black/35">{label}</div>
+    ))}
+    {donnees.map(([label, valeur], i) => (
+      <div key={label + 'v'} className={`p-2.5 px-4 font-bold text-sm border-t border-black/[0.06] ${i > 0 ? 'border-l' : ''}`} style={i === donnees.length - 1 ? {color: theme.couleur} : {color: 'rgba(0,0,0,0.8)'}}>{valeur}</div>
+    ))}
+  </div>
+)
+
 // ==================== 1. PRODUIT EN CROIX ====================
 function ThemeCroix({ theme }) {
   return (
@@ -129,19 +161,28 @@ function ThemeCroix({ theme }) {
           <Exemple theme={theme} num="1" titre="Amoxicilline"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>750 mg</strong>. Disponible : flacon de <strong className="font-bold" style={{color: theme.couleur}}>500 mg / 5 ml</strong>.</>}
             resultat="= 7,5 ml">
-            <Ligne>(750 × 5) / 500 = 3 750 / 500</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['500 mg', '5 ml']} cherche={['750 mg', '?']} />
+              <Ligne>(750 × 5) / 500 = 3 750 / 500</Ligne>
+            </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Paracétamol"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>200 mg</strong>. Disponible : sirop <strong className="font-bold" style={{color: theme.couleur}}>120 mg / 5 ml</strong>.</>}
             resultat="≈ 8,3 ml">
-            <Ligne>(200 × 5) / 120 = 1 000 / 120</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['120 mg', '5 ml']} cherche={['200 mg', '?']} />
+              <Ligne>(200 × 5) / 120 = 1 000 / 120</Ligne>
+            </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="Piège unités !"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>0,5 g</strong>. Disponible : ampoule de <strong className="font-bold" style={{color: theme.couleur}}>250 mg / 2 ml</strong>.</>}
             resultat="= 4 ml">
-            <div className="space-y-1.5">
-              <Ligne>Je convertis d&apos;abord : 0,5 g = <strong className="text-black/80">500 mg</strong></Ligne>
-              <Ligne>(500 × 2) / 250 = 1 000 / 250</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Quantité" c2="Volume" sais={['250 mg', '2 ml']} cherche={['500 mg', '?']} />
+              <div className="space-y-1.5">
+                <Ligne>Je convertis d&apos;abord : 0,5 g = <strong className="text-black/80">500 mg</strong></Ligne>
+                <Ligne>(500 × 2) / 250 = 1 000 / 250</Ligne>
+              </div>
             </div>
           </Exemple>
         </div>
@@ -234,27 +275,36 @@ function ThemeDebit({ theme }) {
           <Exemple theme={theme} num="1" titre="Perfusion standard"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>1 000 ml</strong> de NaCl en <strong className="font-bold" style={{color: theme.couleur}}>6 heures</strong>. Tubulure standard ×20.</>}
             resultat="≈ 56 gouttes/min">
-            <div className="space-y-1.5">
-              <Ligne>Numérateur : 1 000 × 20 = 20 000 gouttes</Ligne>
-              <Ligne>Dénominateur : 6 × 60 = 360 minutes</Ligne>
-              <Ligne>20 000 / 360</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <TableauDonnees theme={theme} donnees={[['Volume', '1 000 ml'], ['Temps', '360 min'], ['Tubulure', '×20']]} />
+              <div className="space-y-1.5">
+                <Ligne>Numérateur : 1 000 × 20 = 20 000 gouttes</Ligne>
+                <Ligne>Dénominateur : 6 × 60 = 360 minutes</Ligne>
+                <Ligne>20 000 / 360</Ligne>
+              </div>
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Formule simplifiée"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>250 ml</strong> en <strong className="font-bold" style={{color: theme.couleur}}>2 heures</strong>. Tubulure standard ×20. Astuce : 20 / 60 = 1/3.</>}
             resultat="≈ 42 gouttes/min">
-            <div className="space-y-1.5">
-              <Ligne>(Vol × 20) / (Heures × 60) = Vol / (Heures × 3)</Ligne>
-              <Ligne>= 250 / (2 × 3) = 250 / 6</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <TableauDonnees theme={theme} donnees={[['Volume', '250 ml'], ['Temps', '120 min'], ['Tubulure', '×20']]} />
+              <div className="space-y-1.5">
+                <Ligne>(Vol × 20) / (Heures × 60) = Vol / (Heures × 3)</Ligne>
+                <Ligne>= 250 / (2 × 3) = 250 / 6</Ligne>
+              </div>
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="Perfusion pédiatrique"
             enonce={<>Prescription : <strong className="font-bold" style={{color: theme.couleur}}>100 ml</strong> de G5% en <strong className="font-bold" style={{color: theme.couleur}}>4 heures</strong>. Tubulure pédiatrique ×60.</>}
             resultat="= 25 gouttes/min">
-            <div className="space-y-1.5">
-              <Ligne>Numérateur : 100 × 60 = 6 000 gouttes</Ligne>
-              <Ligne>Dénominateur : 4 × 60 = 240 minutes</Ligne>
-              <Ligne>6 000 / 240</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <TableauDonnees theme={theme} donnees={[['Volume', '100 ml'], ['Temps', '240 min'], ['Tubulure', '×60']]} />
+              <div className="space-y-1.5">
+                <Ligne>Numérateur : 100 × 60 = 6 000 gouttes</Ligne>
+                <Ligne>Dénominateur : 4 × 60 = 240 minutes</Ligne>
+                <Ligne>6 000 / 240</Ligne>
+              </div>
             </div>
           </Exemple>
         </div>
@@ -425,26 +475,35 @@ function ThemeConcentration({ theme }) {
           <Exemple theme={theme} num="1" titre="G5%, flacon 500 ml"
             enonce={<>Combien de grammes de glucose dans un flacon de <strong className="font-bold" style={{color: theme.couleur}}>G5%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>500 ml</strong> ?</>}
             resultat="= 25 g de glucose">
-            <div className="space-y-1.5">
-              <Ligne>G5% = 5 g pour 100 ml</Ligne>
-              <Ligne>(5 × 500) / 100 = 2 500 / 100</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['5 g', '100 ml']} cherche={['?', '500 ml']} />
+              <div className="space-y-1.5">
+                <Ligne>G5% = 5 g pour 100 ml</Ligne>
+                <Ligne>(5 × 500) / 100 = 2 500 / 100</Ligne>
+              </div>
             </div>
           </Exemple>
           <Exemple theme={theme} num="2" titre="Bétadine 10%, flacon 125 ml"
             enonce={<>Combien de grammes dans un flacon de <strong className="font-bold" style={{color: theme.couleur}}>Bétadine 10%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>125 ml</strong> ?</>}
             resultat="= 12,5 g">
-            <div className="space-y-1.5">
-              <Ligne>10% = 10 g pour 100 ml</Ligne>
-              <Ligne>(10 × 125) / 100 = 1 250 / 100</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['10 g', '100 ml']} cherche={['?', '125 ml']} />
+              <div className="space-y-1.5">
+                <Ligne>10% = 10 g pour 100 ml</Ligne>
+                <Ligne>(10 × 125) / 100 = 1 250 / 100</Ligne>
+              </div>
             </div>
           </Exemple>
           <Exemple theme={theme} num="3" titre="NaCl 0,9%, poche 1 L (piège !)"
             enonce={<>Combien de grammes de NaCl dans une poche de <strong className="font-bold" style={{color: theme.couleur}}>NaCl 0,9%</strong> de <strong className="font-bold" style={{color: theme.couleur}}>1 L</strong> ?</>}
             resultat="= 9 g de NaCl">
-            <div className="space-y-1.5">
-              <Ligne>0,9% = <strong className="text-black/80">0,9 g</strong> pour 100 ml (pas 9 g !)</Ligne>
-              <Ligne>1 L = 1 000 ml</Ligne>
-              <Ligne>(0,9 × 1 000) / 100 = 900 / 100</Ligne>
+            <div className="flex flex-col sm:flex-row items-center gap-5">
+              <MiniTableau theme={theme} c1="Masse" c2="Volume" sais={['0,9 g', '100 ml']} cherche={['?', '1 000 ml']} />
+              <div className="space-y-1.5">
+                <Ligne>0,9% = <strong className="text-black/80">0,9 g</strong> pour 100 ml (pas 9 g !)</Ligne>
+                <Ligne>1 L = 1 000 ml</Ligne>
+                <Ligne>(0,9 × 1 000) / 100 = 900 / 100</Ligne>
+              </div>
             </div>
           </Exemple>
         </div>

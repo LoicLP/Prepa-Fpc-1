@@ -472,7 +472,7 @@ export default function MaquetteCalculsDosesPage() {
       </section>
 
       {/* ===================== SÉLECTEUR + CONTENU ===================== */}
-      <section className="relative px-5 pt-8 pb-16 sm:pb-24 overflow-hidden" style={{background: `linear-gradient(to bottom, #ffffff 0%, ${theme.couleur}0b 160px, ${theme.couleur}0b calc(100% - 180px), #ffffff 100%)`}}>
+      <section className="relative px-5 pt-8 pb-5 sm:pb-8 overflow-hidden" style={{background: `linear-gradient(to bottom, #ffffff 0%, ${theme.couleur}0b 160px, ${theme.couleur}0b calc(100% - 90px), #ffffff 100%)`}}>
         {/* Décorations au ton du thème */}
         <div aria-hidden="true" className="absolute top-40 -left-24 w-96 h-72 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}14`}}></div>
         <div aria-hidden="true" className="absolute top-[45%] -right-28 w-80 h-64 rounded-full blur-3xl pointer-events-none" style={{background: `${theme.couleur}10`}}></div>

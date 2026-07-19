@@ -179,7 +179,7 @@ export default function MaquetteAuthPage() {
         ) : (
         <div className={`max-w-[420px] w-full ${sliding}`}>
           <h1 className="text-4xl sm:text-[2.9rem] font-extrabold tracking-[-0.03em] leading-[1.05] mb-3">
-            {mode === 'login' ? 'Bon retour !' : 'Débutez votre essai de 7 jours'}
+            {mode === 'login' ? 'Ravis de vous revoir !' : 'Débutez votre essai de 7 jours'}
           </h1>
           <p className="text-black/50 font-medium text-lg mb-8">
             {mode === 'login' ? 'Connectez-vous pour reprendre votre entraînement.' : 'Commencez votre entraînement pour le concours FPC.'}

@@ -36,9 +36,9 @@ function PileModules() {
     <div className="flex flex-col items-center">
       {/* Orbes légères qui prennent la couleur de la matière affichée */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-        <div className="tile-float absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}1c`, transition: 'background 1.2s ease'}}></div>
-        <div className="tile-float absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}14`, transition: 'background 1.2s ease', animationDelay: '1.6s'}}></div>
-        <div className="tile-float absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}10`, transition: 'background 1.2s ease', animationDelay: '3.1s'}}></div>
+        <div className="tile-float absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}30`, transition: 'background 1.2s ease'}}></div>
+        <div className="tile-float absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}26`, transition: 'background 1.2s ease', animationDelay: '1.6s'}}></div>
+        <div className="tile-float absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}1e`, transition: 'background 1.2s ease', animationDelay: '3.1s'}}></div>
       </div>
       <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
         <div className="relative w-[88px] h-[88px] mx-auto">

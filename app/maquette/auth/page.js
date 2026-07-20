@@ -34,6 +34,12 @@ function PileModules() {
   const mod = MODULES[index]
   return (
     <div className="flex flex-col items-center">
+      {/* Orbes légères qui prennent la couleur de la matière affichée */}
+      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+        <div className="tile-float absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}1c`, transition: 'background 1.2s ease'}}></div>
+        <div className="tile-float absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}14`, transition: 'background 1.2s ease', animationDelay: '1.6s'}}></div>
+        <div className="tile-float absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}10`, transition: 'background 1.2s ease', animationDelay: '3.1s'}}></div>
+      </div>
       <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
         <div className="relative w-[88px] h-[88px] mx-auto">
           <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
@@ -380,8 +386,6 @@ export default function MaquetteAuthPage() {
 
       {/* ===================== COLONNE DROITE : DÉMO PRODUIT ===================== */}
       <div className="hidden lg:flex items-center justify-center relative pt-[96px] pb-14 px-10 overflow-hidden">
-        {/* Halos dégradés façon Partielo */}
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{backgroundImage: 'radial-gradient(55% 45% at 22% 24%, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0) 70%), radial-gradient(50% 42% at 78% 72%, rgba(99,102,241,0.09) 0%, rgba(99,102,241,0) 70%), radial-gradient(40% 35% at 70% 20%, rgba(245,158,11,0.07) 0%, rgba(245,158,11,0) 70%)'}}></div>
         <PileModules />
       </div>
     </section>

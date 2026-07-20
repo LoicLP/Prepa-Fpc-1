@@ -123,7 +123,7 @@ export default function MaquetteLayout({ children }) {
         </a>
         <div className="nav-dim flex items-center gap-x-1 mx-auto">
           <a href="/maquette" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Accueil</a>
-          <a href="/maquette/calculs-doses" className="px-3.5 py-2 whitespace-nowrap text-[0.95rem] font-bold text-[#0d0d0d]">Calculs de doses</a>
+          <a href="/maquette/calculs-doses/produit-en-croix" className="px-3.5 py-2 whitespace-nowrap text-[0.95rem] font-bold text-[#0d0d0d]">Calculs de doses</a>
           <a href="/maquette/blog" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Blog</a>
           <a href="/maquette/tarifs" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Tarifs</a>
         </div>
@@ -175,7 +175,7 @@ export default function MaquetteLayout({ children }) {
               <h4 className="text-xs font-extrabold uppercase tracking-widest mb-4">Ressources</h4>
               <ul className="space-y-3 text-[15px] text-white/85">
                 <li><a href="/maquette/blog" className="hover:text-white transition">Blog</a></li>
-                <li><a href="/maquette/calculs-doses" className="hover:text-white transition">Formules de calculs</a></li>
+                <li><a href="/maquette/calculs-doses/produit-en-croix" className="hover:text-white transition">Formules de calculs</a></li>
                 <li><a href="mailto:support@prepa-fpc.fr" className="font-bold text-white hover:text-white/80 transition">support@prepa-fpc.fr</a></li>
               </ul>
             </div>

@@ -15,6 +15,70 @@ const MODULES = [
   { label: 'Annales', bg: 'linear-gradient(145deg, #cbd5e1, #94a3b8)', ink: '#0f172a', accent: '#64748b', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> },
 ]
 
+// Orbes de fond qui dérivent et changent de teinte
+const Orbes = ({ couleur }) => (
+  <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
+    <div className="orbe-1 absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${couleur}30`, transition: 'background 1.2s ease'}}></div>
+    <div className="orbe-2 absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${couleur}26`, transition: 'background 1.2s ease'}}></div>
+    <div className="orbe-3 absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${couleur}1e`, transition: 'background 1.2s ease'}}></div>
+  </div>
+)
+
+// Panneau du mode inscription : parcours en 3 étapes, checklist de l'essai, témoignage
+function PanneauInscription() {
+  const [teinte, setTeinte] = useState(0)
+  useEffect(() => {
+    const interval = setInterval(() => setTeinte(t => (t + 1) % MODULES.length), 2400)
+    return () => clearInterval(interval)
+  }, [])
+  return (
+    <div className="flex flex-col items-start max-w-[340px]">
+      <Orbes couleur={MODULES[teinte].accent} />
+
+      {/* Parcours en 3 étapes */}
+      <div className="relative mb-10">
+        <div aria-hidden="true" className="absolute left-[17px] top-3 bottom-3 w-[3px] rounded-full bg-black/[0.07]"></div>
+        <div className="relative space-y-7">
+          <div className="flex items-start gap-4">
+            <div className="micro-beat w-9 h-9 rounded-full flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-lg shadow-red-600/30" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>1</div>
+            <div className="pt-0.5">
+              <p className="font-extrabold text-black/85">Créez votre compte</p>
+              <p className="text-sm text-red-600 font-bold">Vous êtes ici — 2 minutes</p>
+            </div>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white ring-1 ring-black/10 text-black/35 font-extrabold text-sm shrink-0">2</div>
+            <p className="pt-1.5 font-bold text-black/45">Entraînez-vous chaque jour</p>
+          </div>
+          <div className="flex items-start gap-4">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white ring-1 ring-black/10 text-black/35 font-extrabold text-sm shrink-0">3</div>
+            <p className="pt-1.5 font-bold text-black/45">Réussissez le concours</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Checklist de l'essai */}
+      <div className="relative w-full bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 mb-10 space-y-3">
+        {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Tous les entraînements inclus', 'Résiliable en un clic'].map((item, i) => (
+          <div key={i} className="flex items-center gap-3">
+            <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-emerald-500/10">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+            <span className="text-[15px] text-black/65 font-medium">{item}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Témoignage */}
+      <div className="relative w-full pl-6">
+        <span aria-hidden="true" className="absolute -top-2 left-0 text-4xl font-extrabold text-red-600/25 leading-none">«</span>
+        <p className="text-[15px] italic text-black/60 leading-relaxed">Les examens blancs m&apos;ont mise dans les conditions réelles. Le jour J, aucune surprise.</p>
+        <p className="mt-2 text-sm font-bold text-black/70">Marie, aide-soignante <span className="text-black/40 font-semibold">— admise en IFSI en 2025</span></p>
+      </div>
+    </div>
+  )
+}
+
 // Pile de modules animée (version agrandie de celle du hero), avec le nom du
 // module qui s'affiche dessous dans sa couleur
 function PileModules() {
@@ -34,12 +98,7 @@ function PileModules() {
   const mod = MODULES[index]
   return (
     <div className="flex flex-col items-center">
-      {/* Orbes légères qui prennent la couleur de la matière affichée */}
-      <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-        <div className="orbe-1 absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}30`, transition: 'background 1.2s ease'}}></div>
-        <div className="orbe-2 absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}26`, transition: 'background 1.2s ease'}}></div>
-        <div className="orbe-3 absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}1e`, transition: 'background 1.2s ease'}}></div>
-      </div>
+      <Orbes couleur={mod.accent} />
       <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
         <div className="relative w-[88px] h-[88px] mx-auto">
           <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
@@ -402,7 +461,7 @@ export default function MaquetteAuthPage() {
 
       {/* ===================== COLONNE DROITE : DÉMO PRODUIT ===================== */}
       <div className="hidden lg:flex items-center justify-center relative pt-[96px] pb-14 px-10 overflow-hidden">
-        <PileModules />
+        {mode === 'login' ? <PileModules /> : <PanneauInscription />}
       </div>
     </section>
   )

@@ -362,7 +362,7 @@ export default function MaquetteAuthPage() {
           </div>
         ) : (
         <div className={`max-w-[420px] w-full ${sliding}`}>
-          <h1 className="text-4xl sm:text-[2.9rem] font-extrabold tracking-[-0.03em] leading-[1.05] mb-3">
+          <h1 className={`font-extrabold tracking-[-0.03em] leading-[1.05] mb-3 ${mode === 'login' ? 'whitespace-nowrap text-4xl sm:text-[2.55rem]' : 'text-4xl sm:text-[2.9rem]'}`}>
             {mode === 'login' ? 'Ravis de vous revoir !' : 'Débutez votre essai de 7 jours'}
           </h1>
           <p className="text-black/50 font-medium text-lg mb-8">

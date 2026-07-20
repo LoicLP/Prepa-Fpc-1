@@ -361,7 +361,7 @@ export default function MaquetteAuthPage() {
             <button onClick={() => { setSignupSuccess(false); switchTo('login') }} className="inline-block mt-7 bg-[#0d0d0d] hover:bg-black/85 text-white font-bold px-7 py-3.5 rounded-full transition cursor-pointer">Aller à la connexion</button>
           </div>
         ) : (
-        <div className={`max-w-[420px] w-full ${sliding}`}>
+        <div className={`max-w-[420px] w-full ${sliding}`} style={mode === 'login' ? {marginTop: '10vh'} : undefined}>
           <h1 className={`font-extrabold tracking-[-0.03em] leading-[1.05] mb-3 ${mode === 'login' ? 'whitespace-nowrap text-4xl sm:text-[2.55rem]' : 'text-4xl sm:text-[2.9rem]'}`}>
             {mode === 'login' ? 'Ravis de vous revoir !' : 'Débutez votre essai de 7 jours'}
           </h1>

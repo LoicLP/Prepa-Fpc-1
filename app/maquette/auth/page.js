@@ -63,13 +63,23 @@ function PileModules() {
       <div className="mt-10 flex flex-col items-center gap-2.5">
         <div className="flex">
           {[
-            'https://randomuser.me/api/portraits/women/44.jpg',
-            'https://randomuser.me/api/portraits/women/68.jpg',
-            'https://randomuser.me/api/portraits/women/12.jpg',
-            'https://randomuser.me/api/portraits/men/75.jpg',
-          ].map((photo, i) => (
-            <img key={i} src={photo} alt="" width={36} height={36} className={`w-9 h-9 rounded-full object-cover ring-2 ring-white shadow-sm ${i > 0 ? '-ml-2.5' : ''}`} />
+            ['#fee2e2', '#dc2626', <path key="t" d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z M22 10v6 M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>],
+            ['#dbeafe', '#2563eb', <path key="c" d="M20 6 9 17l-5-5"/>],
+            ['#fce7f3', '#ec4899', <path key="h" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>],
+            ['#fef3c7', '#d97706', <path key="p" d="M12 5v14M5 12h14"/>],
+          ].map(([fond, trait, icone], i) => (
+            <span key={i} className={`w-9 h-9 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm ${i > 0 ? '-ml-2.5' : ''}`} style={{background: fond}}>
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke={trait} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{icone}</svg>
+            </span>
           ))}
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="flex gap-0.5">
+            {[1, 2, 3, 4, 5].map(i => (
+              <svg key={i} className="w-4 h-4" viewBox="0 0 24 24" fill="#f59e0b"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+            ))}
+          </span>
+          <span className="text-sm font-extrabold text-black/70">4,8/5</span>
         </div>
         <p className="text-sm text-black/45 font-medium text-center max-w-[300px] leading-relaxed">Rejoignez <strong className="font-extrabold text-black/70">1 400 candidats</strong> en reconversion qui ont réussi leur entrée en IFSI grâce à Prépa FPC</p>
       </div>

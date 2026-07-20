@@ -33,8 +33,8 @@ function PanneauInscription() {
       <div className="relative w-[300px] bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 mt-9 space-y-3">
         {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Tous les entraînements inclus', 'Résiliable en un clic'].map((item, i) => (
           <div key={i} className="flex items-center gap-3">
-            <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-emerald-500/10">
-              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+            <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-red-600/10">
+              <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#dc2626" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </span>
             <span className="text-[15px] text-black/65 font-medium">{item}</span>
           </div>

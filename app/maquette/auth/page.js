@@ -2,6 +2,58 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '../../../lib/supabase'
 
+// Les 5 entraînements affichés dans la pile (repris du hero de l'accueil)
+const MODULES = [
+  { label: 'Calculs de doses', bg: 'linear-gradient(145deg, #ef4444, #dc2626)', ink: '#ffffff', accent: '#dc2626', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg> },
+  { label: 'Rédaction', bg: 'linear-gradient(145deg, #a5b4fc, #818cf8)', ink: '#1e1b4b', accent: '#6366f1', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> },
+  { label: 'Oral', bg: 'linear-gradient(145deg, #fcd34d, #fbbf24)', ink: '#451a03', accent: '#e5a50c', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg> },
+  { label: 'Examen blanc', bg: 'linear-gradient(145deg, #f9a8d4, #f472b6)', ink: '#500724', accent: '#ec4899', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg> },
+  { label: 'Culture sanitaire', bg: 'linear-gradient(145deg, #67e8f9, #22d3ee)', ink: '#083344', accent: '#0eb5d4', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg> },
+  { label: 'Annales', bg: 'linear-gradient(145deg, #cbd5e1, #94a3b8)', ink: '#0f172a', accent: '#64748b', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg> },
+]
+
+// Pile de modules animée (version agrandie de celle du hero), avec le nom du
+// module qui s'affiche dessous dans sa couleur
+function PileModules() {
+  const [index, setIndex] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLeaving(true)
+      const t = setTimeout(() => {
+        setIndex(i => (i + 1) % MODULES.length)
+        setLeaving(false)
+      }, 420)
+      return () => clearTimeout(t)
+    }, 2400)
+    return () => clearInterval(interval)
+  }, [])
+  const mod = MODULES[index]
+  return (
+    <div className="flex flex-col items-center">
+      <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
+        <div className="relative w-[88px] h-[88px] mx-auto">
+          <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
+          <div className="absolute inset-0 rounded-[24px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-7px) scale(0.92)'}}></div>
+          <div
+            className="absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
+            style={{
+              background: mod.bg,
+              transition: leaving ? 'transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.42s' : 'none',
+              transform: leaving ? 'translateY(-32px) scale(0.88)' : 'none',
+              opacity: leaving ? 0 : 1,
+            }}
+          >
+            {mod.icon(mod.ink)}
+          </div>
+        </div>
+      </div>
+      <p key={index} className="stat-swap text-2xl font-extrabold tracking-tight" style={{color: mod.accent}}>{mod.label}</p>
+      <p className="mt-3 text-[15px] text-black/45 font-medium text-center max-w-[280px] leading-relaxed">5 entraînements pour couvrir chaque partie du concours FPC.</p>
+    </div>
+  )
+}
+
 // Carte démo du panneau droit (façon Partielo) : CV téléversé → questions générées
 function DemoOral() {
   return (
@@ -312,7 +364,7 @@ export default function MaquetteAuthPage() {
       <div className="hidden lg:flex items-center justify-center relative pt-[96px] pb-14 px-10 overflow-hidden">
         {/* Halos dégradés façon Partielo */}
         <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{backgroundImage: 'radial-gradient(55% 45% at 22% 24%, rgba(239,68,68,0.10) 0%, rgba(239,68,68,0) 70%), radial-gradient(50% 42% at 78% 72%, rgba(99,102,241,0.09) 0%, rgba(99,102,241,0) 70%), radial-gradient(40% 35% at 70% 20%, rgba(245,158,11,0.07) 0%, rgba(245,158,11,0) 70%)'}}></div>
-        <DemoOral />
+        <PileModules />
       </div>
     </section>
   )

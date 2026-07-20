@@ -49,6 +49,22 @@ function PileModules() {
         </div>
       </div>
       <p key={index} className="stat-swap text-2xl font-extrabold tracking-tight" style={{color: mod.accent}}>{mod.label}</p>
+
+      {/* Preuve sociale : avatars des candidats */}
+      <div className="mt-10 flex flex-col items-center gap-2.5">
+        <div className="flex">
+          {[
+            ['M', 'linear-gradient(145deg, #f9a8d4, #ec4899)'],
+            ['S', 'linear-gradient(145deg, #93c5fd, #3b82f6)'],
+            ['K', 'linear-gradient(145deg, #fcd34d, #f59e0b)'],
+            ['A', 'linear-gradient(145deg, #6ee7b7, #10b981)'],
+            ['L', 'linear-gradient(145deg, #fca5a5, #ef4444)'],
+          ].map(([initiale, fond], i) => (
+            <span key={i} className={`w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-extrabold ring-2 ring-white shadow-sm ${i > 0 ? '-ml-2.5' : ''}`} style={{background: fond}}>{initiale}</span>
+          ))}
+        </div>
+        <p className="text-sm text-black/45 font-medium">Rejoignez les candidats en reconversion</p>
+      </div>
     </div>
   )
 }

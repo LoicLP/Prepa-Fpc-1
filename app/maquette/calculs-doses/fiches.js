@@ -354,18 +354,34 @@ function ThemeDebit({ theme }) {
       <div className="mb-16">
         <Eyebrow couleur={theme.couleur}>La clé : le type de tubulure</Eyebrow>
         <div className="flex flex-col sm:flex-row items-center justify-center gap-8 sm:gap-12">
-          {/* Chambre compte-gouttes animée : gouttes qui remplissent, puis vidange */}
+          {/* Perfusion réaliste : poche, tubulure, chambre compte-gouttes avec canule */}
           <div className="flex flex-col items-center shrink-0">
-            <div className="w-1 h-8 bg-black/10 rounded-t"></div>
-            <div className="relative w-20 h-32 rounded-b-[2rem] rounded-t-xl ring-1 ring-black/10 bg-white overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
-              <div className="goutte absolute left-1/2 -translate-x-1/2 w-3 h-3">
+            {/* Attache de la poche */}
+            <div className="w-4 h-2 rounded-t-md ring-1 ring-black/10 bg-white"></div>
+            {/* Poche de perfusion */}
+            <div className="relative w-16 h-[4.5rem] rounded-xl ring-1 ring-black/10 bg-white overflow-hidden shadow-[0_10px_28px_rgba(0,0,0,0.06)]">
+              <div className="absolute bottom-0 inset-x-0" style={{height: '80%', background: `${theme.couleur}22`}}></div>
+              <div className="absolute top-2 left-2 w-1.5 h-7 rounded-full bg-white/80"></div>
+            </div>
+            {/* Tubulure haute */}
+            <div className="w-1 h-5 bg-black/10"></div>
+            {/* Chambre compte-gouttes */}
+            <div className="relative w-14 h-32 rounded-[18px] ring-1 ring-black/10 bg-white overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.06)]">
+              {/* Canule d'où se forme la goutte */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-2 h-4 rounded-b bg-black/15"></div>
+              {/* La goutte : se forme, grossit, se détache, tombe */}
+              <div className="goutte absolute left-1/2 w-3 h-3">
                 <div className="w-full h-full" style={{background: theme.couleur, borderRadius: '0 50% 50% 50%', transform: 'rotate(45deg)'}}></div>
               </div>
-              <div className="niveau-liquide absolute bottom-0 inset-x-0" style={{background: `${theme.couleur}26`}}>
+              {/* Ondulation à l'impact */}
+              <div className="onde absolute left-1/2 w-8 h-2 rounded-[50%]" style={{top: '61%', border: `2px solid ${theme.couleur}66`}}></div>
+              {/* Liquide (niveau constant, au tiers comme une vraie chambre) */}
+              <div className="absolute bottom-0 inset-x-0" style={{height: '36%', background: `${theme.couleur}26`}}>
                 <div className="absolute top-0 inset-x-0 h-1 rounded-full opacity-40" style={{background: theme.couleur}}></div>
               </div>
             </div>
-            <div className="w-1 h-8 bg-black/10 rounded-b"></div>
+            {/* Tubulure basse */}
+            <div className="w-1 h-5 bg-black/10 rounded-b"></div>
             <p className="mt-2 text-[11px] font-extrabold uppercase tracking-widest text-black/35">1 goutte à la fois</p>
           </div>
           {/* Tubulures */}
@@ -722,27 +738,23 @@ export default function FichesCalculsDoses({ actif }) {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <style>{`
-        /* Compte-gouttes : 5 gouttes tombent (de moins en moins bas, le niveau monte),
-           puis la chambre pleine se vide et la boucle repart (8s) */
-        @keyframes goutte-chute {
-          0% { top: 6%; opacity: 0; } 1.5% { opacity: 1; } 9% { top: 64%; opacity: 1; } 10% { top: 66%; opacity: 0; }
-          13% { top: 6%; opacity: 0; } 14.5% { opacity: 1; } 22% { top: 61%; opacity: 1; } 23% { top: 63%; opacity: 0; }
-          26% { top: 6%; opacity: 0; } 27.5% { opacity: 1; } 35% { top: 57%; opacity: 1; } 36% { top: 59%; opacity: 0; }
-          39% { top: 6%; opacity: 0; } 40.5% { opacity: 1; } 48% { top: 53%; opacity: 1; } 49% { top: 55%; opacity: 0; }
-          52% { top: 6%; opacity: 0; } 53.5% { opacity: 1; } 61% { top: 49%; opacity: 1; } 62% { top: 51%; opacity: 0; }
-          63%, 100% { top: 6%; opacity: 0; }
+        /* Compte-gouttes réaliste (boucle 2,2s) : la goutte se forme à la canule,
+           grossit, se détache, s'étire en tombant, puis ondulation à la surface */
+        @keyframes goutte-vie {
+          0% { top: 12%; opacity: 0; transform: translateX(-50%) scale(0.2); }
+          8% { opacity: 1; }
+          40% { top: 12%; transform: translateX(-50%) scale(1); animation-timing-function: cubic-bezier(0.5, 0, 0.9, 0.6); }
+          64% { top: 55%; transform: translateX(-50%) scale(0.92, 1.18); }
+          68% { top: 58%; opacity: 0; transform: translateX(-50%) scale(0.9, 1); }
+          100% { top: 58%; opacity: 0; }
         }
-        .goutte { animation: goutte-chute 8s linear infinite; }
-        @keyframes niveau-monte {
-          0%, 9% { height: 14%; }
-          11%, 22% { height: 22%; }
-          24%, 35% { height: 30%; }
-          37%, 48% { height: 38%; }
-          50%, 61% { height: 46%; }
-          64%, 74% { height: 55%; }
-          86%, 100% { height: 14%; }
+        .goutte { animation: goutte-vie 2.2s ease-in-out infinite; }
+        @keyframes onde-impact {
+          0%, 63% { opacity: 0; transform: translateX(-50%) scale(0.3); }
+          69% { opacity: 0.8; transform: translateX(-50%) scale(0.6); }
+          88%, 100% { opacity: 0; transform: translateX(-50%) scale(1.6); }
         }
-        .niveau-liquide { animation: niveau-monte 8s linear infinite; }
+        .onde { animation: onde-impact 2.2s ease-out infinite; }
 
         /* ===== Chorégraphie du tableau en croix (boucle 7s) ===== */
         /* Apparition en cascade des cellules */

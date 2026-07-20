@@ -64,7 +64,6 @@ function PileModules() {
         <div className="flex">
           {[
             'https://randomuser.me/api/portraits/women/44.jpg',
-            'https://randomuser.me/api/portraits/men/32.jpg',
             'https://randomuser.me/api/portraits/women/68.jpg',
             'https://randomuser.me/api/portraits/women/12.jpg',
             'https://randomuser.me/api/portraits/men/75.jpg',

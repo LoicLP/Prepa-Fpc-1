@@ -24,39 +24,19 @@ const Orbes = ({ couleur }) => (
   </div>
 )
 
-// Panneau du mode inscription : pile compacte, checklist de l'essai, compteurs
+// Panneau du mode inscription : le même que la connexion, avec la checklist de l'essai en plus
 function PanneauInscription() {
-  const [mod, setMod] = useState(MODULES[0])
   return (
-    <div className="flex flex-col items-start max-w-[340px]">
-      <Orbes couleur={mod.accent} />
-
-      {/* Pile de modules compacte */}
-      <div className="self-center">
-        <PileTuiles echelle={1.05} marge="14px 0 30px" onModule={setMod} />
-      </div>
-
+    <div className="flex flex-col items-center">
+      <PileModules />
       {/* Checklist de l'essai */}
-      <div className="relative w-full bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 space-y-3">
+      <div className="relative w-[300px] bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 mt-9 space-y-3">
         {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Tous les entraînements inclus', 'Résiliable en un clic'].map((item, i) => (
           <div key={i} className="flex items-center gap-3">
             <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-emerald-500/10">
               <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="#10b981" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
             </span>
             <span className="text-[15px] text-black/65 font-medium">{item}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Compteurs de la bibliothèque */}
-      <div className="relative w-full mt-8 flex items-center justify-center gap-5">
-        {[[2200, 'Exercices'], [2300, 'Examens blancs'], [40, 'Annales']].map(([valeur, libelle], i) => (
-          <div key={libelle} className="flex items-center gap-5">
-            {i > 0 && <div className="w-px h-8 bg-black/10"></div>}
-            <div className="text-center">
-              <p className="text-xl font-extrabold tracking-tight text-red-600 tabular-nums"><CountUp target={valeur} /></p>
-              <p className="text-[10px] font-extrabold uppercase tracking-widest text-black/40">{libelle}</p>
-            </div>
           </div>
         ))}
       </div>
@@ -104,24 +84,6 @@ function PileTuiles({ echelle = 1, marge = '0', onModule }) {
       </div>
     </div>
   )
-}
-
-// Compteur animé au chargement
-function CountUp({ target }) {
-  const [val, setVal] = useState(0)
-  useEffect(() => {
-    const debut = performance.now()
-    const duree = 1400
-    let raf
-    const tick = (now) => {
-      const p = Math.min((now - debut) / duree, 1)
-      setVal(Math.round(target * (1 - Math.pow(1 - p, 3))))
-      if (p < 1) raf = requestAnimationFrame(tick)
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [target])
-  return <>{val.toLocaleString('fr-FR')}</>
 }
 
 // Pile de modules animée (version agrandie de celle du hero), avec le nom du

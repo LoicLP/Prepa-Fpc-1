@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../../lib/supabase'
 
 // Les 5 entraînements affichés dans la pile (repris du hero de l'accueil)
@@ -24,16 +24,17 @@ const Orbes = ({ couleur }) => (
   </div>
 )
 
-// Panneau du mode inscription : parcours en 3 étapes, checklist de l'essai, témoignage
+// Panneau du mode inscription : pile compacte, checklist de l'essai, compteurs
 function PanneauInscription() {
-  const [teinte, setTeinte] = useState(0)
-  useEffect(() => {
-    const interval = setInterval(() => setTeinte(t => (t + 1) % MODULES.length), 2400)
-    return () => clearInterval(interval)
-  }, [])
+  const [mod, setMod] = useState(MODULES[0])
   return (
     <div className="flex flex-col items-start max-w-[340px]">
-      <Orbes couleur={MODULES[teinte].accent} />
+      <Orbes couleur={mod.accent} />
+
+      {/* Pile de modules compacte */}
+      <div className="self-center">
+        <PileTuiles echelle={1.05} marge="14px 0 30px" onModule={setMod} />
+      </div>
 
       {/* Checklist de l'essai */}
       <div className="relative w-full bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 space-y-3">
@@ -47,48 +48,91 @@ function PanneauInscription() {
         ))}
       </div>
 
+      {/* Compteurs de la bibliothèque */}
+      <div className="relative w-full mt-8 flex items-center justify-center gap-5">
+        {[[2200, 'Exercices'], [2300, 'Examens blancs'], [40, 'Annales']].map(([valeur, libelle], i) => (
+          <div key={libelle} className="flex items-center gap-5">
+            {i > 0 && <div className="w-px h-8 bg-black/10"></div>}
+            <div className="text-center">
+              <p className="text-xl font-extrabold tracking-tight text-red-600 tabular-nums"><CountUp target={valeur} /></p>
+              <p className="text-[10px] font-extrabold uppercase tracking-widest text-black/40">{libelle}</p>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
 
-// Pile de modules animée (version agrandie de celle du hero), avec le nom du
-// module qui s'affiche dessous dans sa couleur
-function PileModules() {
+// La pile de tuiles seule (réutilisable) : cycle toutes les 2,4s et notifie le module affiché
+function PileTuiles({ echelle = 1, marge = '0', onModule }) {
   const [index, setIndex] = useState(0)
   const [leaving, setLeaving] = useState(false)
+  const onModuleRef = useRef(onModule)
+  onModuleRef.current = onModule
+  const indexRef = useRef(0)
   useEffect(() => {
     const interval = setInterval(() => {
       setLeaving(true)
-      const t = setTimeout(() => {
-        setIndex(i => (i + 1) % MODULES.length)
+      setTimeout(() => {
+        const n = (indexRef.current + 1) % MODULES.length
+        indexRef.current = n
+        setIndex(n)
+        onModuleRef.current?.(MODULES[n])
         setLeaving(false)
       }, 420)
-      return () => clearTimeout(t)
     }, 2400)
     return () => clearInterval(interval)
   }, [])
   const mod = MODULES[index]
   return (
-    <div className="flex flex-col items-center">
-      <Orbes couleur={mod.accent} />
-      <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
-        <div className="relative w-[88px] h-[88px] mx-auto">
-          <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
-          <div className="absolute inset-0 rounded-[24px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-7px) scale(0.92)'}}></div>
-          <div
-            className="absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
-            style={{
-              background: mod.bg,
-              transition: leaving ? 'transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.42s' : 'none',
-              transform: leaving ? 'translateY(-32px) scale(0.88)' : 'none',
-              opacity: leaving ? 0 : 1,
-            }}
-          >
-            {mod.icon(mod.ink)}
-          </div>
+    <div aria-hidden="true" style={{transform: `scale(${echelle})`, margin: marge}}>
+      <div className="relative w-[88px] h-[88px] mx-auto">
+        <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
+        <div className="absolute inset-0 rounded-[24px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-7px) scale(0.92)'}}></div>
+        <div
+          className="absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
+          style={{
+            background: mod.bg,
+            transition: leaving ? 'transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.42s' : 'none',
+            transform: leaving ? 'translateY(-32px) scale(0.88)' : 'none',
+            opacity: leaving ? 0 : 1,
+          }}
+        >
+          {mod.icon(mod.ink)}
         </div>
       </div>
-      <p key={index} className="stat-swap text-2xl font-extrabold tracking-tight" style={{color: mod.accent}}>{mod.label}</p>
+    </div>
+  )
+}
+
+// Compteur animé au chargement
+function CountUp({ target }) {
+  const [val, setVal] = useState(0)
+  useEffect(() => {
+    const debut = performance.now()
+    const duree = 1400
+    let raf
+    const tick = (now) => {
+      const p = Math.min((now - debut) / duree, 1)
+      setVal(Math.round(target * (1 - Math.pow(1 - p, 3))))
+      if (p < 1) raf = requestAnimationFrame(tick)
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target])
+  return <>{val.toLocaleString('fr-FR')}</>
+}
+
+// Pile de modules animée (version agrandie de celle du hero), avec le nom du
+// module qui s'affiche dessous dans sa couleur
+function PileModules() {
+  const [mod, setMod] = useState(MODULES[0])
+  return (
+    <div className="flex flex-col items-center">
+      <Orbes couleur={mod.accent} />
+      <PileTuiles echelle={1.5} marge="36px 0 48px" onModule={setMod} />
+      <p key={mod.label} className="stat-swap text-2xl font-extrabold tracking-tight" style={{color: mod.accent}}>{mod.label}</p>
 
       {/* Preuve sociale : avatars des candidats */}
       <div className="mt-10 flex flex-col items-center gap-2.5">

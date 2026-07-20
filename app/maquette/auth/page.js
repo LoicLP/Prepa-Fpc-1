@@ -71,7 +71,7 @@ function PileModules() {
             <img key={i} src={photo} alt="" width={36} height={36} className={`w-9 h-9 rounded-full object-cover ring-2 ring-white shadow-sm ${i > 0 ? '-ml-2.5' : ''}`} />
           ))}
         </div>
-        <p className="text-sm text-black/45 font-medium">Rejoignez <strong className="font-extrabold text-black/70">1 400 candidats</strong> en reconversion</p>
+        <p className="text-sm text-black/45 font-medium text-center max-w-[300px] leading-relaxed">Rejoignez <strong className="font-extrabold text-black/70">1 400 candidats</strong> en reconversion qui ont réussi leur entrée en IFSI grâce à Prépa FPC</p>
       </div>
     </div>
   )

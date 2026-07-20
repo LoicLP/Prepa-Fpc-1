@@ -122,10 +122,10 @@ function PileModules() {
       <div className="mt-10 flex flex-col items-center gap-2.5">
         <div className="flex">
           {[
-            ['#fee2e2', '#dc2626', <path key="t" d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z M22 10v6 M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>],
-            ['#dbeafe', '#2563eb', <path key="c" d="M20 6 9 17l-5-5"/>],
-            ['#fce7f3', '#ec4899', <path key="h" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>],
-            ['#fef3c7', '#d97706', <path key="p" d="M12 5v14M5 12h14"/>],
+            ['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.6)', <path key="t" d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z M22 10v6 M6 12.5V16a6 3 0 0 0 12 0v-3.5"/>],
+            ['rgba(0,0,0,0.08)', 'rgba(0,0,0,0.6)', <path key="c" d="M20 6 9 17l-5-5"/>],
+            ['rgba(0,0,0,0.05)', 'rgba(0,0,0,0.6)', <path key="h" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>],
+            ['rgba(0,0,0,0.08)', 'rgba(0,0,0,0.6)', <path key="p" d="M12 5v14M5 12h14"/>],
           ].map(([fond, trait, icone], i) => (
             <span key={i} className={`w-9 h-9 rounded-full flex items-center justify-center ring-2 ring-white shadow-sm ${i > 0 ? '-ml-2.5' : ''}`} style={{background: fond}}>
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke={trait} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{icone}</svg>

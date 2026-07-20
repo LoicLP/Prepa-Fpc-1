@@ -35,30 +35,8 @@ function PanneauInscription() {
     <div className="flex flex-col items-start max-w-[340px]">
       <Orbes couleur={MODULES[teinte].accent} />
 
-      {/* Parcours en 3 étapes */}
-      <div className="relative mb-10">
-        <div aria-hidden="true" className="absolute left-[17px] top-3 bottom-3 w-[3px] rounded-full bg-black/[0.07]"></div>
-        <div className="relative space-y-7">
-          <div className="flex items-start gap-4">
-            <div className="micro-beat w-9 h-9 rounded-full flex items-center justify-center text-white font-extrabold text-sm shrink-0 shadow-lg shadow-red-600/30" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>1</div>
-            <div className="pt-0.5">
-              <p className="font-extrabold text-black/85">Créez votre compte</p>
-              <p className="text-sm text-red-600 font-bold">Vous êtes ici — 2 minutes</p>
-            </div>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white ring-1 ring-black/10 text-black/35 font-extrabold text-sm shrink-0">2</div>
-            <p className="pt-1.5 font-bold text-black/45">Entraînez-vous chaque jour</p>
-          </div>
-          <div className="flex items-start gap-4">
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-white ring-1 ring-black/10 text-black/35 font-extrabold text-sm shrink-0">3</div>
-            <p className="pt-1.5 font-bold text-black/45">Réussissez le concours</p>
-          </div>
-        </div>
-      </div>
-
       {/* Checklist de l'essai */}
-      <div className="relative w-full bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 mb-10 space-y-3">
+      <div className="relative w-full bg-white/70 backdrop-blur rounded-2xl ring-1 ring-black/[0.06] p-5 space-y-3">
         {["7 jours d'essai gratuit", 'Sans carte bancaire', 'Tous les entraînements inclus', 'Résiliable en un clic'].map((item, i) => (
           <div key={i} className="flex items-center gap-3">
             <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center bg-emerald-500/10">
@@ -69,12 +47,6 @@ function PanneauInscription() {
         ))}
       </div>
 
-      {/* Témoignage */}
-      <div className="relative w-full pl-6">
-        <span aria-hidden="true" className="absolute -top-2 left-0 text-4xl font-extrabold text-red-600/25 leading-none">«</span>
-        <p className="text-[15px] italic text-black/60 leading-relaxed">Les examens blancs m&apos;ont mise dans les conditions réelles. Le jour J, aucune surprise.</p>
-        <p className="mt-2 text-sm font-bold text-black/70">Marie, aide-soignante <span className="text-black/40 font-semibold">— admise en IFSI en 2025</span></p>
-      </div>
     </div>
   )
 }

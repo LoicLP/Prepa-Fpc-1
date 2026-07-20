@@ -36,9 +36,9 @@ function PileModules() {
     <div className="flex flex-col items-center">
       {/* Orbes légères qui prennent la couleur de la matière affichée */}
       <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-        <div className="tile-float absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}30`, transition: 'background 1.2s ease'}}></div>
-        <div className="tile-float absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}26`, transition: 'background 1.2s ease', animationDelay: '1.6s'}}></div>
-        <div className="tile-float absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}1e`, transition: 'background 1.2s ease', animationDelay: '3.1s'}}></div>
+        <div className="orbe-1 absolute w-44 h-44 rounded-full blur-3xl" style={{top: '14%', left: '12%', background: `${mod.accent}30`, transition: 'background 1.2s ease'}}></div>
+        <div className="orbe-2 absolute w-60 h-60 rounded-full blur-3xl" style={{bottom: '12%', right: '8%', background: `${mod.accent}26`, transition: 'background 1.2s ease'}}></div>
+        <div className="orbe-3 absolute w-32 h-32 rounded-full blur-2xl" style={{top: '60%', left: '20%', background: `${mod.accent}1e`, transition: 'background 1.2s ease'}}></div>
       </div>
       <div aria-hidden="true" style={{transform: 'scale(1.5)', margin: '36px 0 48px'}}>
         <div className="relative w-[88px] h-[88px] mx-auto">
@@ -258,6 +258,13 @@ export default function MaquetteAuthPage() {
         .glisse-sortie-d { animation: glisseSortieD .3s cubic-bezier(.55,.06,.68,.19) forwards }
         .glisse-entree-d { animation: glisseEntreeD .4s cubic-bezier(.22,1,.36,1) forwards }
         .glisse-entree-g { animation: glisseEntreeG .4s cubic-bezier(.22,1,.36,1) forwards }
+        /* Les orbes dérivent lentement sur le panneau, chacune sur sa trajectoire */
+        @keyframes orbe-derive-1 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(90px, -60px); } 66% { transform: translate(-50px, 70px); } }
+        @keyframes orbe-derive-2 { 0%, 100% { transform: translate(0, 0); } 33% { transform: translate(-100px, -50px); } 66% { transform: translate(60px, 60px); } }
+        @keyframes orbe-derive-3 { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(80px, 90px); } }
+        .orbe-1 { animation: orbe-derive-1 16s ease-in-out infinite; }
+        .orbe-2 { animation: orbe-derive-2 20s ease-in-out infinite; }
+        .orbe-3 { animation: orbe-derive-3 13s ease-in-out infinite; }
         /* Neutralise le fond bleu du remplissage automatique de Chrome */
         input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
           -webkit-box-shadow: 0 0 0 1000px #f7f7f7 inset;

@@ -49,7 +49,6 @@ function PileModules() {
         </div>
       </div>
       <p key={index} className="stat-swap text-2xl font-extrabold tracking-tight" style={{color: mod.accent}}>{mod.label}</p>
-      <p className="mt-3 text-[15px] text-black/45 font-medium text-center max-w-[280px] leading-relaxed">5 entraînements pour couvrir chaque partie du concours FPC.</p>
     </div>
   )
 }

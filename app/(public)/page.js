@@ -560,7 +560,7 @@ export default function MaquettePage() {
           La première plateforme web de révision conçue exclusivement pour les professionnels en reconversion. Maîtrisez parfaitement les <strong className="font-bold text-black/75">calculs de doses</strong> et la <strong className="font-bold text-black/75">culture sanitaire</strong>, et intégrez votre première année en IFSI.
         </p>
         <div className="mt-9 flex flex-col sm:flex-row items-center gap-3">
-          <a href="/qcm" className="btn-shine inline-flex items-center gap-2 justify-center bg-[#0d0d0d] hover:bg-black/85 text-white font-semibold text-base px-7 py-3.5 rounded-full transition group">
+          <a href="/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 justify-center bg-[#0d0d0d] hover:bg-black/85 text-white font-semibold text-base px-7 py-3.5 rounded-full transition group">
             Commencer l&apos;entraînement
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
           </a>

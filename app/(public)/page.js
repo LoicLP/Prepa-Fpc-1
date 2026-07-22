@@ -610,8 +610,8 @@ export default function MaquettePage() {
               {/* Ligne de liaison (desktop : horizontale, mobile : verticale) */}
               <div aria-hidden="true" className="hidden md:block absolute top-[34px] left-[12%] right-[12%] h-[3px] rounded-full bg-black/[0.07]"></div>
               <div aria-hidden="true" className="hidden md:block absolute top-[34px] left-[12%] right-[12%] h-[3px] rounded-full frise-ligne-h" style={{background: '#94a3b8'}}></div>
-              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-8 w-[3px] rounded-full bg-black/[0.07]"></div>
-              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-8 w-[3px] rounded-full frise-ligne-v" style={{background: '#94a3b8'}}></div>
+              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-16 w-[3px] rounded-full bg-black/[0.07]"></div>
+              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-16 w-[3px] rounded-full frise-ligne-v" style={{background: '#94a3b8'}}></div>
               <div className="grid md:grid-cols-4 gap-8 md:gap-4">
                 {ETAPES.map((e, i) => (
                   <div key={i} className="frise-etape relative flex md:flex-col items-start md:items-center gap-4 md:gap-0 md:text-center" style={{animationDelay: `${0.15 + i * 0.35}s`}}>

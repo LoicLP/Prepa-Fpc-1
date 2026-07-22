@@ -11,6 +11,7 @@ import { supabase } from '../../lib/supabase'
 export default function LayoutPublic({ children }) {
   const surAccueil = usePathname() === '/'
   const [connecte, setConnecte] = useState(false)
+  const [menuOuvert, setMenuOuvert] = useState(false)
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setConnecte(!!session))
@@ -160,10 +161,43 @@ export default function LayoutPublic({ children }) {
           </div>
           <span className="font-black text-base tracking-tight">Prépa <span className="text-red-600">FPC</span></span>
         </a>
-        {connecte ? (
-          <a href="/dashboard" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Mon tableau de bord</a>
-        ) : (
-          <a href="/auth?mode=signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
+        <div className="flex items-center gap-2">
+          {connecte ? (
+            <a href="/dashboard" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Mon tableau de bord</a>
+          ) : (
+            <a href="/auth?mode=signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
+          )}
+          <button
+            type="button"
+            onClick={() => setMenuOuvert(!menuOuvert)}
+            aria-label={menuOuvert ? 'Fermer le menu' : 'Ouvrir le menu'}
+            aria-expanded={menuOuvert}
+            className="w-10 h-10 -mr-1.5 flex items-center justify-center rounded-full active:bg-black/5 cursor-pointer"
+          >
+            {menuOuvert ? (
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            ) : (
+              <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M4 7h16"/><path d="M4 12h16"/><path d="M4 17h16"/></svg>
+            )}
+          </button>
+        </div>
+        {/* Panneau du menu mobile */}
+        {menuOuvert && (
+          <div className="absolute top-full left-0 right-0 bg-white/95 backdrop-blur-xl border-b border-black/10 shadow-[0_24px_50px_rgba(0,0,0,0.12)] px-5 pt-1 pb-4">
+            {[
+              { href: '/', label: 'Accueil' },
+              { href: '/calculs-doses/produit-en-croix', label: 'Calculs de doses' },
+              { href: '/blog', label: 'Blog' },
+              { href: '/tarifs', label: 'Tarifs' },
+            ].map((l) => (
+              <a key={l.href} href={l.href} onClick={() => setMenuOuvert(false)} className="block py-3.5 text-[17px] font-bold text-[#0d0d0d] border-b border-black/[0.05]">{l.label}</a>
+            ))}
+            {connecte ? (
+              <a href="/dashboard" onClick={() => setMenuOuvert(false)} className="block py-3.5 text-[17px] font-bold text-red-600">Mon tableau de bord</a>
+            ) : (
+              <a href="/auth" onClick={() => setMenuOuvert(false)} className="block py-3.5 text-[17px] font-bold text-red-600">Connexion</a>
+            )}
+          </div>
         )}
       </nav>
 

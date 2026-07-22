@@ -24,7 +24,9 @@
       "Bash(do grep:*)",
       "Bash(grep -r \"base-maths\\\\|examen-maths\\\\|famille-conversions\" /c/Users/Paul/Desktop/prepa-fpc/app --include=*.js)",
       "Bash(xargs wc:*)",
-      "Bash(git -C /c/Users/Paul/Desktop/prepa-fpc worktree list)"
+      "Bash(git -C /c/Users/Paul/Desktop/prepa-fpc worktree list)",
+      "PowerShell(npm run build)",
+      "PowerShell(npm install --no-audit --no-fund)"
     ]
   }
 }

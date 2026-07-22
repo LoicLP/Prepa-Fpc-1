@@ -2,10 +2,21 @@
 // Layout partagé de la maquette (partie non connectée) : nav pilule, nav
 // mobile, footer et styles communs. Toutes les pages de app/maquette/ en héritent.
 // Sur l'accueil la nav suit le défilement ; sur les autres pages elle reste en haut.
+// Si une session Supabase existe, la nav remplace Connexion/Inscription
+// par « Mon tableau de bord ».
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
+import { supabase } from '../../lib/supabase'
 
 export default function MaquetteLayout({ children }) {
   const surAccueil = usePathname() === '/maquette'
+  const [connecte, setConnecte] = useState(false)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => setConnecte(!!session))
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => setConnecte(!!session))
+    return () => subscription.unsubscribe()
+  }, [])
   return (
     <div className="min-h-screen bg-white text-[#0d0d0d] antialiased" style={{fontFamily: "'Inter', system-ui, -apple-system, sans-serif"}}>
       {/* Maquette non référencée tant que la bascule n'a pas eu lieu (contenu dupliqué) */}
@@ -128,8 +139,14 @@ export default function MaquetteLayout({ children }) {
           <a href="/maquette/tarifs" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Tarifs</a>
         </div>
         <div className="flex items-center gap-x-5 shrink-0">
-          <a href="/maquette/auth" className="w-fit text-[0.95rem] font-bold text-[#0d0d0d] transition-opacity hover:opacity-80">Connexion</a>
-          <a href="/maquette/auth?mode=signup" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Inscription</a>
+          {connecte ? (
+            <a href="/dashboard" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Mon tableau de bord</a>
+          ) : (
+            <>
+              <a href="/maquette/auth" className="w-fit text-[0.95rem] font-bold text-[#0d0d0d] transition-opacity hover:opacity-80">Connexion</a>
+              <a href="/maquette/auth?mode=signup" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Inscription</a>
+            </>
+          )}
         </div>
       </nav>
 
@@ -141,7 +158,11 @@ export default function MaquetteLayout({ children }) {
           </div>
           <span className="font-black text-base tracking-tight">Prépa <span className="text-red-600">FPC</span></span>
         </a>
-        <a href="/maquette/auth?mode=signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
+        {connecte ? (
+          <a href="/dashboard" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Mon tableau de bord</a>
+        ) : (
+          <a href="/maquette/auth?mode=signup" className="inline-flex items-center bg-[#141414] text-white text-sm font-bold px-4 py-2 rounded-full">Essayer</a>
+        )}
       </nav>
 
       {children}
@@ -165,10 +186,11 @@ export default function MaquetteLayout({ children }) {
             <div>
               <h4 className="text-xs font-extrabold uppercase tracking-widest mb-4">Produit</h4>
               <ul className="space-y-3 text-[15px] text-white/85">
-                <li><a href="#" className="hover:text-white transition">Entraînement maths</a></li>
-                <li><a href="#" className="hover:text-white transition">Rédaction</a></li>
-                <li><a href="#" className="hover:text-white transition">Préparation à l&apos;oral</a></li>
-                <li><a href="#" className="hover:text-white transition">Examens blancs</a></li>
+                <li><a href="/maquette#entrainement-specifique" className="hover:text-white transition">Entraînement spécifique</a></li>
+                <li><a href="/maquette#entrainement-maths" className="hover:text-white transition">Entraînement maths</a></li>
+                <li><a href="/maquette#redaction" className="hover:text-white transition">Rédaction</a></li>
+                <li><a href="/maquette#examen-blanc" className="hover:text-white transition">Examens blancs</a></li>
+                <li><a href="/maquette#preparation-oral" className="hover:text-white transition">Préparation à l&apos;oral</a></li>
               </ul>
             </div>
             <div>

@@ -486,9 +486,27 @@ export default function MaquettePage() {
   const [activeTab, setActiveTab] = useState(0)
   const [activeFaq, setActiveFaq] = useState(null)
   // Étape du mini-quiz d'éligibilité : q1 → q2 → oui / non
-  const [eligEtape, setEligEtape] = useState('q1')
-  const [annees, setAnnees] = useState(2)
-  const [nonMotif, setNonMotif] = useState(null)
+  // Sélecteur d'éligibilité : un clic sur un profil → verdict immédiat
+  const [profil, setProfil] = useState(null)
+  const PROFILS = [
+    { id: 'as', label: 'Aide-soignant(e)', sous: 'Diplômé(e) DEAS', eligible: true,
+      titre: 'La voie FPC vous est grande ouverte !',
+      texte: 'Dès 3 ans de cotisation à temps plein, vous pouvez vous présenter au concours. Et votre expérience du soin est un vrai atout pour l’oral.',
+      icone: <><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></> },
+    { id: 'ap', label: 'Auxiliaire de puériculture', sous: 'Diplômé(e) DEAP', eligible: true,
+      titre: 'La voie FPC vous est grande ouverte !',
+      texte: 'Dès 3 ans de cotisation à temps plein, vous pouvez vous présenter au concours. Votre quotidien auprès des tout-petits parlera pour vous à l’oral.',
+      icone: <><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></> },
+    { id: 'autre', label: 'Un autre métier', sous: 'Vente, bureau, BTP…', eligible: true,
+      titre: 'Bonne nouvelle : vous aussi !',
+      texte: 'La voie FPC n’est pas réservée aux soignants : 3 ans de cotisation à temps plein, tous secteurs confondus, suffisent pour vous présenter au concours.',
+      icone: <><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></> },
+    { id: 'debut', label: 'En début de carrière', sous: 'Moins de 3 ans d’activité', eligible: false,
+      titre: 'Pas encore — mais ce n’est que partie remise',
+      texte: 'La voie FPC s’ouvre dès 3 ans de cotisation à temps plein. Rien ne vous empêche de commencer à vous préparer dès maintenant.',
+      icone: <><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.828V2"/></> },
+  ]
+  const profilActif = PROFILS.find((p) => p.id === profil)
 
   // Progression de la ligne verticale des 5 catégories (suit le scroll).
   // Chaque pastille s'allume quand le remplissage atteint sa position réelle.
@@ -535,6 +553,8 @@ export default function MaquettePage() {
       {/* ===================== HERO ===================== */}
       <section className="relative grid place-items-center px-5 pb-4 pt-[68px] md:pt-[150px] text-center">
         <div aria-hidden="true" className="hero-grid absolute inset-0 pointer-events-none"></div>
+        {/* Brume bleu marine foncé sur le bas et les côtés du hero */}
+        <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{background: 'radial-gradient(ellipse 46% 324px at 5% calc(100% - 54px), rgba(30,58,138,0.17), transparent 70%), radial-gradient(ellipse 44% 46% at 98% 70%, rgba(30,58,138,0.15), transparent 70%), radial-gradient(ellipse 72% 252px at 50% calc(100% + 72px), rgba(30,58,138,0.12), transparent 70%), radial-gradient(ellipse 42% 306px at 96% calc(100% - 27px), rgba(30,58,138,0.16), transparent 70%), radial-gradient(ellipse 38% 216px at 50% calc(100% - 9px), rgba(30,58,138,0.13), transparent 70%)'}}></div>
         <ParticleField />
         <div className="relative z-10 grid place-items-center">
         <AppLogoStack onChange={setHeroMod} />
@@ -565,6 +585,8 @@ export default function MaquettePage() {
 
       {/* ===================== ÉLIGIBILITÉ ===================== */}
       <section id="eligibilite" className="relative overflow-hidden pt-8 pb-12 sm:pt-10 sm:pb-16 px-5 fade-in-up" style={{background: 'linear-gradient(to bottom, #ffffff 0%, #f7f6f4 90px, #f7f6f4 calc(100% - 140px), #ffffff 100%)', scrollMarginTop: '115px'}}>
+        {/* Prolongement de la brume bleu marine du hero (mêmes positions, fondu vers le bas) */}
+        <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[340px] pointer-events-none" style={{background: 'radial-gradient(ellipse 46% 324px at 5% -54px, rgba(30,58,138,0.17), transparent 70%), radial-gradient(ellipse 72% 252px at 50% 72px, rgba(30,58,138,0.12), transparent 70%), radial-gradient(ellipse 42% 306px at 96% -27px, rgba(30,58,138,0.16), transparent 70%), radial-gradient(ellipse 38% 216px at 50% -9px, rgba(30,58,138,0.13), transparent 70%)'}}></div>
         {/* Décorations */}
         <div aria-hidden="true" className="absolute top-20 -left-24 w-80 h-64 bg-red-500/[0.07] rounded-full blur-3xl pointer-events-none"></div>
         <div aria-hidden="true" className="absolute bottom-16 -right-20 w-72 h-56 bg-indigo-500/[0.06] rounded-full blur-3xl pointer-events-none"></div>
@@ -573,103 +595,57 @@ export default function MaquettePage() {
         <svg aria-hidden="true" className="absolute top-[62%] right-[9%] w-5 h-5 text-black/[0.1] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-14deg)'}}><path d="M12 5v14M5 12h14"/></svg>
         {/* Annotation manuscrite + flèche vers la carte */}
         <div aria-hidden="true" className="absolute top-[46%] left-[8%] hidden lg:block pointer-events-none">
-          <p className="text-[1.55rem] text-red-500 -rotate-6" style={{fontFamily: "'Caveat', cursive", fontWeight: 700}}>10 secondes chrono&nbsp;!</p>
+          <p className="text-[1.55rem] text-red-500 -rotate-6" style={{fontFamily: "'Caveat', cursive", fontWeight: 700}}>Un seul clic&nbsp;!</p>
           <svg className="w-16 h-14 text-red-500/80 ml-14 mt-1" viewBox="0 0 60 50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6 C 18 26, 34 38, 52 40"/><path d="M42 44 52 40 49 30"/></svg>
         </div>
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.2]"><span className="surligne">Êtes-vous éligible au concours FPC&nbsp;?</span></h2>
-            <p className="mt-5 text-lg text-black/55 font-medium leading-relaxed">La voie de la Formation Professionnelle Continue (FPC) est une passerelle spécifique qui permet d&apos;intégrer un IFSI. Répondez à deux questions pour le savoir.</p>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.2]"><span style={{background: 'linear-gradient(100deg, rgba(100,116,139,0) 0.8%, rgba(100,116,139,0.32) 2.8%, rgba(100,116,139,0.25) 50%, rgba(100,116,139,0.32) 97%, rgba(100,116,139,0) 99.2%)', borderRadius: '0.45em 0.2em 0.55em 0.25em', padding: '0.04em 0.22em', margin: '0 -0.06em', WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone'}}>Êtes-vous éligible au concours FPC&nbsp;?</span></h2>
+            <p className="mt-5 text-lg text-black/55 font-medium leading-relaxed">La voie de la Formation Professionnelle Continue (FPC) est une passerelle spécifique qui permet d&apos;intégrer un IFSI. Dites-nous d&apos;où vous partez, on vous répond tout de suite.</p>
           </div>
-          {/* Mini-quiz d'éligibilité */}
-          <div className="relative overflow-hidden max-w-xl mx-auto bg-white/45 backdrop-blur-sm rounded-[28px] ring-1 ring-black/[0.04] p-8 sm:p-10">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-extrabold uppercase tracking-widest text-red-600">Vérifiez-le en 10 secondes</p>
-              {(eligEtape === 'q1' || eligEtape === 'q2') && (
-                <span className="text-xs font-bold text-black/40">Question {eligEtape === 'q1' ? '1' : '2'}/2</span>
-              )}
-            </div>
-            <div className="h-1 rounded-full bg-black/[0.06] mb-8 overflow-hidden">
-              <div className="h-full rounded-full bg-red-600 transition-all duration-500" style={{width: eligEtape === 'q1' ? '25%' : eligEtape === 'q2' ? '62%' : '100%'}}></div>
-            </div>
-
-            {eligEtape === 'q1' && (
-              <div key="q1" className="slide-in text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-red-600/30" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>
-                  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                </div>
-                <h3 className="text-2xl font-extrabold tracking-tight mb-2">Avez-vous 17 ans ou plus&nbsp;?</h3>
-                <p className="text-black/50 font-medium mb-8">Avec ou sans diplôme, quel que soit votre parcours.</p>
-                <div className="flex gap-3">
-                  <button onClick={() => setEligEtape('q2')} className="flex-1 bg-red-600 hover:bg-red-500 hover:-translate-y-0.5 active:scale-[0.97] text-white font-bold py-3.5 rounded-full transition-all cursor-pointer">Oui</button>
-                  <button onClick={() => { setNonMotif('age'); setEligEtape('non') }} className="flex-1 ring-1 ring-black/10 hover:bg-black/5 hover:-translate-y-0.5 active:scale-[0.97] font-bold py-3.5 rounded-full transition-all cursor-pointer">Non</button>
-                </div>
-              </div>
-            )}
-
-            {eligEtape === 'q2' && (
-              <div key="q2" className="slide-in text-center">
-                <div className="w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-red-600/30" style={{background: 'linear-gradient(145deg, #ef4444, #dc2626)'}}>
-                  <svg className="w-7 h-7" viewBox="0 0 24 24" fill="none" stroke="#ffffff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 15h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 17"/><path d="m7 21 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"/><path d="m2 16 6 6"/><circle cx="16" cy="9" r="2.9"/><circle cx="6" cy="5" r="3"/></svg>
-                </div>
-                <h3 className="text-2xl font-extrabold tracking-tight mb-2">Depuis combien d&apos;années cotisez-vous (temps plein)&nbsp;?</h3>
-                <p className="text-black/50 font-medium mb-8">Tous secteurs confondus, pas seulement la santé.</p>
-                <div className="flex items-center gap-4 mb-1">
-                  <input
-                    type="range" min="0" max="10" step="1" value={annees}
-                    onChange={(e) => setAnnees(parseInt(e.target.value))}
-                    className="curseur flex-1 cursor-pointer"
-                    style={{background: `linear-gradient(to right, #dc2626 ${annees * 10}%, rgba(0,0,0,0.08) ${annees * 10}%)`}}
-                    aria-label="Années de cotisation"
-                  />
-                  <span key={annees} className="pop text-lg font-extrabold tabular-nums w-16 text-left">{annees} an{annees > 1 ? 's' : ''}</span>
-                </div>
-                <div className="relative h-7 mb-3 mr-20 ml-1">
-                  <span className="absolute left-0 top-0 text-[10px] font-bold text-black/30">0</span>
-                  <div className="absolute top-0 flex flex-col items-center" style={{left: '30%'}}>
-                    <div className="w-0.5 h-2 bg-red-600/60"></div>
-                    <span className="text-[10px] font-bold text-red-600/80 whitespace-nowrap">seuil : 3 ans</span>
-                  </div>
-                  <span className="absolute right-0 top-0 text-[10px] font-bold text-black/30">10</span>
-                </div>
-                <p className={`text-sm font-bold mb-8 ${annees >= 3 ? 'text-emerald-600' : 'text-black/45'}`}>
-                  {annees >= 3 ? 'C’est bon, la voie FPC vous est ouverte !' : `Encore ${3 - annees} an${3 - annees > 1 ? 's' : ''} et la voie FPC s’ouvre`}
-                </p>
+          {/* Sélecteur de profil : un clic → verdict immédiat */}
+          <div className="relative overflow-hidden max-w-3xl mx-auto bg-white/45 backdrop-blur-sm rounded-[28px] ring-1 ring-black/[0.04] p-8 sm:p-10">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-red-600 mb-8 text-center">Vérifiez-le en un clic — vous êtes…</p>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {PROFILS.map((p) => (
                 <button
-                  onClick={() => { if (annees >= 3) { setEligEtape('oui') } else { setNonMotif('cotisation'); setEligEtape('non') } }}
-                  className="w-full bg-red-600 hover:bg-red-500 hover:-translate-y-0.5 active:scale-[0.97] text-white font-bold py-3.5 rounded-full transition-all cursor-pointer"
-                >Voir mon résultat</button>
-              </div>
-            )}
+                  key={p.id}
+                  onClick={() => setProfil(p.id)}
+                  className={`flex flex-col items-center text-center gap-2.5 rounded-2xl p-4 sm:p-5 transition-all cursor-pointer hover:-translate-y-0.5 active:scale-[0.97] ${profil === p.id ? 'bg-red-600/[0.06] ring-2 ring-red-600' : 'bg-white ring-1 ring-black/[0.07] hover:ring-black/20'}`}
+                >
+                  <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${profil === p.id ? 'bg-red-600 text-white' : 'bg-black/[0.05] text-black/60'}`}>
+                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{p.icone}</svg>
+                  </span>
+                  <span className="text-sm font-extrabold leading-tight">{p.label}</span>
+                  <span className="text-[11px] font-semibold text-black/40 leading-tight">{p.sous}</span>
+                </button>
+              ))}
+            </div>
 
-            {eligEtape === 'oui' && (
-              <div key="oui" className="slide-in text-center">
-                <ConfettiBurst />
-                <div className="mb-6 mt-2">
-                  <span className="stamp-in inline-block border-[3.5px] border-red-600 text-red-600 font-extrabold tracking-[0.16em] px-6 py-2 rounded-lg text-2xl">ÉLIGIBLE</span>
-                </div>
-                <h3 className="text-2xl font-extrabold tracking-tight mb-2">Vous êtes éligible au concours FPC&nbsp;!</h3>
-                <p className="text-black/50 font-medium mb-8">Vous pouvez vous présenter à la sélection et intégrer un IFSI. Il ne reste plus qu&apos;à vous préparer.</p>
-                <a href="/signup" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-3.5 rounded-full transition shadow-lg shadow-red-600/25 group/btn">
-                  Commencer ma préparation
-                  <svg className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
-                </a>
-                <button onClick={() => setEligEtape('q1')} className="block mx-auto mt-5 text-sm font-bold text-black/40 hover:text-black/60 transition cursor-pointer">Refaire le test</button>
-              </div>
-            )}
-
-            {eligEtape === 'non' && (
-              <div key="non" className="slide-in text-center">
-                <div className="w-16 h-16 rounded-full bg-black/[0.06] flex items-center justify-center mx-auto mb-5">
-                  <svg className="w-8 h-8 text-black/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                </div>
-                <h3 className="text-2xl font-extrabold tracking-tight mb-2">Pas encore — mais ce n&apos;est que partie remise</h3>
-                <p className="text-black/50 font-medium mb-8">
-                  {nonMotif === 'cotisation'
-                    ? `Encore ${3 - annees} an${3 - annees > 1 ? 's' : ''} de cotisation et la voie FPC vous sera ouverte. Rien ne vous empêche de commencer à vous préparer dès maintenant.`
-                    : 'Dès vos 17 ans révolus, la voie FPC vous sera ouverte. Rien ne vous empêche de commencer à vous préparer dès maintenant.'}
-                </p>
-                <button onClick={() => setEligEtape('q1')} className="text-sm font-bold text-red-600 hover:text-red-500 transition cursor-pointer">Refaire le test</button>
+            {profilActif && (
+              <div key={profilActif.id} className="slide-in text-center mt-9 pt-8 border-t border-black/[0.06]">
+                {profilActif.eligible ? (
+                  <>
+                    <ConfettiBurst />
+                    <div className="mb-5">
+                      <span className="stamp-in inline-block border-[3.5px] border-red-600 text-red-600 font-extrabold tracking-[0.16em] px-6 py-2 rounded-lg text-2xl">ÉLIGIBLE</span>
+                    </div>
+                    <h3 className="text-2xl font-extrabold tracking-tight mb-2">{profilActif.titre}</h3>
+                    <p className="text-black/50 font-medium max-w-lg mx-auto mb-8">{profilActif.texte}</p>
+                    <a href="/signup" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-3.5 rounded-full transition shadow-lg shadow-red-600/25 group/btn">
+                      Commencer ma préparation
+                      <svg className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                    </a>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-16 h-16 rounded-full bg-black/[0.06] flex items-center justify-center mx-auto mb-5">
+                      <svg className="w-8 h-8 text-black/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <h3 className="text-2xl font-extrabold tracking-tight mb-2">{profilActif.titre}</h3>
+                    <p className="text-black/50 font-medium max-w-lg mx-auto">{profilActif.texte}</p>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -689,13 +665,13 @@ export default function MaquettePage() {
               <div className="w-full rounded-full transition-[height,background-color] duration-300" style={{height: `${catProgress * 100}%`, backgroundColor: CAT_COLORS[catActive]}}></div>
             </div>
             {[
-              { titre: 'Entraînement spécifique', desc: "Tous les types d'exercices de maths avec des explications pour réellement progresser", pied: 'Ne compte pas dans la moyenne', badge: null, bord: '#2563eb', teinte: '#eff6ff', num: '1', sur: 'Se concentrer sur un thème', points: ['Conversions, pourcentages, produits en croix, équations', 'Correction détaillée après chaque question', 'Aucune note, afin de progresser en amont des tests'], icone: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></> },
-              { titre: 'Entraînement mathématiques', desc: "Conditions similaires à l'examen pour évaluer son niveau basé en partie sur les annales", pied: 'Note /10', badge: '30 min', bord: '#dc2626', teinte: '#fef2f2', num: '2', sur: 'Se mesurer à l’épreuve de calculs', points: ['Génération illimitée de sujets inspirés des annales', '30 minutes chrono, sans calculatrice, comme la sous-épreuve du concours', 'Note sur 10 et correction finale détaillée'], icone: <><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></> },
-              { titre: 'Entraînement rédactionnel', desc: 'Analyse de texte, dissertations, culture sanitaire basée en partie sur les annales', pied: 'Note /10', badge: '30 min', bord: '#9333ea', teinte: '#faf5ff', num: '3', sur: 'Maîtriser l’épreuve de rédaction', points: ['Analyse de texte ou dissertation sur la culture sanitaire et sociale', 'Correction complète : argumentation, structure et chaque faute relevée', 'Note sur 10 comme à l’écrit du concours'], icone: <><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></> },
-              { titre: 'Examen blanc', desc: "Conditions réelles, sans calculatrice, vous disposez d'un temps imparti d'1H", pied: 'Note /20', badge: '1H', bord: '#eab308', teinte: '#fefce8', num: '4', sur: 'Répéter le jour J', points: ['Maths puis rédaction à la suite, en conditions réelles', 'Une heure au total, sans calculatrice', 'Note sur 20, correction finale détaillée'], icone: <><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></> },
-              { titre: 'Questions sur votre parcours', desc: "Simulations de questions possibles sur votre parcours afin de passer l'examen oral dans les meilleures conditions", pied: 'Pas de note', badge: null, bord: '#16a34a', teinte: '#f0fdf4', num: '5', sur: 'Préparer l’oral sereinement', points: ['Importez votre CV et répondez aux questions personnalisées', 'Entraînez-vous à répondre à voix haute', 'Sans note, l’objectif est d’arriver confiant devant le jury'], icone: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/> },
+              { ancre: 'entrainement-specifique', titre: 'Entraînement spécifique', desc: "Tous les types d'exercices de maths avec des explications pour réellement progresser", pied: 'Ne compte pas dans la moyenne', badge: null, bord: '#2563eb', teinte: '#eff6ff', num: '1', sur: 'Se concentrer sur un thème', points: ['Conversions, pourcentages, produits en croix, équations', 'Correction détaillée après chaque question', 'Aucune note, afin de progresser en amont des tests'], icone: <><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></> },
+              { ancre: 'entrainement-maths', titre: 'Entraînement mathématiques', desc: "Conditions similaires à l'examen pour évaluer son niveau basé en partie sur les annales", pied: 'Note /10', badge: '30 min', bord: '#dc2626', teinte: '#fef2f2', num: '2', sur: 'Se mesurer à l’épreuve de calculs', points: ['Génération illimitée de sujets inspirés des annales', '30 minutes chrono, sans calculatrice, comme la sous-épreuve du concours', 'Note sur 10 et correction finale détaillée'], icone: <><line x1="19" y1="5" x2="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/></> },
+              { ancre: 'redaction', titre: 'Entraînement rédactionnel', desc: 'Analyse de texte, dissertations, culture sanitaire basée en partie sur les annales', pied: 'Note /10', badge: '30 min', bord: '#9333ea', teinte: '#faf5ff', num: '3', sur: 'Maîtriser l’épreuve de rédaction', points: ['Analyse de texte ou dissertation sur la culture sanitaire et sociale', 'Correction complète : argumentation, structure et chaque faute relevée', 'Note sur 10 comme à l’écrit du concours'], icone: <><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></> },
+              { ancre: 'examen-blanc', titre: 'Examen blanc', desc: "Conditions réelles, sans calculatrice, vous disposez d'un temps imparti d'1H", pied: 'Note /20', badge: '1H', bord: '#eab308', teinte: '#fefce8', num: '4', sur: 'Répéter le jour J', points: ['Maths puis rédaction à la suite, en conditions réelles', 'Une heure au total, sans calculatrice', 'Note sur 20, correction finale détaillée'], icone: <><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></> },
+              { ancre: 'preparation-oral', titre: 'Questions sur votre parcours', desc: "Simulations de questions possibles sur votre parcours afin de passer l'examen oral dans les meilleures conditions", pied: 'Pas de note', badge: null, bord: '#16a34a', teinte: '#f0fdf4', num: '5', sur: 'Préparer l’oral sereinement', points: ['Importez votre CV et répondez aux questions personnalisées', 'Entraînez-vous à répondre à voix haute', 'Sans note, l’objectif est d’arriver confiant devant le jury'], icone: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/> },
             ].map((c, i) => (
-              <div key={i} className="relative grid md:grid-cols-2 gap-8 md:gap-24 items-center">
+              <div key={i} id={c.ancre} style={{scrollMarginTop: '110px'}} className="relative grid md:grid-cols-2 gap-8 md:gap-24 items-center">
                 {/* Pastille d'étape sur la ligne centrale */}
                 <div
                   aria-hidden="true"

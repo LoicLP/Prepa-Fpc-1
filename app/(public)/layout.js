@@ -127,7 +127,7 @@ export default function LayoutPublic({ children }) {
       `}</style>
 
       {/* ===================== NAVIGATION (pilule flottante) ===================== */}
-      <nav className={`hidden md:flex ${surAccueil ? 'fixed' : 'absolute'} left-1/2 top-6 -translate-x-1/2 z-50 h-[60px] w-[min(880px,calc(100vw-40px))] items-center gap-x-6 rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl px-6 py-2`}>
+      <nav className={`hidden md:flex ${surAccueil ? 'fixed' : 'absolute'} left-1/2 top-6 -translate-x-1/2 z-50 h-[60px] w-[min(880px,calc(100vw-40px))] items-center gap-x-3 lg:gap-x-6 rounded-full bg-[hsla(0,0%,93%,0.72)] backdrop-blur-xl px-4 lg:px-6 py-2`}>
         <a href="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80 shrink-0">
           <div className="bg-red-600 text-white p-1.5 rounded-xl shadow-sm">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg>
@@ -135,12 +135,12 @@ export default function LayoutPublic({ children }) {
           <span className="font-black text-lg tracking-tight text-slate-900">Prépa <span className="text-red-600">FPC</span></span>
         </a>
         <div className="nav-dim flex items-center gap-x-1 mx-auto">
-          <a href="/" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Accueil</a>
-          <a href="/calculs-doses/produit-en-croix" className="px-3.5 py-2 whitespace-nowrap text-[0.95rem] font-bold text-[#0d0d0d]">Calculs de doses</a>
-          <a href="/blog" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Blog</a>
-          <a href="/tarifs" className="px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Tarifs</a>
+          <a href="/" className="px-2.5 lg:px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Accueil</a>
+          <a href="/calculs-doses/produit-en-croix" className="px-2.5 lg:px-3.5 py-2 whitespace-nowrap text-[0.95rem] font-bold text-[#0d0d0d]">Calculs de doses</a>
+          <a href="/blog" className="px-2.5 lg:px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Blog</a>
+          <a href="/tarifs" className="px-2.5 lg:px-3.5 py-2 text-[0.95rem] font-bold text-[#0d0d0d]">Tarifs</a>
         </div>
-        <div className="flex items-center gap-x-5 shrink-0">
+        <div className="flex items-center gap-x-3 lg:gap-x-5 shrink-0">
           {connecte ? (
             <a href="/dashboard" className="inline-flex items-center justify-center h-[44px] bg-[#141414] hover:bg-black/80 text-white text-[0.95rem] font-bold px-4 rounded-full transition">Mon tableau de bord</a>
           ) : (

@@ -685,7 +685,7 @@ export default function MaquettePage() {
                         <span className="shrink-0 w-5 h-5 rounded-full flex items-center justify-center mt-0.5" style={{background: c.teinte}}>
                           <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke={c.bord} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
                         </span>
-                        <span className={`text-[15px] text-black/60 font-medium leading-relaxed ${p.includes('votre CV') ? 'md:whitespace-nowrap tracking-tight' : ''}`}>{p}</span>
+                        <span className={`text-[15px] text-black/60 font-medium leading-relaxed ${p.includes('votre CV') ? 'xl:whitespace-nowrap tracking-tight' : ''}`}>{p}</span>
                       </li>
                     ))}
                   </ul>

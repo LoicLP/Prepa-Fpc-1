@@ -46,7 +46,7 @@ export default function MaquetteBlogPage() {
       </section>
 
       {/* ===================== ARTICLES ===================== */}
-      <section className="relative px-5 pt-10 pb-16 sm:pt-12 sm:pb-24">
+      <section className="relative overflow-hidden px-5 pt-10 pb-16 sm:pt-12 sm:pb-24">
         {/* Décorations */}
         <div aria-hidden="true" className="absolute top-32 -left-24 w-80 h-64 bg-red-500/[0.06] rounded-full blur-3xl pointer-events-none"></div>
         <div aria-hidden="true" className="absolute bottom-24 -right-20 w-72 h-56 bg-indigo-500/[0.05] rounded-full blur-3xl pointer-events-none"></div>

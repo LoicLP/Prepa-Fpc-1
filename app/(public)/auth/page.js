@@ -375,7 +375,7 @@ export default function MaquetteAuthPage() {
                   <label className={`block text-sm font-bold mb-1.5 ${sombre ? 'text-white/80' : 'text-black/70'}`}>Adresse email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                    <input type="email" required placeholder="marie.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type="email" required placeholder="chloe.as@hopital.fr" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} className={inputClass + ' pr-12'}/>
                     <FieldCheck show={emailValide(loginEmail)} />
                   </div>
                 </div>
@@ -406,7 +406,7 @@ export default function MaquetteAuthPage() {
                   <label className={`block text-sm font-bold mb-1.5 ${sombre ? 'text-white/80' : 'text-black/70'}`}>Prénom</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{UserIcon}</div>
-                    <input type="text" required placeholder="Marie" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type="text" required placeholder="Chloé" value={firstname} onChange={e=>setFirstname(e.target.value)} className={inputClass + ' pr-12'}/>
                     <FieldCheck show={firstname.trim().length >= 2} />
                   </div>
                 </div>
@@ -414,7 +414,7 @@ export default function MaquetteAuthPage() {
                   <label className={`block text-sm font-bold mb-1.5 ${sombre ? 'text-white/80' : 'text-black/70'}`}>Adresse email</label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">{MailIcon}</div>
-                    <input type="email" required placeholder="marie.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass + ' pr-12'}/>
+                    <input type="email" required placeholder="chloe.as@hopital.fr" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} className={inputClass + ' pr-12'}/>
                     <FieldCheck show={emailValide(signupEmail)} />
                   </div>
                 </div>

@@ -10,6 +10,23 @@ const nextConfig: NextConfig = {
         destination: "https://www.prepa-fpc.fr/:path*",
         permanent: true,
       },
+      // Le hub calculs de doses mène directement à la première fiche (308 : transmet l'autorité SEO)
+      {
+        source: "/calculs-doses",
+        destination: "/calculs-doses/produit-en-croix",
+        permanent: true,
+      },
+      // L'ancien univers /maquette est devenu le site : redirections permanentes
+      {
+        source: "/maquette",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/maquette/:path*",
+        destination: "/:path*",
+        permanent: true,
+      },
     ];
   },
 };

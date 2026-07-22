@@ -815,7 +815,7 @@ export default function FichesCalculsDoses({ actif }) {
       {/* ===================== EN-TÊTE ===================== */}
       <section className="relative px-5 pt-[110px] md:pt-[150px] pb-4 text-center">
         <div className="relative z-10 max-w-3xl mx-auto">
-          <h1 className="text-[2.4rem] sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.035em] leading-[1.08]">
+          <h1 id="titre" style={{scrollMarginTop: '36px'}} className="text-[2.4rem] sm:text-5xl lg:text-6xl font-extrabold tracking-[-0.035em] leading-[1.08]">
             {theme.h1avant}<span className="surligne" style={{background: `linear-gradient(100deg, ${theme.marqueur}00 0.8%, ${theme.marqueur}61 2.8%, ${theme.marqueur}4d 50%, ${theme.marqueur}61 97%, ${theme.marqueur}00 99.2%)`}}>{theme.h1marque}</span>
           </h1>
           <p className="mt-6 text-lg sm:text-xl text-black/55 font-medium leading-relaxed">
@@ -838,7 +838,7 @@ export default function FichesCalculsDoses({ actif }) {
               {THEMES.map((t, i) => (
                 <a
                   key={i}
-                  href={`/maquette/calculs-doses/${t.slug}`}
+                  href={`/calculs-doses/${t.slug}#titre`}
                   className="px-4 py-2.5 rounded-full text-[13px] sm:text-sm font-bold text-center transition-all whitespace-nowrap"
                   style={actif === i
                     ? { background: t.grad, color: '#ffffff', boxShadow: `0 6px 16px ${t.couleur}50` }
@@ -864,7 +864,7 @@ export default function FichesCalculsDoses({ actif }) {
         <div className="relative max-w-2xl mx-auto text-center">
           <p className="text-xs font-extrabold uppercase tracking-widest mb-4" style={{color: theme.couleur}}>Prêt à passer à la pratique&nbsp;?</p>
           <h2 className="text-xl sm:text-2xl font-extrabold tracking-[-0.02em] leading-snug mb-8">Inscrivez-vous et entraînez-vous sur des exercices illimités, avec correction détaillée à chaque question.</h2>
-          <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full transition-all hover:-translate-y-0.5 hover:brightness-110 group" style={{background: theme.grad, boxShadow: `0 10px 24px ${theme.couleur}45`}}>
+          <a href="/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 text-white font-bold px-8 py-4 rounded-full transition-all hover:-translate-y-0.5 hover:brightness-110 group" style={{background: theme.grad, boxShadow: `0 10px 24px ${theme.couleur}45`}}>
             Commencer à m&apos;entraîner
             <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
           </a>

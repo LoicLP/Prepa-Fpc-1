@@ -12,7 +12,7 @@ const colorMap = {
   red: { bg: 'from-red-50 to-rose-50', text: 'text-red-600', pill: 'bg-red-600/10', icon: 'text-red-200' }
 }
 
-export default function MaquetteArticlePage() {
+export default function ArticlePage() {
   const params = useParams()
   const [article, setArticle] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -21,7 +21,6 @@ export default function MaquetteArticlePage() {
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user || null))
-    // Pas d'incrément de vues depuis la maquette (pour ne pas fausser les stats)
     supabase
       .from('articles')
       .select('*')
@@ -29,7 +28,11 @@ export default function MaquetteArticlePage() {
       .eq('published', true)
       .single()
       .then(({ data, error }) => {
-        if (!error && data) setArticle(data)
+        if (!error && data) {
+          setArticle(data)
+          // Incrémenter le compteur de vues
+          supabase.from('articles').update({ views: (data.views || 0) + 1 }).eq('id', data.id).then(() => {})
+        }
         setLoading(false)
       })
     const saved = localStorage.getItem(`vote-${params.slug}`)
@@ -61,11 +64,11 @@ export default function MaquetteArticlePage() {
           <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight mb-3">Article introuvable</h1>
           <p className="text-black/50 font-medium mb-9">Cet article n&apos;existe pas ou a été supprimé.</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <a href="/maquette/blog" className="inline-flex items-center gap-2 bg-[#0d0d0d] hover:bg-black/85 text-white font-bold px-6 py-3.5 rounded-full transition">
+            <a href="/blog" className="inline-flex items-center gap-2 bg-[#0d0d0d] hover:bg-black/85 text-white font-bold px-6 py-3.5 rounded-full transition">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg>
               Retour au blog
             </a>
-            <a href="/maquette" className="inline-flex items-center font-bold px-6 py-3.5 rounded-full ring-1 ring-black/10 hover:bg-black/5 transition">Accueil</a>
+            <a href="/" className="inline-flex items-center font-bold px-6 py-3.5 rounded-full ring-1 ring-black/10 hover:bg-black/5 transition">Accueil</a>
           </div>
         </div>
       </section>
@@ -74,9 +77,23 @@ export default function MaquetteArticlePage() {
 
   const colors = colorMap[article.category_color] || colorMap.blue
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    dateModified: article.date,
+    author: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://www.prepa-fpc.fr' },
+    publisher: { '@type': 'Organization', name: 'Prépa FPC', url: 'https://www.prepa-fpc.fr' },
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://www.prepa-fpc.fr/blog/${params.slug}` },
+    ...(article.image_url && { image: article.image_url }),
+  }
+
   return (
     <article className="max-w-3xl mx-auto px-5 sm:px-6 pt-[110px] md:pt-[140px] pb-16 sm:pb-24">
-      <a href="/maquette/blog" className="inline-flex items-center gap-2 text-sm font-bold text-black/45 hover:text-red-600 transition mb-9">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <a href="/blog" className="inline-flex items-center gap-2 text-sm font-bold text-black/45 hover:text-red-600 transition mb-9">
         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 12H5m7-7-7 7 7 7"/></svg> Retour au blog
       </a>
 
@@ -137,7 +154,7 @@ export default function MaquetteArticlePage() {
           <div className="relative">
             <h3 className="text-2xl font-extrabold tracking-tight text-white mb-3">Prêt à vous entraîner&nbsp;?</h3>
             <p className="text-white/55 font-medium mb-7">Rejoignez Prépa FPC et commencez vos révisions dès maintenant.</p>
-            <a href="/maquette/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full transition shadow-lg shadow-red-600/25 group">
+            <a href="/auth?mode=signup" className="btn-shine inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-8 py-4 rounded-full transition shadow-lg shadow-red-600/25 group">
               Inscrivez-vous dès maintenant
               <svg className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
             </a>

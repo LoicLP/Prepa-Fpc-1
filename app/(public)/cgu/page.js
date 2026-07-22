@@ -44,7 +44,7 @@ const SECTIONS = [
   },
   {
     title: "Article 8 — Abonnements et paiements (CGV)",
-    html: `<p>La Plateforme propose deux formules payantes dont les tarifs sont indiqués sur la page <strong><a href="/maquette/tarifs" class="text-red-600 hover:underline">Tarifs</a></strong>. Les prix sont indiqués en <strong>euros, toutes taxes comprises (TTC)</strong>. Les paiements sont sécurisés par <strong>Stripe</strong>.</p>
+    html: `<p>La Plateforme propose deux formules payantes dont les tarifs sont indiqués sur la page <strong><a href="/tarifs" class="text-red-600 hover:underline">Tarifs</a></strong>. Les prix sont indiqués en <strong>euros, toutes taxes comprises (TTC)</strong>. Les paiements sont sécurisés par <strong>Stripe</strong>.</p>
 <ul>
 <li><strong>Abonnement mensuel — 12,99 €/mois</strong> : renouvellement automatique chaque mois, résiliable à tout moment depuis votre espace personnel</li>
 <li><strong>Pack annuel — 89,99 € (paiement unique)</strong> : accès pour 12 mois, sans renouvellement automatique</li>

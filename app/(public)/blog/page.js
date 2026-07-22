@@ -62,7 +62,7 @@ export default function MaquetteBlogPage() {
                 {articles.slice((currentPage - 1) * articlesPerPage, currentPage * articlesPerPage).map((article, index) => {
                   const colors = colorMap[article.category_color] || colorMap.blue
                   return (
-                    <a key={article.id} href={`/maquette/blog/${article.slug}`} className="group bg-white rounded-[24px] ring-1 ring-black/[0.07] overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
+                    <a key={article.id} href={`/blog/${article.slug}`} className="group bg-white rounded-[24px] ring-1 ring-black/[0.07] overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_20px_40px_rgba(0,0,0,0.08)]">
                       <div className={`h-44 relative flex items-center justify-center bg-gradient-to-br ${colors.bg} overflow-hidden`}>
                         {article.image_url ? (
                           <img src={article.image_url} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading={index === 0 ? 'eager' : 'lazy'} fetchPriority={index === 0 ? 'high' : 'auto'} width={400} height={200} />

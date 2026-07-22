@@ -81,12 +81,13 @@ function AppLogoStack({ onChange }) {
       <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
       <div className="absolute inset-0 rounded-[24px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-7px) scale(0.92)'}}></div>
       <div
-        className="absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
+        key={index}
+        className="tuile-entree absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
         style={{
           background: mod.bg,
-          transition: leaving ? 'transform 0.42s cubic-bezier(0.4,0,0.2,1), opacity 0.42s' : 'none',
-          transform: leaving ? 'translateY(-32px) scale(0.88)' : 'none',
-          opacity: leaving ? 0 : 1,
+          transition: leaving ? 'transform 0.42s cubic-bezier(0.55,0.06,0.68,0.19), opacity 0.42s cubic-bezier(0.55,0.06,0.68,0.19)' : 'none',
+          transform: leaving ? 'translateY(-34px) scale(0.9)' : undefined,
+          opacity: leaving ? 0 : undefined,
         }}
       >
         {mod.icon(mod.ink)}
@@ -471,42 +472,36 @@ function ScreenCard({ s, w = 230, h = 460 }) {
 }
 
 const FAQ_DATA = [
-  { q: "Puis-je passer le concours FPC sans le baccalauréat ?", a: "Oui ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Il vous suffit de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, quel que soit votre domaine d'activité précédent." },
-  { q: "En quoi consiste l'épreuve écrite du concours FPC ?", a: "L'épreuve écrite dure 1 heure et se divise en deux parties : une sous-épreuve de calculs (calculs de doses, conversions, pourcentages, produits en croix) notée sur 10 points, et une sous-épreuve de rédaction (analyse de texte ou questions sur un sujet de culture sanitaire et sociale) notée sur 10 points. Attention : une note inférieure à 8/20 à l'écrit est éliminatoire." },
-  { q: "La plateforme est-elle adaptée si je suis nul(le) en maths ?", a: "Absolument ! Notre plateforme propose un entraînement spécifique qui reprend les bases étape par étape : produits en croix, conversions, pourcentages, calculs de doses. Chaque exercice est accompagné d'une correction détaillée qui vous explique la méthode de résolution de façon simple et progressive." },
-  { q: "Comment se déroule l'épreuve orale ?", a: "L'épreuve orale dure 20 minutes et est notée sur 20 points. Vous présentez votre parcours professionnel et votre projet de reconversion devant un jury composé de formateurs IFSI et de professionnels de santé. Notre outil de préparation à l'oral analyse votre CV et génère des questions personnalisées pour vous entraîner." },
-  { q: "Y a-t-il une période d'essai gratuite ?", a: "Oui, vous bénéficiez de 7 jours d'essai gratuit dès votre inscription. Pendant cette période, vous avez accès à toutes les fonctionnalités de la plateforme : entraînements de mathématiques, sujets de rédaction, examens blancs et préparation à l'oral." },
-  { q: "Combien de temps dois-je consacrer aux révisions ?", a: "Nous conseillons de démarrer vos révisions 3 à 6 mois avant le concours, à raison de 2 à 4 heures par semaine. Notre plateforme vous permet de réviser à votre rythme, sur mobile, tablette ou ordinateur, que vous ayez 15 minutes dans les transports ou une heure de libre le week-end." },
+  { q: "Puis-je passer le concours FPC sans le baccalauréat ?", a: "Oui ! La voie FPC (Formation Professionnelle Continue) est justement conçue pour cela. Aucun diplôme n'est exigé : il vous suffit d'avoir 18 ans et de justifier de 3 années de cotisation à un régime de protection sociale à la date d'inscription aux épreuves, quel que soit votre domaine d'activité." },
+  { q: "La plateforme est-elle adaptée si je suis nul(le) en maths ?", a: "Absolument ! C'est même pour vous qu'elle a été pensée. L'entraînement spécifique reprend les bases étape par étape : produits en croix, conversions, pourcentages, calculs de doses. Chaque exercice est suivi d'une correction détaillée qui explique la méthode simplement. Vous progressez sans pression : ce module n'est pas noté." },
+  { q: "Y a-t-il une période d'essai gratuite ?", a: "Oui, vous bénéficiez de 7 jours d'essai gratuit dès votre inscription, sans carte bancaire. Pendant cette période, vous accédez à toute la plateforme : entraînements de mathématiques, sujets de rédaction, examens blancs et préparation à l'oral." },
+  { q: "Combien de temps faut-il pour se préparer au concours ?", a: "Nous conseillons de démarrer vos révisions 3 à 6 mois avant les épreuves, à raison de 2 à 4 heures par semaine. La plateforme s'adapte à votre emploi du temps : sur mobile, tablette ou ordinateur, que vous ayez 15 minutes dans les transports ou une heure de libre le week-end." },
   { q: "Quelles sont les dates du concours FPC ?", a: "Les dates varient selon les IFSI et les régions. Généralement, les inscriptions ouvrent entre janvier et mars, les épreuves écrites se déroulent entre mars et mai, et les oraux entre mai et juin. Consultez <a href='/blog/dates-concours-fpc-infirmier-2026'>notre article dédié aux dates du concours FPC</a> pour le calendrier complet et à jour." },
-  { q: "Comment puis-je financer ma formation en IFSI ?", a: "Plusieurs solutions existent selon votre situation : promotion professionnelle prise en charge par votre employeur, projet de transition professionnelle (Transitions Pro), financements France Travail pour les demandeurs d'emploi, ou autofinancement. Retrouvez tous les détails dans <a href='/blog'>notre espace Blog</a>." },
-  { q: "J'ai un problème, comment vous contacter ?", a: "Vous pouvez nous écrire à <strong>support@prepa-fpc.fr</strong>. Nous vous répondrons dans les plus brefs délais." }
+  { q: "Comment puis-je financer ma formation en IFSI ?", a: "Plusieurs solutions existent selon votre situation : promotion professionnelle prise en charge par votre employeur, projet de transition professionnelle (Transitions Pro), financement France Travail si vous êtes demandeur d'emploi, ou autofinancement. Retrouvez tous les détails dans <a href='/blog'>notre espace Blog</a>." },
+  { q: "Une question, un problème ? Comment nous contacter ?", a: "Écrivez-nous à <strong>support@prepa-fpc.fr</strong> : nous vous répondons dans les plus brefs délais, généralement sous 24 heures." }
 ]
 
 export default function MaquettePage() {
   const [activeTab, setActiveTab] = useState(0)
   const [activeFaq, setActiveFaq] = useState(null)
-  // Étape du mini-quiz d'éligibilité : q1 → q2 → oui / non
-  // Sélecteur d'éligibilité : un clic sur un profil → verdict immédiat
-  const [profil, setProfil] = useState(null)
-  const PROFILS = [
-    { id: 'as', label: 'Aide-soignant(e)', sous: 'Diplômé(e) DEAS', eligible: true,
-      titre: 'La voie FPC vous est grande ouverte !',
-      texte: 'Dès 3 ans de cotisation à temps plein, vous pouvez vous présenter au concours. Et votre expérience du soin est un vrai atout pour l’oral.',
-      icone: <><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></> },
-    { id: 'ap', label: 'Auxiliaire de puériculture', sous: 'Diplômé(e) DEAP', eligible: true,
-      titre: 'La voie FPC vous est grande ouverte !',
-      texte: 'Dès 3 ans de cotisation à temps plein, vous pouvez vous présenter au concours. Votre quotidien auprès des tout-petits parlera pour vous à l’oral.',
-      icone: <><path d="M9 12h.01"/><path d="M15 12h.01"/><path d="M10 16c.5.3 1.2.5 2 .5s1.5-.2 2-.5"/><path d="M19 6.3a9 9 0 0 1 1.8 3.9 2 2 0 0 1 0 3.6 9 9 0 0 1-17.6 0 2 2 0 0 1 0-3.6A9 9 0 0 1 12 3c2 0 3.5 1.1 3.5 2.5s-.9 2.5-2 2.5c-.8 0-1.5-.4-1.5-1"/></> },
-    { id: 'autre', label: 'Un autre métier', sous: 'Vente, bureau, BTP…', eligible: true,
-      titre: 'Bonne nouvelle : vous aussi !',
-      texte: 'La voie FPC n’est pas réservée aux soignants : 3 ans de cotisation à temps plein, tous secteurs confondus, suffisent pour vous présenter au concours.',
-      icone: <><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/><rect width="20" height="14" x="2" y="6" rx="2"/></> },
-    { id: 'debut', label: 'En début de carrière', sous: 'Moins de 3 ans d’activité', eligible: false,
-      titre: 'Pas encore — mais ce n’est que partie remise',
-      texte: 'La voie FPC s’ouvre dès 3 ans de cotisation à temps plein. Rien ne vous empêche de commencer à vous préparer dès maintenant.',
-      icone: <><path d="M5 22h14"/><path d="M5 2h14"/><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"/><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.828V2"/></> },
+  // Frise d'éligibilité : les 4 étapes du métier actuel jusqu'à l'IFSI
+  const ETAPES = [
+    { titre: 'Être âgé de plus de 18 ans', desc: 'Avec ou sans diplôme, quel que soit votre parcours.', couleur: '#64748b', fond: '#f1f5f9',
+      icone: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
+    { titre: '3 ans de cotisation', desc: 'À temps plein, tous secteurs confondus. C’est tout.', couleur: '#64748b', fond: '#f1f5f9',
+      icone: <><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="m9 16 2 2 4-4"/></> },
+    { titre: 'Le concours FPC', desc: 'Un écrit (maths + rédaction) et un oral. Nous sommes là pour que vous le réussissiez.', couleur: '#64748b', fond: '#f1f5f9', enCours: true,
+      icone: <><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></> },
+    { titre: 'L’IFSI', desc: 'Intégrez un IFSI grâce à l’obtention du concours et devenez infirmier(ère).', couleur: '#64748b', fond: '#f1f5f9',
+      icone: <><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></> },
   ]
-  const profilActif = PROFILS.find((p) => p.id === profil)
+  // Sous-parties de l'examen pour la frise chronologique (durées proportionnelles)
+  const SOUS_EPREUVES = [
+    { court: 'Calculs', titre: 'Sous-épreuve de calculs', etiquette: '/10', duree: '30 min', bg: '#ef4444', clair: '#fca5a5', desc: 'Calculs de doses, conversions, pourcentages, produits en croix.' },
+    { court: 'Rédaction', titre: 'Sous-épreuve de rédaction', etiquette: '/10', duree: '30 min', bg: '#dc2626', clair: '#fca5a5', desc: 'Analyse ou questions/réponses sur un texte de culture sanitaire et sociale.' },
+    { court: 'Parcours', titre: 'Présentation du parcours', etiquette: '10 min', duree: '10 min', bg: '#3b82f6', clair: '#93c5fd', desc: 'Valorisez votre expérience professionnelle et votre projet.' },
+    { court: 'Jury', titre: 'Entretien avec le jury', etiquette: '10 min', duree: '10 min', bg: '#2563eb', clair: '#93c5fd', desc: 'Vos motivations et votre connaissance du métier IDE.' },
+  ]
 
   // Progression de la ligne verticale des 5 catégories (suit le scroll).
   // Chaque pastille s'allume quand le remplissage atteint sa position réelle.
@@ -593,61 +588,57 @@ export default function MaquettePage() {
         <svg aria-hidden="true" className="absolute top-[30%] left-[10%] w-6 h-6 text-black/[0.12] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-10deg)'}}><path d="M12 5v14M5 12h14"/></svg>
         <svg aria-hidden="true" className="absolute bottom-[22%] left-[16%] w-4 h-4 text-red-500/30 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(18deg)'}}><path d="M12 5v14M5 12h14"/></svg>
         <svg aria-hidden="true" className="absolute top-[62%] right-[9%] w-5 h-5 text-black/[0.1] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-14deg)'}}><path d="M12 5v14M5 12h14"/></svg>
-        {/* Annotation manuscrite + flèche vers la carte */}
-        <div aria-hidden="true" className="absolute top-[46%] left-[8%] hidden lg:block pointer-events-none">
-          <p className="text-[1.55rem] text-red-500 -rotate-6" style={{fontFamily: "'Caveat', cursive", fontWeight: 700}}>Un seul clic&nbsp;!</p>
-          <svg className="w-16 h-14 text-red-500/80 ml-14 mt-1" viewBox="0 0 60 50" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 6 C 18 26, 34 38, 52 40"/><path d="M42 44 52 40 49 30"/></svg>
-        </div>
         <div className="max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-10">
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.2]"><span style={{background: 'linear-gradient(100deg, rgba(100,116,139,0) 0.8%, rgba(100,116,139,0.32) 2.8%, rgba(100,116,139,0.25) 50%, rgba(100,116,139,0.32) 97%, rgba(100,116,139,0) 99.2%)', borderRadius: '0.45em 0.2em 0.55em 0.25em', padding: '0.04em 0.22em', margin: '0 -0.06em', WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone'}}>Êtes-vous éligible au concours FPC&nbsp;?</span></h2>
-            <p className="mt-5 text-lg text-black/55 font-medium leading-relaxed">La voie de la Formation Professionnelle Continue (FPC) est une passerelle spécifique qui permet d&apos;intégrer un IFSI. Dites-nous d&apos;où vous partez, on vous répond tout de suite.</p>
+            <p className="mt-5 text-lg text-black/55 font-medium leading-relaxed">La voie de la Formation Professionnelle Continue (FPC) est une passerelle spécifique qui permet d&apos;intégrer un IFSI. Quatre étapes vous séparent du diplôme d&apos;infirmier — et vous avez déjà fait une partie du chemin.</p>
           </div>
-          {/* Sélecteur de profil : un clic → verdict immédiat */}
-          <div className="relative overflow-hidden max-w-3xl mx-auto bg-white/45 backdrop-blur-sm rounded-[28px] ring-1 ring-black/[0.04] p-8 sm:p-10">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-red-600 mb-8 text-center">Vérifiez-le en un clic — vous êtes…</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              {PROFILS.map((p) => (
-                <button
-                  key={p.id}
-                  onClick={() => setProfil(p.id)}
-                  className={`flex flex-col items-center text-center gap-2.5 rounded-2xl p-4 sm:p-5 transition-all cursor-pointer hover:-translate-y-0.5 active:scale-[0.97] ${profil === p.id ? 'bg-red-600/[0.06] ring-2 ring-red-600' : 'bg-white ring-1 ring-black/[0.07] hover:ring-black/20'}`}
-                >
-                  <span className={`w-12 h-12 rounded-xl flex items-center justify-center transition-colors ${profil === p.id ? 'bg-red-600 text-white' : 'bg-black/[0.05] text-black/60'}`}>
-                    <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{p.icone}</svg>
-                  </span>
-                  <span className="text-sm font-extrabold leading-tight">{p.label}</span>
-                  <span className="text-[11px] font-semibold text-black/40 leading-tight">{p.sous}</span>
-                </button>
-              ))}
-            </div>
-
-            {profilActif && (
-              <div key={profilActif.id} className="slide-in text-center mt-9 pt-8 border-t border-black/[0.06]">
-                {profilActif.eligible ? (
-                  <>
-                    <ConfettiBurst />
-                    <div className="mb-5">
-                      <span className="stamp-in inline-block border-[3.5px] border-red-600 text-red-600 font-extrabold tracking-[0.16em] px-6 py-2 rounded-lg text-2xl">ÉLIGIBLE</span>
+          {/* Frise du parcours : 4 étapes qui s'allument en cascade au scroll */}
+          <div className="max-w-4xl mx-auto">
+            <style>{`
+              @keyframes frise-pop { from { opacity: 0; transform: translateY(18px) scale(0.92); } to { opacity: 1; transform: none; } }
+              @keyframes frise-remplit { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+              @keyframes frise-remplit-v { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+              .frise-etape { opacity: 0; }
+              .fade-in-up.visible .frise-etape { animation: frise-pop 0.55s cubic-bezier(0.25, 1, 0.4, 1) both; }
+              .frise-ligne-h { transform: scaleX(0); transform-origin: left; }
+              .fade-in-up.visible .frise-ligne-h { animation: frise-remplit 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both; }
+              .frise-ligne-v { transform: scaleY(0); transform-origin: top; }
+              .fade-in-up.visible .frise-ligne-v { animation: frise-remplit-v 1.6s cubic-bezier(0.4, 0, 0.2, 1) 0.3s both; }
+            `}</style>
+            <div className="relative">
+              {/* Ligne de liaison (desktop : horizontale, mobile : verticale) */}
+              <div aria-hidden="true" className="hidden md:block absolute top-[34px] left-[12%] right-[12%] h-[3px] rounded-full bg-black/[0.07]"></div>
+              <div aria-hidden="true" className="hidden md:block absolute top-[34px] left-[12%] right-[12%] h-[3px] rounded-full frise-ligne-h" style={{background: '#94a3b8'}}></div>
+              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-8 w-[3px] rounded-full bg-black/[0.07]"></div>
+              <div aria-hidden="true" className="md:hidden absolute left-[27px] top-8 bottom-8 w-[3px] rounded-full frise-ligne-v" style={{background: '#94a3b8'}}></div>
+              <div className="grid md:grid-cols-4 gap-8 md:gap-4">
+                {ETAPES.map((e, i) => (
+                  <div key={i} className="frise-etape relative flex md:flex-col items-start md:items-center gap-4 md:gap-0 md:text-center" style={{animationDelay: `${0.15 + i * 0.35}s`}}>
+                    <div className={`relative z-10 w-[56px] h-[56px] md:w-[68px] md:h-[68px] shrink-0 rounded-2xl flex items-center justify-center ring-4 ring-[#f7f6f4] ${e.enCours ? 'micro-beat' : ''}`} style={{background: e.fond, color: e.couleur, boxShadow: `0 10px 24px ${e.couleur}2e`}}>
+                      {e.enCours && (
+                        <>
+                          <span aria-hidden="true" className="micro-pulse absolute inset-0 rounded-2xl bg-slate-500/25"></span>
+                          <span aria-hidden="true" className="micro-pulse-retard absolute inset-0 rounded-2xl bg-slate-500/15"></span>
+                        </>
+                      )}
+                      <svg className="w-7 h-7 md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{e.icone}</svg>
                     </div>
-                    <h3 className="text-2xl font-extrabold tracking-tight mb-2">{profilActif.titre}</h3>
-                    <p className="text-black/50 font-medium max-w-lg mx-auto mb-8">{profilActif.texte}</p>
-                    <a href="/signup" className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-500 text-white font-bold px-7 py-3.5 rounded-full transition shadow-lg shadow-red-600/25 group/btn">
-                      Commencer ma préparation
-                      <svg className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
-                    </a>
-                  </>
-                ) : (
-                  <>
-                    <div className="w-16 h-16 rounded-full bg-black/[0.06] flex items-center justify-center mx-auto mb-5">
-                      <svg className="w-8 h-8 text-black/50" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <div className="md:mt-4">
+                      <p className="text-[11px] font-extrabold uppercase tracking-widest mb-1" style={{color: e.couleur}}>Étape {i + 1}</p>
+                      <h3 className="text-lg font-extrabold tracking-tight leading-tight whitespace-nowrap">{e.titre}</h3>
+                      <p className="mt-1.5 text-sm text-black/50 font-medium leading-relaxed md:px-1">{e.desc}</p>
                     </div>
-                    <h3 className="text-2xl font-extrabold tracking-tight mb-2">{profilActif.titre}</h3>
-                    <p className="text-black/50 font-medium max-w-lg mx-auto">{profilActif.texte}</p>
-                  </>
-                )}
+                  </div>
+                ))}
               </div>
-            )}
+            </div>
+            <div className="text-center mt-12">
+              <a href="/signup" className="inline-flex items-center gap-2 bg-slate-600 hover:bg-slate-500 text-white font-bold px-7 py-3.5 rounded-full transition shadow-lg shadow-slate-600/25 group/btn">
+                Commencer ma préparation
+                <svg className="w-4 h-4 group-hover/btn:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
+              </a>
+            </div>
           </div>
         </div>
       </section>
@@ -711,55 +702,125 @@ export default function MaquettePage() {
         </div>
       </section>
 
-      {/* ===================== BIBLIOTHÈQUE QUI GRANDIT (scroll animé) ===================== */}
-      <GrowingLibrary />
-
       {/* ===================== COMPOSITION DE L'EXAMEN ===================== */}
       <section id="composition-examen" className="relative overflow-hidden bg-[#0d0d0d] py-20 sm:py-28 px-5 fade-in-up">
         <div aria-hidden="true" className="absolute -top-32 -right-24 w-[32rem] h-[24rem] bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-[28rem] h-[20rem] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="relative max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <p className="text-xs font-extrabold uppercase tracking-widest text-red-400 mb-3">Composition de l&apos;épreuve</p>
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.05] text-white">Déroulement de l&apos;examen</h2>
             <p className="mt-5 text-lg text-white/55 font-medium leading-relaxed">Vous devez impérativement obtenir un total d&apos;au moins <strong className="font-bold text-white">20 sur 40</strong> aux épreuves pour être admis.</p>
           </div>
-          <div className="grid md:grid-cols-2 gap-5">
-            <div className="bg-white/[0.04] rounded-[28px] ring-1 ring-white/10 p-8 relative transition-transform duration-300 hover:-translate-y-1">
-              <div className="absolute top-6 right-6 bg-red-500/15 text-red-300 ring-1 ring-red-500/20 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider">20 points</div>
-              <div className="w-12 h-12 bg-red-500/15 text-red-400 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg>
+          <style>{`
+            @keyframes chrono-pousse { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+            @keyframes chrono-fondu { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+            .chrono-seg { transform: scaleX(0); transform-origin: left; }
+            .fade-in-up.visible .chrono-seg { animation: chrono-pousse 0.65s cubic-bezier(0.4, 0, 0.2, 1) both; }
+            .chrono-detail { opacity: 0; }
+            .fade-in-up.visible .chrono-detail { animation: chrono-fondu 0.5s ease-out both; }
+          `}</style>
+
+          {/* ===== Frise chronologique du jour J (desktop) ===== */}
+          <div className="hidden md:block">
+            {/* En-têtes des deux blocs */}
+            <div className="flex gap-6 mb-4">
+              <div className="flex items-center gap-2.5" style={{width: '72%'}}>
+                <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                <h3 className="text-lg font-extrabold text-white">Épreuve écrite</h3>
+                <span className="text-sm font-bold text-white/45">1 heure · 20 points</span>
               </div>
-              <h3 className="text-xl font-extrabold tracking-tight text-white mb-6">Épreuve écrite — 1 heure</h3>
-              <div className="space-y-4 text-white/70">
-                <div className="flex items-start gap-3"><svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><p className="leading-relaxed font-medium"><strong className="font-bold text-white">Sous-épreuve de calculs</strong> : calculs de doses, conversions, pourcentages, produits en croix (sur 10 points)</p></div>
-                <div className="flex items-start gap-3"><svg className="w-5 h-5 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><p className="leading-relaxed font-medium"><strong className="font-bold text-white">Sous-épreuve de rédaction</strong> : analyse ou questions/réponses sur un texte de culture sanitaire et sociale (sur 10 points)</p></div>
-              </div>
-              <div className="mt-6 bg-red-500/10 ring-1 ring-red-500/20 rounded-2xl px-4 py-3 flex items-start gap-2.5">
-                <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <p className="text-sm text-red-200 leading-relaxed font-medium">Une note en dessous de <strong className="font-bold text-white">8/20</strong> à l&apos;épreuve écrite est <strong className="font-bold text-white">éliminatoire</strong>.</p>
-              </div>
-            </div>
-            <div className="bg-white/[0.04] rounded-[28px] ring-1 ring-white/10 p-8 relative transition-transform duration-300 hover:-translate-y-1">
-              <div className="absolute top-6 right-6 bg-blue-500/15 text-blue-300 ring-1 ring-blue-500/20 px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider">20 points</div>
-              <div className="w-12 h-12 bg-blue-500/15 text-blue-400 rounded-2xl flex items-center justify-center mb-6">
-                <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/></svg>
-              </div>
-              <h3 className="text-xl font-extrabold tracking-tight text-white mb-6">Épreuve orale — 20 minutes</h3>
-              <div className="space-y-4 text-white/70">
-                <div className="flex items-start gap-3"><svg className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><p className="leading-relaxed font-medium"><strong className="font-bold text-white">Présentation du parcours</strong> : valoriser votre expérience professionnelle et votre projet (10 min)</p></div>
-                <div className="flex items-start gap-3"><svg className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg><p className="leading-relaxed font-medium"><strong className="font-bold text-white">Entretien avec le jury</strong> : questions sur vos motivations, connaissances du métier IDE (10 min)</p></div>
-              </div>
-              <div className="mt-6 bg-red-500/10 ring-1 ring-red-500/20 rounded-2xl px-4 py-3 flex items-start gap-2.5">
-                <svg className="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                <p className="text-sm text-red-200 leading-relaxed font-medium">Une note en dessous de <strong className="font-bold text-white">8/20</strong> à l&apos;épreuve orale est <strong className="font-bold text-white">éliminatoire</strong>.</p>
+              <div className="flex items-center gap-2.5 flex-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
+                <h3 className="text-lg font-extrabold text-white whitespace-nowrap">Épreuve orale</h3>
+                <span className="text-sm font-bold text-white/45 whitespace-nowrap">20 min · 20 points</span>
               </div>
             </div>
+            {/* Barre du temps : segments proportionnels aux durées */}
+            <div className="flex items-stretch gap-6">
+              <div className="flex h-14 rounded-2xl overflow-hidden ring-1 ring-white/10" style={{width: '72%'}}>
+                {SOUS_EPREUVES.slice(0, 2).map((s, i) => (
+                  <div key={i} className="chrono-seg flex items-center justify-center gap-2.5" style={{width: '50%', background: s.bg, animationDelay: `${0.1 + i * 0.45}s`}}>
+                    <span className="text-[15px] font-extrabold text-white">{s.court}</span>
+                    <span className="text-[11px] font-bold text-white/75">{s.duree}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="flex h-14 rounded-2xl overflow-hidden ring-1 ring-white/10 flex-1">
+                {SOUS_EPREUVES.slice(2).map((s, i) => (
+                  <div key={i} className="chrono-seg flex items-center justify-center gap-2" style={{width: '50%', background: s.bg, animationDelay: `${1 + i * 0.25}s`}}>
+                    <span className="text-[15px] font-extrabold text-white">{s.court}</span>
+                    <span className="text-[11px] font-bold text-white/75">{s.duree}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Graduations */}
+            <div className="flex gap-6 mt-2.5 text-[11px] font-bold text-white/35">
+              <div className="relative h-4" style={{width: '72%'}}>
+                <span className="absolute left-0">0</span>
+                <span className="absolute left-1/2 -translate-x-1/2">30 min</span>
+                <span className="absolute right-0">1 h</span>
+              </div>
+              <div className="relative h-4 flex-1">
+                <span className="absolute left-0">0</span>
+                <span className="absolute left-1/2 -translate-x-1/2">10 min</span>
+                <span className="absolute right-0">20 min</span>
+              </div>
+            </div>
+          </div>
+
+          {/* ===== Version mobile : frise verticale ===== */}
+          <div className="md:hidden space-y-3">
+            {SOUS_EPREUVES.map((s, i) => (
+              <div key={i}>
+                {(i === 0 || i === 2) && (
+                  <div className="flex items-center gap-2.5 mb-3 mt-5 first:mt-0">
+                    <span className="w-2.5 h-2.5 rounded-full" style={{background: s.bg}}></span>
+                    <h3 className="text-base font-extrabold text-white">{i === 0 ? 'Épreuve écrite' : 'Épreuve orale'}</h3>
+                    <span className="text-[13px] font-bold text-white/45">{i === 0 ? '1 heure · 20 points' : '20 min · 20 points'}</span>
+                  </div>
+                )}
+                <div className="flex items-stretch gap-3">
+                  <div className="w-[64px] shrink-0 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white" style={{background: s.bg}}>{s.duree}</div>
+                  <div className="flex-1 bg-white/[0.04] ring-1 ring-white/[0.06] rounded-xl px-4 py-3">
+                    <p className="font-bold text-white text-[14px]">{s.titre} <span className="ml-1 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md align-middle" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span></p>
+                    <p className="text-[13px] text-white/55 font-medium leading-relaxed mt-0.5">{s.desc}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Détails des 4 temps forts (desktop, alignés sous la frise) */}
+          <div className="hidden md:grid grid-cols-4 gap-4 mt-7">
+            {SOUS_EPREUVES.map((s, i) => (
+              <div key={i} className="chrono-detail bg-white/[0.04] ring-1 ring-white/[0.06] rounded-2xl p-5" style={{animationDelay: `${0.35 + i * 0.35}s`}}>
+                <div className="h-1 w-9 rounded-full mb-4" style={{background: s.bg}}></div>
+                <p className="font-bold text-white text-[15px] leading-snug">{s.titre} <span className="ml-1 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md align-middle whitespace-nowrap" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span></p>
+                <p className="text-sm text-white/55 font-medium leading-relaxed mt-2">{s.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Seuil éliminatoire commun */}
+          <div className="chrono-detail mt-8 flex items-center justify-center gap-2.5" style={{animationDelay: '1.6s'}}>
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            <p className="text-sm text-red-200/90 font-medium">Une note en dessous de <strong className="font-bold text-white">8/20</strong> à l&apos;une ou l&apos;autre des épreuves est <strong className="font-bold text-white">éliminatoire</strong>.</p>
           </div>
         </div>
       </section>
 
       {/* ===================== FAQ ===================== */}
+      {/* Schéma FAQPage pour Google (réponses sans balises HTML) */}
+      <script type="application/ld+json" dangerouslySetInnerHTML={{__html: JSON.stringify({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: FAQ_DATA.map(f => ({
+          '@type': 'Question',
+          name: f.q,
+          acceptedAnswer: { '@type': 'Answer', text: f.a.replace(/<[^>]+>/g, '') }
+        }))
+      })}} />
       <section id="faq" className="py-20 sm:py-28 px-5 fade-in-up">
         <div className="max-w-[860px] mx-auto">
           <h2 className="text-3xl sm:text-[52px] font-extrabold tracking-[-0.03em] leading-[1.05] text-center mb-12">Questions fréquentes</h2>

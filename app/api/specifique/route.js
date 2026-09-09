@@ -8,6 +8,7 @@ import { SYSTEM_PROPORTIONNALITE, PROMPT_PROPORTIONNALITE } from '@/lib/prompts/
 import { SYSTEM_CONVERSIONS, PROMPT_CONVERSIONS } from '@/lib/prompts/famille-conversions'
 import { SYSTEM_EQUATIONS, PROMPT_EQUATIONS } from '@/lib/prompts/famille-equations'
 import { callClaude, callClaudeWithPDF } from '@/lib/anthropic'
+import { buildBriefFamille } from '@/lib/prompts/variation-maths'
 
 let annalesBase64 = null
 try {
@@ -44,13 +45,15 @@ export async function POST(request) {
 
       const config = FAMILLES[famille]
       const systemInstruction = BASE_SYSTEM + '\n\n' + config.system
-      const userPrompt = config.prompt + '\n\n' + FORMAT_SORTIE
+      // Brief tiré au sort : contextes, prénoms et NOMBRES imposés pour les 10 questions (réponses calculées côté serveur)
+      const brief = buildBriefFamille(famille)
+      const userPrompt = config.prompt + '\n\n' + brief.text + '\n\n' + FORMAT_SORTIE
 
       let text
       if (annalesBase64) {
-        text = await callClaudeWithPDF(systemInstruction, userPrompt, annalesBase64, { temperature: 0.85, maxTokens: 12000 })
+        text = await callClaudeWithPDF(systemInstruction, userPrompt, annalesBase64, { temperature: 0.95, maxTokens: 12000 })
       } else {
-        text = await callClaude(systemInstruction, userPrompt, { temperature: 0.85, maxTokens: 12000 })
+        text = await callClaude(systemInstruction, userPrompt, { temperature: 0.95, maxTokens: 12000 })
       }
 
       let sujetData

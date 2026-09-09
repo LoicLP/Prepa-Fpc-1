@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { BASE_SYSTEM, buildHistoryContext } from '@/lib/prompts/base-maths'
-import { SYSTEM_EXAMEN_MATHS, PROMPT_EXAMEN_MATHS } from '@/lib/prompts/examen-maths'
+import { SYSTEM_EXAMEN_MATHS, buildPromptExamenMaths } from '@/lib/prompts/examen-maths'
+import { buildBriefExamen } from '@/lib/prompts/variation-maths'
 import { checkRateLimit } from '@/lib/rate-limit'
 import { callClaude, callClaudeWithPDF } from '@/lib/anthropic'
 
@@ -26,18 +27,23 @@ export async function POST(request) {
     }
 
     const body = await request.json()
-    const { action, exercices, reponses, history } = body
+    const { action, exercices, reponses, history, recent } = body
 
     // === GÉNÉRER UN SUJET ===
     if (action === 'generer') {
       const historyContext = buildHistoryContext(history)
       const systemInstruction = BASE_SYSTEM + '\n\n' + SYSTEM_EXAMEN_MATHS + (historyContext ? '\n\n' + historyContext : '')
 
+      // Brief tiré au sort : sous-types, contextes, prénoms et NOMBRES imposés (réponses calculées côté serveur).
+      // `recent` = sous-types/contextes des derniers sujets du candidat, pour ne pas retomber dessus.
+      const brief = buildBriefExamen(recent)
+      const userPrompt = buildPromptExamenMaths(brief.text)
+
       let text
       if (annalesBase64) {
-        text = await callClaudeWithPDF(systemInstruction, PROMPT_EXAMEN_MATHS, annalesBase64, { temperature: 0.85, maxTokens: 12000 })
+        text = await callClaudeWithPDF(systemInstruction, userPrompt, annalesBase64, { temperature: 0.95, maxTokens: 12000 })
       } else {
-        text = await callClaude(systemInstruction, PROMPT_EXAMEN_MATHS, { temperature: 0.85, maxTokens: 12000 })
+        text = await callClaude(systemInstruction, userPrompt, { temperature: 0.95, maxTokens: 12000 })
       }
 
       let raw
@@ -73,7 +79,7 @@ export async function POST(request) {
         }))
       }
 
-      return NextResponse.json({ sujet: sujetData })
+      return NextResponse.json({ sujet: sujetData, brief: brief.meta })
     }
 
     // === CORRIGER LES RÉPONSES ===

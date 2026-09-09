@@ -143,11 +143,15 @@ export default function ExamenPage() {
       ])
       const historyRedac = pastRedac?.map(s => ({ theme: s.label })) || []
       const historyMaths = pastMaths?.map(s => ({ famille: s.label, score: s.note })) || []
+      // Sous-types et contextes des 3 derniers sujets de maths : le serveur les évite pour varier
+      let recentBriefs = []
+      try { recentBriefs = JSON.parse(localStorage.getItem('maths_recent_briefs') || '[]') } catch {}
+      const recent = { sousTypes: recentBriefs.flatMap(b => b?.sousTypes || []), contextes: recentBriefs.flatMap(b => b?.contextes || []) }
       const [resMaths, resRedaction] = await Promise.all([
         fetch('/api/maths', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'generer', history: historyMaths })
+          body: JSON.stringify({ action: 'generer', history: historyMaths, recent })
         }),
         fetch('/api/redaction', {
           method: 'POST',
@@ -160,6 +164,7 @@ export default function ExamenPage() {
       if (!resRedaction.ok || dataRedaction.error) { setStep(null); setShowWaitPopup(true); return }
       const elapsed = Date.now() - startTime
       if (elapsed < 25000) await new Promise(r => setTimeout(r, 25000 - elapsed))
+      if (dataMaths.brief) { try { localStorage.setItem('maths_recent_briefs', JSON.stringify([...recentBriefs.slice(-2), dataMaths.brief])) } catch {} }
       setSujetMaths(dataMaths.sujet)
       setSujetRedaction(dataRedaction.sujet)
       setReponses({})

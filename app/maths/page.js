@@ -127,15 +127,20 @@ export default function MathsPage() {
       // Récupérer l'historique pour adapter la difficulté et varier
       const { data: pastSessions } = await supabase.from('historique').select('label, note, note_max').eq('user_id', currentUser.id).eq('type', 'Maths').order('created_at', { ascending: false }).limit(20)
       const history = pastSessions?.map(s => ({ famille: s.label, score: s.note })) || []
+      // Sous-types et contextes des 3 derniers sujets : le serveur les évite pour varier
+      let recentBriefs = []
+      try { recentBriefs = JSON.parse(localStorage.getItem('maths_recent_briefs') || '[]') } catch {}
+      const recent = { sousTypes: recentBriefs.flatMap(b => b?.sousTypes || []), contextes: recentBriefs.flatMap(b => b?.contextes || []) }
       const res = await fetch('/api/maths', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'generer', history })
+        body: JSON.stringify({ action: 'generer', history, recent })
       })
       const data = await res.json()
       if (!res.ok || data.error) { setStep(null); setShowWaitPopup(true); return }
       const elapsed = Date.now() - startTime
       if (elapsed < 20000) await new Promise(r => setTimeout(r, 20000 - elapsed))
+      if (data.brief) { try { localStorage.setItem('maths_recent_briefs', JSON.stringify([...recentBriefs.slice(-2), data.brief])) } catch {} }
       setSujet(data.sujet)
       setReponses({})
       setTimeLeft(30 * 60)

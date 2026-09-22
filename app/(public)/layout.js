@@ -256,7 +256,7 @@ export default function LayoutPublic({ children }) {
           </div>
           <div className="mt-16 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-2 text-sm text-white/45">
             <span>© 2026 Prépa FPC</span>
-            <span className="text-center">Nos autres prépas : <a href="https://www.prepa-police.fr" className="hover:text-white transition">Prépa POLICE</a> · <a href="https://www.prepa-atsem.fr" className="hover:text-white transition">Prépa ATSEM</a> · <a href="https://www.prepa-pass-las.fr" className="hover:text-white transition">Prépa PASS/LAS</a></span>
+            <span className="text-center">Nos autres prépas : <a href="https://www.prepa-police.fr" className="hover:text-white transition">Prépa POLICE</a> · <a href="https://www.prepa-atsem.fr" className="hover:text-white transition">Prépa ATSEM</a></span>
             <span>Fait avec ❤️ en France</span>
           </div>
         </div>

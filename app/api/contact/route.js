@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { getTransporter, sendEmail } from '@/lib/email'
 
 const validCategories = ['bug', 'question', 'suggestion', 'autre']
 const categoryLabels = { bug: 'Bug', question: 'Question', suggestion: 'Suggestion', autre: 'Autre' }
@@ -69,14 +69,13 @@ export async function POST(request) {
     const safeMessage = escapeHtml(message)
     const safeCategory = categoryLabels[category]
 
-    // Envoi email via Resend
-    const apiKey = process.env.RESEND_API_KEY
-    if (!apiKey) {
+    // Envoi par la boîte SMTP du domaine (lib/email.js)
+    if (!getTransporter()) {
       return NextResponse.json({ error: 'Configuration email manquante.' }, { status: 500 })
     }
-    const resend = new Resend(apiKey)
-    const { data: sendData, error: sendError } = await resend.emails.send({
-      from: 'Prépa FPC - Contact <noreply@prepa-fpc.fr>',
+    let sendError = null
+    await sendEmail({
+      fromLabel: 'Prépa FPC - Contact',
       to: 'support@prepa-fpc.fr',
       replyTo: email,
       subject: `[${safeCategory}] ${safeSubject}`,
@@ -96,9 +95,10 @@ export async function POST(request) {
           </div>
         </div>
       `
-    })
+    }).catch(e => { sendError = e })
 
     if (sendError) {
+      console.error('Contact email error:', sendError)
       return NextResponse.json({ error: 'Erreur lors de l\'envoi. Veuillez réessayer.' }, { status: 500 })
     }
 

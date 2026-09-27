@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { Resend } from 'resend'
+import { getTransporter, sendEmail } from '@/lib/email'
 
 const allowedOrigins = [
   'https://prepa-fpc.fr',
@@ -46,14 +46,13 @@ export async function POST(request) {
     const safeComment = comment ? escapeHtml(comment) : ''
     const safeEmail = email ? escapeHtml(email) : 'Non connecté'
 
-    const apiKey = process.env.RESEND_API_KEY
-    if (!apiKey) {
+    if (!getTransporter()) {
       return NextResponse.json({ error: 'Configuration email manquante.' }, { status: 500 })
     }
 
-    const resend = new Resend(apiKey)
-    const { error: sendError } = await resend.emails.send({
-      from: 'Prépa FPC - Avis <noreply@prepa-fpc.fr>',
+    let sendError = null
+    await sendEmail({
+      fromLabel: 'Prépa FPC - Avis',
       to: 'support@prepa-fpc.fr',
       subject: `${stars} Nouvel avis (${rating}/5)`,
       html: `
@@ -75,7 +74,7 @@ export async function POST(request) {
           </div>
         </div>
       `
-    })
+    }).catch(e => { sendError = e })
 
     if (sendError) {
       console.error('Review email error:', sendError)

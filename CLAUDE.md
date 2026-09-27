@@ -12,6 +12,7 @@ Prépa FPC is a French-language exam preparation platform for the FPC (Formation
 - **Styling**: Tailwind CSS v4 (via PostCSS plugin)
 - **Backend/Auth**: Supabase (auth + database + storage)
 - **AI**: Gemini API (for oral exam CV analysis)
+- **Email**: SMTP direct sur la boîte Infomaniak du domaine via `nodemailer` (`lib/email.js`, depuis le 2026-09-27, Resend retiré, même montage que prepa-police.fr et prepa-atsem.fr). Expéditeur = `SMTP_USER` (`support@prepa-fpc.fr`), jamais un `noreply@` : le `from` doit être la boîte authentifiée, sinon SPF/DKIM ne couvrent pas l'envoi et le DMARC du domaine (`p=reject`) fait refuser le message. Prérequis DNS : SPF `v=spf1 include:spf.infomaniak.ch -all` à la racine de prepa-fpc.fr. Les e-mails d'auth Supabase (confirmation, mot de passe oublié) passent par le même SMTP, déclaré dans Supabase › Authentication › SMTP Settings.
 - **Deployment**: Vercel
 
 ## Commands
@@ -27,6 +28,7 @@ All pages are client components (`'use client'`) using plain `.js` files in the 
 ### Key files
 
 - `lib/supabase.js` — Single Supabase client instance (uses `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY`)
+- `lib/email.js` — Envoi des e-mails en SMTP (nodemailer) : `sendEmail` est le point d'entrée unique (formulaires contact, support et avis, relances d'essai de `app/api/emails/check`), `getTransporter()` renvoie `null` si le SMTP n'est pas configuré.
 - `app/page.js` — Landing page with inline interactive QCM demo, FAQ, eligibility section
 - `app/qcm/page.js` — Main quiz engine with hardcoded question bank (20 questions covering dose calculations, percentages, cross-products, mental math, equations, conversions)
 - `app/dashboard/page.js` — Authenticated user dashboard with sidebar navigation (stats, history, profile, subscription tabs all in one file)
@@ -48,6 +50,7 @@ Every authenticated page follows the same pattern: check `supabase.auth.getSessi
 - `NEXT_PUBLIC_SUPABASE_URL` — Supabase project URL
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase anonymous key
 - `GEMINI_API_KEY` — Server-side only, used in `app/api/oral/route.js`
+- `SMTP_HOST` (`mail.infomaniak.com`), `SMTP_PORT` (`587`), `SMTP_USER` (la boîte, `support@prepa-fpc.fr`), `SMTP_PASSWORD` (le mot de passe de la boîte, PAS celui du compte Infomaniak : erreur 535 sinon) — e-mails transactionnels. `RESEND_API_KEY` n'existe plus.
 
 ## Language
 

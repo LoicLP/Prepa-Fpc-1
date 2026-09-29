@@ -11,7 +11,7 @@ export default function AdminPage() {
   const [message, setMessage] = useState('')
   const [uploading, setUploading] = useState(false)
 
-  const emptyArticle = { title: '', slug: '', category: '', category_color: 'blue', excerpt: '', content: '', date: new Date().toISOString().split('T')[0], reading_time: '5 min de lecture', published: true, image_url: '' }
+  const emptyArticle = { title: '', slug: '', category: '', category_color: 'blue', excerpt: '', content: '', date: new Date().toISOString().split('T')[0], reading_time: '5 min de lecture', published: true, image_url: '', views: 0 }
   const [form, setForm] = useState(emptyArticle)
 
   const ADMIN_EMAIL = process.env.NEXT_PUBLIC_ADMIN_EMAIL
@@ -101,12 +101,15 @@ export default function AdminPage() {
     setSaving(true)
     setMessage('')
 
+    // Nombre de vues : entier positif (le champ peut être vide pendant la saisie)
+    const payload = { ...form, views: Math.max(0, parseInt(form.views, 10) || 0) }
+
     if (editing) {
-      const { error } = await supabase.from('articles').update(form).eq('id', editing)
+      const { error } = await supabase.from('articles').update(payload).eq('id', editing)
       if (error) setMessage('Erreur : ' + error.message)
       else { setMessage('Article mis à jour !'); cancelEdit() }
     } else {
-      const { id, ...newArticle } = form
+      const { id, ...newArticle } = payload
       const { error } = await supabase.from('articles').insert(newArticle)
       if (error) setMessage('Erreur : ' + error.message)
       else { setMessage('Article publié !'); setForm(emptyArticle) }
@@ -176,7 +179,7 @@ export default function AdminPage() {
             </div>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5">
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Catégorie</label>
               <input type="text" required value={form.category} onChange={e => handleChange('category', e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white focus:border-transparent outline-none font-medium" placeholder="Mathématiques"/>
@@ -190,6 +193,10 @@ export default function AdminPage() {
             <div>
               <label className="block text-sm font-bold text-slate-700 mb-1.5">Date</label>
               <input type="date" value={form.date} onChange={e => handleChange('date', e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white focus:border-transparent outline-none font-medium"/>
+            </div>
+            <div>
+              <label className="block text-sm font-bold text-slate-700 mb-1.5">Nombre de vues</label>
+              <input type="number" min="0" step="1" value={form.views ?? 0} onChange={e => handleChange('views', e.target.value)} className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:bg-white focus:border-transparent outline-none font-medium"/>
             </div>
           </div>
 
@@ -277,6 +284,8 @@ export default function AdminPage() {
                     <span>{new Date(article.date).toLocaleDateString('fr-FR')}</span>
                     <span>•</span>
                     <span className="font-mono">/blog/{article.slug}</span>
+                    <span>•</span>
+                    <span>{(article.views || 0).toLocaleString('fr-FR')} vue{(article.views || 0) > 1 ? 's' : ''}</span>
                   </div>
                 </div>
               </div>

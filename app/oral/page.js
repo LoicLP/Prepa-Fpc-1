@@ -117,11 +117,7 @@ export default function OralPage() {
   const recognitionRef = useRef(null)
 
   useEffect(() => {
-    // Aperçu du loader en local (http://localhost:3000/oral?apercu=loader) : sans compte ni génération.
-    // Inactif en production : NODE_ENV y vaut 'production', la condition est toujours fausse.
-    const apercu = process.env.NODE_ENV === 'development' && new URLSearchParams(window.location.search).get('apercu') === 'loader'
     supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (apercu) { setAuthLoading(false); setStep('loading'); return }
       if (!session) { window.location.href = '/auth'; return }
       setUser(session.user)
       const { data: sub } = await supabase.from('subscriptions').select('status, current_period_end').eq('user_id', session.user.id).eq('status', 'active').single()

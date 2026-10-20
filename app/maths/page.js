@@ -11,6 +11,81 @@ const sidebarItems = [
   { id: 'abonnement', label: 'Devenir Premium', href: '/dashboard?tab=abonnement', icon: BadgeCheck, premium: true }
 ]
 
+// Nuée de points en arrière-plan du chargement, reprise de Prépa POLICE (NueeChargement) :
+// les points dérivent lentement, sont effacés en douceur autour de la carte blanche (.la-frame)
+// et restent immobiles si l'utilisateur a demandé à réduire les animations.
+// couleur : "r,g,b" de la couleur du module (rouge pour les maths).
+function NueeChargement({ couleur = '220,38,38', carte: selecteurCarte = '.la-frame' }) {
+  const canvasRef = useRef(null)
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const ctx = canvas.getContext('2d')
+    const dpr = Math.min(window.devicePixelRatio || 1, 2)
+    const reduit = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    let w = 0, h = 0
+    const points = []
+    const nouveau = (i) => ({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.26, phase: Math.random() * Math.PI * 2, lot: i % 3 })
+    const mesurer = () => {
+      const nw = canvas.offsetWidth, nh = canvas.offsetHeight
+      if (nw === w && nh === h) return
+      if (w && h) for (const p of points) { p.x *= nw / w; p.y *= nh / h }
+      w = nw; h = nh
+      canvas.width = w * dpr; canvas.height = h * dpr
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      const nb = Math.max(300, Math.min(2000, Math.round((w * h) / 480)))
+      while (points.length < nb) points.push(nouveau(points.length))
+      points.length = nb
+    }
+    const dessiner = () => {
+      ctx.clearRect(0, 0, w, h)
+      // Trois lots d'opacité différente pour donner de la profondeur
+      for (let lot = 0; lot < 3; lot++) {
+        ctx.beginPath()
+        for (const p of points) {
+          if (p.lot !== lot) continue
+          ctx.moveTo(p.x + 1.4, p.y)
+          ctx.arc(p.x, p.y, 1.4, 0, 6.2832)
+        }
+        ctx.fillStyle = `rgba(${couleur},${(0.2 + lot * 0.08).toFixed(2)})`
+        ctx.fill()
+      }
+      const carte = document.querySelector(selecteurCarte)
+      if (carte) {
+        const base = canvas.getBoundingClientRect(), r = carte.getBoundingClientRect()
+        ctx.save()
+        ctx.globalCompositeOperation = 'destination-out'
+        ctx.shadowColor = '#000'
+        ctx.shadowBlur = 40 * dpr
+        ctx.fillStyle = '#000'
+        ctx.fillRect(r.left - base.left - 6, r.top - base.top - 6, r.width + 12, r.height + 12)
+        ctx.restore()
+      }
+    }
+    mesurer(); dessiner()
+    if (reduit) {
+      const figer = () => { mesurer(); dessiner() }
+      window.addEventListener('resize', figer)
+      return () => window.removeEventListener('resize', figer)
+    }
+    let raf = 0
+    const boucle = (now) => {
+      mesurer()
+      const s = now / 1000
+      for (const p of points) {
+        p.x += p.vx + Math.sin(s * 0.6 + p.phase) * 0.12
+        p.y += p.vy + Math.cos(s * 0.5 + p.phase) * 0.1
+        if (p.x < -10) p.x = w + 10; else if (p.x > w + 10) p.x = -10
+        if (p.y < -10) p.y = h + 10; else if (p.y > h + 10) p.y = -10
+      }
+      dessiner()
+      raf = requestAnimationFrame(boucle)
+    }
+    raf = requestAnimationFrame(boucle)
+    return () => cancelAnimationFrame(raf)
+  }, [couleur, selecteurCarte])
+  return <canvas ref={canvasRef} style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', zIndex: 0, pointerEvents: 'none' }} aria-hidden="true" />
+}
+
 export default function MathsPage() {
   const [user, setUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
@@ -388,9 +463,11 @@ export default function MathsPage() {
             const arcOffset = circ - (loadingProgress / 100) * circ
             const stepIdx = STEPS.reduce((a, s, i) => loadingProgress >= s.at ? i : a, 0)
             return (
-              <div className="animate-fade-in min-h-[calc(100vh-6rem)] lg:h-[calc(100vh-2.5rem)] flex items-center justify-center" style={{fontFamily: "'Nunito', sans-serif", '--tc-main': '#dc2626', '--tc-bright': '#f87171', '--tc-tint': '#fee2e2', '--tc-soft-2': 'rgba(220,38,38,0.08)'}}>
+              // Calque plein écran comme sur Prépa POLICE : il masque la trame fixe du fond de page
+              // et accueille la nuée de points animée, sous la carte (la barre latérale reste au-dessus)
+              <div className="animate-fade-in fixed inset-0 z-40 lg:pl-[102px] flex items-center justify-center overflow-y-auto pt-14 lg:pt-0 bg-slate-100" style={{fontFamily: "'Nunito', sans-serif", '--tc-main': '#dc2626', '--tc-bright': '#f87171', '--tc-tint': '#fee2e2', '--tc-soft-2': 'rgba(220,38,38,0.08)'}}>
                 <style>{`
-                  .la-page { padding: 8px; position: relative; width: 100%; }
+                  .la-page { padding: 8px; position: relative; z-index: 1; width: 100%; }
                   .la-frame { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 20px 16px 18px; max-width: 880px; margin: 0 auto; width: 100%; position: relative; overflow: hidden; box-sizing: border-box; }
                   @media (min-width: 640px) { .la-frame { padding: 48px 48px 40px; border-radius: 28px; } }
                   .la-frame::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--tc-soft-2), transparent 60%); pointer-events: none; }
@@ -432,6 +509,7 @@ export default function MathsPage() {
                   .arc-side p { margin: 0; font-size: 12px; line-height: 1.5; color: #64748b; }
                   @media (min-width: 640px) { .arc-side p { font-size: 14px; line-height: 1.55; } }
                 `}</style>
+                <NueeChargement couleur="220,38,38" />
                 <div className="la-page">
                   <div className="la-frame">
                     <div className="lf-head">

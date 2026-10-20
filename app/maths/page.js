@@ -523,7 +523,7 @@ export default function MathsPage() {
                       </a>
                     </div>
                     <h2 className="lf-title">Votre épreuve est <em>en préparation</em>.</h2>
-                    <p className="lf-sub">Sujet généré par IA à partir des annales du concours.<br/>Durée 30 min, note sur 10.</p>
+                    <p className="lf-sub">Sujet généré à partir de notre base des annales du concours.<br/>Durée 30 min, note sur 10.</p>
                     <div className="anim-arc">
                       <div className="arc-wrap">
                         <svg className="arc-svg" width="220" height="220" viewBox="0 0 220 220">

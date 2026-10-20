@@ -1,5 +1,5 @@
 'use client'
-import { useState, useEffect, Suspense } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
@@ -19,9 +19,6 @@ const menuItems = [
 
 // Astuces affichées en alternance sous « Bonjour … » (75 caractères max pour tenir sur une ligne)
 const TIPS = [
-  'Calculs de doses : convertissez tout dans la même unité avant de calculer.',
-  '1 g = 1 000 mg et 1 mg = 1 000 µg : à connaître par cœur.',
-  '1 L = 100 cL = 1 000 mL, et 1 cm³ = 1 mL.',
   'Débit en gouttes/min = volume (mL) × 20 ÷ durée (min).',
   'Durée de perfusion (h) = volume (mL) ÷ débit (mL/h).',
   'Une solution à 5 % contient 5 g pour 100 mL, pas 5 g pour toute la poche.',
@@ -31,19 +28,56 @@ const TIPS = [
   'Les durées sont en base 60 : 1 h 25 = 85 min, pas 125.',
   'Vitesse moyenne : distance totale ÷ temps total, jamais (v1 + v2) ÷ 2.',
   'Sans calculatrice, posez vos divisions : elles pèsent lourd à l\'épreuve.',
-  'En maths, écrivez chaque étape : la méthode rapporte des points.',
-  'Une réponse sans unité peut coûter des points : mg, mL, € ou %.',
-  'Rédaction : introduction, deux parties, conclusion, même en 30 minutes.',
-  'Rédaction : gardez 5 minutes à la fin pour relire l\'orthographe.',
-  'Rédaction : illustrez chaque argument par un exemple concret.',
   'Oral : entraînez-vous à présenter votre parcours sans notes.',
-  'Oral : appuyez-vous sur des situations vécues en poste.',
-  'Oral : sachez expliquer clairement pourquoi vous voulez devenir infirmier.',
-  'Mieux vaut 20 minutes par jour que 3 heures une fois par semaine.',
-  'Faites un examen blanc par semaine pour vous habituer au chrono.',
-  'Stress : inspirez 4 secondes, bloquez 4, expirez 4 avant de commencer.',
-  'Lisez tout l\'énoncé avant de calculer : la question est souvent à la fin.'
+  'Faites un examen blanc par semaine pour vous habituer au chrono.'
 ]
+
+// Clé de jour locale AAAA-MM-JJ (avec zéros, pour comparer les jours sans ambiguïté)
+const cleJour = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+
+// Jours d'affilée avec au moins un exercice (la série tient si le dernier exercice date d'aujourd'hui ou d'hier)
+function calcStreak(historique) {
+  if (!historique.length) return 0
+  const jours = new Set(historique.map(h => cleJour(new Date(h.created_at))))
+  const d = new Date()
+  if (!jours.has(cleJour(d))) d.setDate(d.getDate() - 1)
+  let streak = 0
+  while (jours.has(cleJour(d)) && streak < 365) { streak++; d.setDate(d.getDate() - 1) }
+  return streak
+}
+
+// Phrase sous « Bonjour … » d'après l'activité réelle du candidat : { cle, texte } ou null
+function phraseAccueil(historique, { isPremium, trialDays }) {
+  if (!isPremium && trialDays === 0) return { cle: 'essai-termine', texte: 'Votre essai est terminé : passez Premium pour reprendre l\'entraînement.' }
+  if (historique.length === 0) return { cle: 'aucun-exercice', texte: 'Commencez par un examen blanc pour situer votre niveau.' }
+  const debutJour = new Date(); debutJour.setHours(0, 0, 0, 0)
+  const aujourdhui = historique.filter(h => new Date(h.created_at) >= debutJour).length
+  if (aujourdhui === 1) return { cle: 'jour-1', texte: 'Déjà un exercice aujourd\'hui, bien joué. On en fait un deuxième ?' }
+  if (aujourdhui > 1) return { cle: `jour-${aujourdhui}`, texte: `Déjà ${aujourdhui} exercices aujourd'hui, belle régularité !` }
+  const streak = calcStreak(historique)
+  if (streak >= 2) return { cle: 'serie', texte: `${streak} jours d'affilée : un exercice aujourd'hui et la série continue.` }
+  const dernier = new Date(Math.max(...historique.map(h => new Date(h.created_at).getTime()))); dernier.setHours(0, 0, 0, 0)
+  const jours = Math.round((debutJour - dernier) / 86400000)
+  if (jours >= 3) return { cle: 'inactif', texte: `Dernier exercice il y a ${jours} jours. On reprend en douceur ?` }
+  if (!isPremium && trialDays <= 2) return { cle: 'essai-fin', texte: `Plus que ${trialDays} jour${trialDays > 1 ? 's' : ''} d'essai : tentez un examen blanc complet.` }
+  // Point faible : maths ou rédaction, au moins 2 notes, moyenne sous 12/20
+  const parType = {}
+  historique.filter(h => h.note != null && h.note_max && (h.type === 'Maths' || h.type === 'Rédaction')).forEach(h => { (parType[h.type] ||= []).push(h.note / h.note_max * 20) })
+  const faible = Object.entries(parType).filter(([, v]) => v.length >= 2).map(([t, v]) => [t, v.reduce((s, x) => s + x, 0) / v.length]).sort((a, b) => a[1] - b[1])[0]
+  if (faible && faible[1] < 12) return { cle: `faible-${faible[0]}`, texte: `Point à travailler : ${faible[0] === 'Maths' ? 'les maths' : 'la rédaction'}, ${faible[1].toFixed(1).replace('.', ',')}/20 de moyenne.` }
+  return null
+}
+
+// Une même phrase n'est affichée qu'une fois par jour sur ce navigateur ; les fois suivantes, astuces seules
+function phraseDuJour(candidate) {
+  if (!candidate) return null
+  const jour = cleJour(new Date())
+  let vues = { jour, cles: [] }
+  try { const s = JSON.parse(localStorage.getItem('dash_phrases_vues') || 'null'); if (s && s.jour === jour && Array.isArray(s.cles)) vues = s } catch {}
+  if (vues.cles.includes(candidate.cle)) return null
+  try { localStorage.setItem('dash_phrases_vues', JSON.stringify({ jour, cles: [...vues.cles, candidate.cle] })) } catch {}
+  return candidate.texte
+}
 
 export default function Dashboard() {
   return (
@@ -66,8 +100,14 @@ function DashboardContent() {
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   // Ligne sous « Bonjour … » : avance d'un cran toutes les 10 s (voir le calcul des emplacements plus bas)
   const [tipTick, setTipTick] = useState(0)
-  // Départ au hasard pour ne pas toujours montrer la même astuce en premier
-  const [tipStart] = useState(() => Math.floor(Math.random() * TIPS.length))
+  // Les astuces reprennent là où la visite précédente s'est arrêtée (sinon au hasard)
+  const [tipStart] = useState(() => {
+    try { const n = parseInt(localStorage.getItem('dash_tip_next'), 10); if (n >= 0 && n < TIPS.length) return n } catch {}
+    return Math.floor(Math.random() * TIPS.length)
+  })
+  // Phrase d'accueil : undefined = pas encore décidée, null = aucune, sinon le texte
+  const [phrase, setPhrase] = useState(undefined)
+  const phraseDecidedRef = useRef(false)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [showReviewPopup, setShowReviewPopup] = useState(false)
   const [reviewRating, setReviewRating] = useState(0)
@@ -99,6 +139,7 @@ function DashboardContent() {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
     if (data) setHistorique(data)
+    return data || []
   }
 
   useEffect(() => {
@@ -107,10 +148,11 @@ function DashboardContent() {
       setUser(session.user)
       setNewFirstName(session.user?.user_metadata?.first_name || '')
       setNewLastName(session.user?.user_metadata?.last_name || '')
-      fetchHistorique(session.user.id)
+      const histPromise = fetchHistorique(session.user.id)
       // Fetch subscription puis calcul trial
       const { data: sub } = await supabase.from('subscriptions').select('*').eq('user_id', session.user.id).eq('status', 'active').single()
-      if (sub && new Date(sub.current_period_end) > new Date()) {
+      const hasSub = !!(sub && new Date(sub.current_period_end) > new Date())
+      if (hasSub) {
         setIsPremium(true)
         setSubscriptionPlan(sub.plan)
         setSubscriptionEnd(sub.current_period_end)
@@ -119,8 +161,15 @@ function DashboardContent() {
       const created = new Date(session.user.created_at)
       const now = new Date()
       const diffDays = Math.floor((now - created) / (1000 * 60 * 60 * 24))
-      setTrialDays(Math.max(0, 7 - diffDays))
+      const trial = Math.max(0, 7 - diffDays)
+      setTrialDays(trial)
       setLoading(false)
+      // Phrase d'accueil décidée une seule fois par chargement (le ref évite le double appel du mode strict en dev)
+      histPromise.then(data => {
+        if (phraseDecidedRef.current) return
+        phraseDecidedRef.current = true
+        setPhrase(phraseDuJour(phraseAccueil(data, { isPremium: hasSub, trialDays: trial })))
+      })
       // Afficher la pop-up de succès après paiement
       if (searchParams.get('success') === 'true') {
         setShowSuccessPopup(true)
@@ -176,9 +225,16 @@ function DashboardContent() {
   }
 
   useEffect(() => {
-    const interval = setInterval(() => setTipTick(t => t + 1), 10000)
-    return () => clearInterval(interval)
-  }, [])
+    if (phrase === undefined) return
+    const hasPhrase = typeof phrase === 'string'
+    const last = (hasPhrase ? 1 : 0) + TIPS.length - 1
+    const t = Math.min(tipTick, last)
+    // Mémoriser l'astuce suivante pour que la prochaine visite ne reprenne pas les mêmes
+    if (!(hasPhrase && t === 0)) { try { localStorage.setItem('dash_tip_next', String((tipStart + t - (hasPhrase ? 1 : 0) + 1) % TIPS.length)) } catch {} }
+    if (tipTick >= last) return
+    const id = setTimeout(() => setTipTick(x => x + 1), 10000)
+    return () => clearTimeout(id)
+  }, [phrase, tipTick, tipStart])
 
   async function handleLogout() {
     await supabase.auth.signOut()
@@ -208,61 +264,19 @@ function DashboardContent() {
   const createdAt = new Date(user?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const stats = { qcm: 0, score: '-', calculs: 0, redactions: 0 }
 
-  // Calcul streak (jours d'affilée)
-  const getStreak = () => {
-    if (historique.length === 0) return 0
-    const uniqueDays = [...new Set(historique.map(h => {
-      const d = new Date(h.created_at)
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
-    }))].sort().reverse()
-    const today = new Date()
-    const todayKey = `${today.getFullYear()}-${today.getMonth()}-${today.getDate()}`
-    const yesterday = new Date(today)
-    yesterday.setDate(yesterday.getDate() - 1)
-    const yesterdayKey = `${yesterday.getFullYear()}-${yesterday.getMonth()}-${yesterday.getDate()}`
-    if (uniqueDays[0] !== todayKey && uniqueDays[0] !== yesterdayKey) return 0
-    let streak = 0
-    let checkDate = new Date(today)
-    if (uniqueDays[0] !== todayKey) checkDate.setDate(checkDate.getDate() - 1)
-    for (let i = 0; i < 365; i++) {
-      const key = `${checkDate.getFullYear()}-${checkDate.getMonth()}-${checkDate.getDate()}`
-      if (uniqueDays.includes(key)) { streak++; checkDate.setDate(checkDate.getDate() - 1) }
-      else break
-    }
-    return streak
-  }
-  const streak = getStreak()
+  const streak = calcStreak(historique)
 
-  // Phrase sous « Bonjour … » : d'après l'activité réelle du candidat, sinon d'après l'heure
-  const subtitle = (() => {
-    if (!isPremium && trialDays === 0) return 'Votre essai est terminé : passez Premium pour reprendre l\'entraînement.'
-    if (historique.length === 0) return 'Commencez par un examen blanc pour situer votre niveau.'
-    const startToday = new Date(); startToday.setHours(0, 0, 0, 0)
-    const todayCount = historique.filter(h => new Date(h.created_at) >= startToday).length
-    if (todayCount === 1) return 'Déjà un exercice aujourd\'hui, bien joué. On en fait un deuxième ?'
-    if (todayCount > 1) return `Déjà ${todayCount} exercices aujourd'hui, belle régularité !`
-    if (streak >= 2) return `${streak} jours d'affilée : un exercice aujourd'hui et la série continue.`
-    const lastDay = new Date(Math.max(...historique.map(h => new Date(h.created_at).getTime()))); lastDay.setHours(0, 0, 0, 0)
-    const daysSince = Math.round((startToday - lastDay) / 86400000)
-    if (daysSince >= 3) return `Dernier exercice il y a ${daysSince} jours. On reprend en douceur ?`
-    if (!isPremium && trialDays <= 2) return `Plus que ${trialDays} jour${trialDays > 1 ? 's' : ''} d'essai : tentez un examen blanc complet.`
-    // Point faible : maths ou rédaction, au moins 2 notes, moyenne sous 12/20
-    const parType = {}
-    historique.filter(h => h.note != null && h.note_max && (h.type === 'Maths' || h.type === 'Rédaction')).forEach(h => { (parType[h.type] ||= []).push(h.note / h.note_max * 20) })
-    const faible = Object.entries(parType).filter(([, v]) => v.length >= 2).map(([t, v]) => [t, v.reduce((s, x) => s + x, 0) / v.length]).sort((a, b) => a[1] - b[1])[0]
-    if (faible && faible[1] < 12) return `Point à travailler : ${faible[0] === 'Maths' ? 'les maths' : 'la rédaction'}, ${faible[1].toFixed(1).replace('.', ',')}/20 de moyenne.`
-    return null
-  })()
-
-  // Deux emplacements se relaient en fondu (A aux crans pairs, B aux crans impairs).
-  // Le texte d'un emplacement n'est mis à jour qu'au moment où il réapparaît, jamais pendant son fondu de sortie.
-  // Avec une phrase d'accueil : A = la phrase, B = une astuce. Sans phrase : A et B = des astuces qui se suivent.
-  const showTip = tipTick % 2 === 1
-  const tickA = tipTick - (tipTick % 2)
-  const tickB = tipTick % 2 === 1 ? tipTick : Math.max(0, tipTick - 1)
-  const tipA = TIPS[(tipStart + tickA) % TIPS.length]
-  const tipB = TIPS[(tipStart + (subtitle ? Math.floor(tickB / 2) : tickB)) % TIPS.length]
+  // Ligne sous « Bonjour … » : la phrase d'accueil (si elle existe) puis chaque astuce une seule fois, dans l'ordre.
+  // Deux emplacements se relaient en fondu (A aux crans pairs, B aux crans impairs) ; le texte d'un emplacement
+  // n'est mis à jour qu'au moment où il réapparaît, jamais pendant son fondu de sortie. Arrivé au bout, tout s'arrête.
+  const hasPhrase = typeof phrase === 'string'
+  const nbItems = (hasPhrase ? 1 : 0) + TIPS.length
+  const lineTick = Math.min(tipTick, nbItems - 1)
+  const showTip = lineTick % 2 === 1
+  const itemA = lineTick - (lineTick % 2)
+  const itemB = lineTick % 2 === 1 ? lineTick : Math.min(lineTick === 0 ? 1 : lineTick - 1, nbItems - 1)
   const astuce = tip => <><span className="inline-block text-[10px] font-black uppercase tracking-wider bg-red-50 text-red-600 border border-red-100 px-1.5 py-px rounded-md mr-1.5 align-[1px]">Astuce</span>{tip}</>
+  const ligne = i => phrase === undefined ? '' : (hasPhrase && i === 0 ? phrase : astuce(TIPS[(tipStart + i - (hasPhrase ? 1 : 0)) % TIPS.length]))
 
   // Objectif semaine : exercices faits cette semaine (lundi à dimanche)
   const getWeekData = () => {
@@ -604,8 +618,8 @@ function DashboardContent() {
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">{greeting} {firstName} !</h1>
                   <div className="relative h-10 sm:h-5">
-                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 sm:whitespace-nowrap transition-all duration-500 ${showTip ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>{subtitle || astuce(tipA)}</p>
-                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>{astuce(tipB)}</p>
+                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 sm:whitespace-nowrap transition-all duration-500 ${showTip ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>{ligne(itemA)}</p>
+                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>{ligne(itemB)}</p>
                   </div>
                 </div>
                 {isPremium ? (

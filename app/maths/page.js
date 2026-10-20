@@ -39,6 +39,12 @@ export default function MathsPage() {
   const submitRef = useRef(null)
 
   useEffect(() => {
+    // Aperçu du loader en local (http://localhost:3000/maths?apercu=loader) : sans compte ni génération.
+    // Inactif en production : NODE_ENV y vaut 'production', la condition est toujours fausse.
+    if (process.env.NODE_ENV === 'development' && new URLSearchParams(window.location.search).get('apercu') === 'loader') {
+      setAuthLoading(false)
+      return
+    }
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) { window.location.href = '/auth'; return }
       setUser(session.user)

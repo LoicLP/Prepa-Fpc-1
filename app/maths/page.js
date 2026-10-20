@@ -482,7 +482,7 @@ export default function MathsPage() {
                   @media (min-width: 640px) { .lf-head-text h1 { font-size: 24px; } }
                   .lf-title { font-size: 24px; font-weight: 900; letter-spacing: -0.025em; margin: 6px 0 8px; line-height: 1.1; color: #0f172a; }
                   @media (min-width: 640px) { .lf-title { font-size: 42px; margin: 8px 0 12px; line-height: 1.05; } }
-                  .lf-title em { font-style: normal; background: linear-gradient(135deg, var(--tc-main) 0%, var(--tc-bright) 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+                  .lf-title em { font-style: normal; color: var(--tc-main); }
                   .lf-sub { font-size: 13px; line-height: 1.5; color: #64748b; margin: 0 0 20px; max-width: 540px; font-weight: 600; }
                   @media (min-width: 640px) { .lf-sub { font-size: 15px; line-height: 1.55; margin: 0 0 32px; } }
                   .anim-arc { display: flex; align-items: center; justify-content: center; gap: 20px; padding: 8px 0 4px; flex-wrap: wrap; }

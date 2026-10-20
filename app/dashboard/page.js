@@ -17,6 +17,34 @@ const menuItems = [
   { id: 'abonnement', label: 'Devenir Premium', icon: BadgeCheck, premium: true }
 ]
 
+// Astuces affichées en alternance sous « Bonjour … » (75 caractères max pour tenir sur une ligne)
+const TIPS = [
+  'Calculs de doses : convertissez tout dans la même unité avant de calculer.',
+  '1 g = 1 000 mg et 1 mg = 1 000 µg : à connaître par cœur.',
+  '1 L = 100 cL = 1 000 mL, et 1 cm³ = 1 mL.',
+  'Débit en gouttes/min = volume (mL) × 20 ÷ durée (min).',
+  'Durée de perfusion (h) = volume (mL) ÷ débit (mL/h).',
+  'Une solution à 5 % contient 5 g pour 100 mL, pas 5 g pour toute la poche.',
+  'Hausse de 20 % : multipliez par 1,20. Baisse de 20 % : par 0,80.',
+  '+10 % puis −10 % ne ramène pas au prix de départ : on perd 1 %.',
+  'Pour retrouver un prix avant hausse, divisez : ne retirez pas le %.',
+  'Les durées sont en base 60 : 1 h 25 = 85 min, pas 125.',
+  'Vitesse moyenne : distance totale ÷ temps total, jamais (v1 + v2) ÷ 2.',
+  'Sans calculatrice, posez vos divisions : elles pèsent lourd à l\'épreuve.',
+  'En maths, écrivez chaque étape : la méthode rapporte des points.',
+  'Une réponse sans unité peut coûter des points : mg, mL, € ou %.',
+  'Rédaction : introduction, deux parties, conclusion, même en 30 minutes.',
+  'Rédaction : gardez 5 minutes à la fin pour relire l\'orthographe.',
+  'Rédaction : illustrez chaque argument par un exemple concret.',
+  'Oral : entraînez-vous à présenter votre parcours sans notes.',
+  'Oral : appuyez-vous sur des situations vécues en poste.',
+  'Oral : sachez expliquer clairement pourquoi vous voulez devenir infirmier.',
+  'Mieux vaut 20 minutes par jour que 3 heures une fois par semaine.',
+  'Faites un examen blanc par semaine pour vous habituer au chrono.',
+  'Stress : inspirez 4 secondes, bloquez 4, expirez 4 avant de commencer.',
+  'Lisez tout l\'énoncé avant de calculer : la question est souvent à la fin.'
+]
+
 export default function Dashboard() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-slate-50 flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-red-600 border-t-transparent rounded-full"></div></div>}>
@@ -37,7 +65,8 @@ function DashboardContent() {
   const [subscriptionEnd, setSubscriptionEnd] = useState(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
   const [showTip, setShowTip] = useState(false)
-  const [tipIndex, setTipIndex] = useState(0)
+  // Départ au hasard pour ne pas toujours montrer la même astuce en premier
+  const [tipIndex, setTipIndex] = useState(() => Math.floor(Math.random() * TIPS.length))
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [showReviewPopup, setShowReviewPopup] = useState(false)
   const [reviewRating, setReviewRating] = useState(0)
@@ -145,39 +174,11 @@ function DashboardContent() {
     }
   }
 
-  const tips = [
-    'Pour convertir des mL en L, divisez par 1000.',
-    'Un produit en croix se vérifie toujours en multipliant en diagonale.',
-    'Relisez l\'énoncé deux fois avant de calculer.',
-    'Pour les pourcentages : multiplier par le % puis diviser par 100.',
-    '1 g = 1000 mg, à retenir par cœur !',
-    'Un débit en gouttes/min = volume (mL) × 20 / temps (min).',
-    'Prenez 5 minutes pour relire vos réponses avant de valider.',
-    'Entraînez-vous régulièrement : 20 min/jour valent mieux que 3h une fois.',
-    '1 litre = 100 cL = 1000 mL, pensez aux puissances de 10.',
-    'Pour la rédaction, structurez toujours : introduction, développement, conclusion.',
-    'Un comprimé sécable en 2 = chaque moitié vaut la moitié de la dose.',
-    'Vérifiez toujours l\'unité demandée avant de répondre.',
-    'Pour l\'oral, préparez 3 qualités et 3 axes d\'amélioration.',
-    'La règle de 3 est votre meilleure alliée pour les calculs de doses.',
-    'En culture sanitaire, citez toujours des chiffres et des sources.',
-    'Temps de perfusion (h) = volume (mL) / débit (mL/h).',
-    'Pour les fractions : trouvez le dénominateur commun avant d\'additionner.',
-    'À l\'oral, parlez de vos stages et expériences concrètes.',
-    'Convertir des µg en mg : divisez par 1000.',
-    'Un bon brouillon en rédaction = une meilleure note finale.',
-    'Pour les dilutions : C1 × V1 = C2 × V2.',
-    'Gérez votre stress : respirez 4 secondes, bloquez 4, expirez 4.',
-    'En maths, posez vos calculs étape par étape pour éviter les erreurs.',
-    'Relisez votre copie à voix basse pour repérer les fautes.',
-    'La régularité bat l\'intensité : révisez un peu chaque jour.',
-  ]
-
   useEffect(() => {
     const interval = setInterval(() => setShowTip(prev => {
       // Avancer le conseil pendant qu'il est invisible (avant le fondu d'entrée),
       // sinon le texte change sous les yeux de l'utilisateur pendant le fondu de sortie
-      if (!prev) setTipIndex(i => (i + 1) % tips.length)
+      if (!prev) setTipIndex(i => (i + 1) % TIPS.length)
       return !prev
     }), 10000)
     return () => clearInterval(interval)
@@ -207,7 +208,6 @@ function DashboardContent() {
   const firstName = user?.user_metadata?.first_name || user?.user_metadata?.full_name?.split(' ')[0] || user?.user_metadata?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'Utilisateur'
   const hour = new Date().getHours()
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir'
-  const subtitle = hour < 12 ? 'Une petite session de révision ce matin ?' : hour < 18 ? 'C\'est le moment idéal pour réviser !' : 'Une dernière session avant la fin de journée ?'
   const email = user?.email || ''
   const createdAt = new Date(user?.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })
   const stats = { qcm: 0, score: '-', calculs: 0, redactions: 0 }
@@ -236,6 +236,27 @@ function DashboardContent() {
     return streak
   }
   const streak = getStreak()
+
+  // Phrase sous « Bonjour … » : d'après l'activité réelle du candidat, sinon d'après l'heure
+  const subtitle = (() => {
+    if (!isPremium && trialDays === 0) return 'Votre essai est terminé : passez Premium pour reprendre l\'entraînement.'
+    if (historique.length === 0) return 'Commencez par un examen blanc pour situer votre niveau.'
+    const startToday = new Date(); startToday.setHours(0, 0, 0, 0)
+    const todayCount = historique.filter(h => new Date(h.created_at) >= startToday).length
+    if (todayCount === 1) return 'Déjà un exercice aujourd\'hui, bien joué. On en fait un deuxième ?'
+    if (todayCount > 1) return `Déjà ${todayCount} exercices aujourd'hui, belle régularité !`
+    if (streak >= 2) return `${streak} jours d'affilée : un exercice aujourd'hui et la série continue.`
+    const lastDay = new Date(Math.max(...historique.map(h => new Date(h.created_at).getTime()))); lastDay.setHours(0, 0, 0, 0)
+    const daysSince = Math.round((startToday - lastDay) / 86400000)
+    if (daysSince >= 3) return `Dernier exercice il y a ${daysSince} jours. On reprend en douceur ?`
+    if (!isPremium && trialDays <= 2) return `Plus que ${trialDays} jour${trialDays > 1 ? 's' : ''} d'essai : tentez un examen blanc complet.`
+    // Point faible : maths ou rédaction, au moins 2 notes, moyenne sous 12/20
+    const parType = {}
+    historique.filter(h => h.note != null && h.note_max && (h.type === 'Maths' || h.type === 'Rédaction')).forEach(h => { (parType[h.type] ||= []).push(h.note / h.note_max * 20) })
+    const faible = Object.entries(parType).filter(([, v]) => v.length >= 2).map(([t, v]) => [t, v.reduce((s, x) => s + x, 0) / v.length]).sort((a, b) => a[1] - b[1])[0]
+    if (faible && faible[1] < 12) return `Point à travailler : ${faible[0] === 'Maths' ? 'les maths' : 'la rédaction'}, ${faible[1].toFixed(1).replace('.', ',')}/20 de moyenne.`
+    return hour < 12 ? 'Une petite session de révision ce matin ?' : hour < 18 ? 'C\'est le moment idéal pour réviser !' : 'Une dernière session avant la fin de journée ?'
+  })()
 
   // Objectif semaine : exercices faits cette semaine (lundi à dimanche)
   const getWeekData = () => {
@@ -578,7 +599,7 @@ function DashboardContent() {
                   <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">{greeting} {firstName} !</h1>
                   <div className="relative h-10 sm:h-5">
                     <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 sm:whitespace-nowrap transition-all duration-500 ${showTip ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>{subtitle}</p>
-                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>💡 {tips[tipIndex]}</p>
+                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}><span className="inline-block text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-100 px-1.5 py-px rounded-md mr-1.5 align-[1px]">Astuce</span>{TIPS[tipIndex]}</p>
                   </div>
                 </div>
                 {isPremium ? (

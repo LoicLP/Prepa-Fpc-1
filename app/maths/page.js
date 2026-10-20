@@ -470,7 +470,6 @@ export default function MathsPage() {
                   .la-page { padding: 8px; position: relative; z-index: 1; width: 100%; }
                   .la-frame { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 20px 16px 18px; max-width: 880px; margin: 0 auto; width: 100%; position: relative; overflow: hidden; box-sizing: border-box; }
                   @media (min-width: 640px) { .la-frame { padding: 48px 48px 40px; border-radius: 28px; } }
-                  .la-frame::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at top right, var(--tc-soft-2), transparent 60%); pointer-events: none; }
                   .la-frame > * { position: relative; }
                   .lf-head { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
                   @media (min-width: 640px) { .lf-head { gap: 16px; margin-bottom: 28px; } }

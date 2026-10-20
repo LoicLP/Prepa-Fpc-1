@@ -64,9 +64,10 @@ function DashboardContent() {
   const [subscriptionPlan, setSubscriptionPlan] = useState(null)
   const [subscriptionEnd, setSubscriptionEnd] = useState(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
-  const [showTip, setShowTip] = useState(false)
+  // Ligne sous « Bonjour … » : avance d'un cran toutes les 10 s (voir le calcul des emplacements plus bas)
+  const [tipTick, setTipTick] = useState(0)
   // Départ au hasard pour ne pas toujours montrer la même astuce en premier
-  const [tipIndex, setTipIndex] = useState(() => Math.floor(Math.random() * TIPS.length))
+  const [tipStart] = useState(() => Math.floor(Math.random() * TIPS.length))
   const [showSuccessPopup, setShowSuccessPopup] = useState(false)
   const [showReviewPopup, setShowReviewPopup] = useState(false)
   const [reviewRating, setReviewRating] = useState(0)
@@ -175,12 +176,7 @@ function DashboardContent() {
   }
 
   useEffect(() => {
-    const interval = setInterval(() => setShowTip(prev => {
-      // Avancer le conseil pendant qu'il est invisible (avant le fondu d'entrée),
-      // sinon le texte change sous les yeux de l'utilisateur pendant le fondu de sortie
-      if (!prev) setTipIndex(i => (i + 1) % TIPS.length)
-      return !prev
-    }), 10000)
+    const interval = setInterval(() => setTipTick(t => t + 1), 10000)
     return () => clearInterval(interval)
   }, [])
 
@@ -255,8 +251,18 @@ function DashboardContent() {
     historique.filter(h => h.note != null && h.note_max && (h.type === 'Maths' || h.type === 'Rédaction')).forEach(h => { (parType[h.type] ||= []).push(h.note / h.note_max * 20) })
     const faible = Object.entries(parType).filter(([, v]) => v.length >= 2).map(([t, v]) => [t, v.reduce((s, x) => s + x, 0) / v.length]).sort((a, b) => a[1] - b[1])[0]
     if (faible && faible[1] < 12) return `Point à travailler : ${faible[0] === 'Maths' ? 'les maths' : 'la rédaction'}, ${faible[1].toFixed(1).replace('.', ',')}/20 de moyenne.`
-    return hour < 12 ? 'Une petite session de révision ce matin ?' : hour < 18 ? 'C\'est le moment idéal pour réviser !' : 'Une dernière session avant la fin de journée ?'
+    return null
   })()
+
+  // Deux emplacements se relaient en fondu (A aux crans pairs, B aux crans impairs).
+  // Le texte d'un emplacement n'est mis à jour qu'au moment où il réapparaît, jamais pendant son fondu de sortie.
+  // Avec une phrase d'accueil : A = la phrase, B = une astuce. Sans phrase : A et B = des astuces qui se suivent.
+  const showTip = tipTick % 2 === 1
+  const tickA = tipTick - (tipTick % 2)
+  const tickB = tipTick % 2 === 1 ? tipTick : Math.max(0, tipTick - 1)
+  const tipA = TIPS[(tipStart + tickA) % TIPS.length]
+  const tipB = TIPS[(tipStart + (subtitle ? Math.floor(tickB / 2) : tickB)) % TIPS.length]
+  const astuce = tip => <><span className="inline-block text-[10px] font-black uppercase tracking-wider bg-red-50 text-red-600 border border-red-100 px-1.5 py-px rounded-md mr-1.5 align-[1px]">Astuce</span>{tip}</>
 
   // Objectif semaine : exercices faits cette semaine (lundi à dimanche)
   const getWeekData = () => {
@@ -598,8 +604,8 @@ function DashboardContent() {
                 <div>
                   <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">{greeting} {firstName} !</h1>
                   <div className="relative h-10 sm:h-5">
-                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 sm:whitespace-nowrap transition-all duration-500 ${showTip ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>{subtitle}</p>
-                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}><span className="inline-block text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-600 border border-amber-100 px-1.5 py-px rounded-md mr-1.5 align-[1px]">Astuce</span>{TIPS[tipIndex]}</p>
+                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 sm:whitespace-nowrap transition-all duration-500 ${showTip ? 'opacity-0 -translate-y-3' : 'opacity-100 translate-y-0'}`}>{subtitle || astuce(tipA)}</p>
+                    <p className={`text-slate-500 font-medium text-sm absolute inset-x-0 transition-all duration-500 sm:whitespace-nowrap ${showTip ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>{astuce(tipB)}</p>
                   </div>
                 </div>
                 {isPremium ? (

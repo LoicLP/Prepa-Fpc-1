@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock } from 'lucide-react'
+import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock, Check } from 'lucide-react'
 
 
 const menuItems = [
@@ -902,6 +902,17 @@ function DashboardContent() {
             const has2020 = historique.some(h => h.note != null && h.note_max && h.note >= h.note_max)
             const typesManquants = ['Maths', 'Rédaction', 'Oral'].filter(t => !historique.some(h => h.type === t))
             const UNITES = { jours: ['jour', 'jours'], exercices: ['exercice', 'exercices'] }
+            // Date d'obtention de chaque diplôme, retrouvée dans l'historique
+            const chrono = [...historique].sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+            const joursTries = Object.keys(parJour).map(Number).sort((a, b) => a - b)
+            const dateSerie = n => { let cur = 0, prev = null; for (const x of joursTries) { cur = prev != null && Math.round((x - prev) / JOUR) === 1 ? cur + 1 : 1; prev = x; if (cur >= n) return x } return null }
+            const premiereFois = t => chrono.find(h => h.type === t)?.created_at
+            const DATES = {
+              'premier-pas': chrono[0]?.created_at, studieux: chrono[9]?.created_at, expert: chrono[49]?.created_at,
+              regulier: dateSerie(3), assidu: dateSerie(5), marathonien: dateSerie(7), infatigable: dateSerie(14), pret: dateSerie(30),
+              perfectionniste: chrono.find(h => h.note != null && h.note_max && h.note >= h.note_max)?.created_at,
+              polyvalent: typesManquants.length ? null : Math.max(...['Maths', 'Rédaction', 'Oral'].map(t => new Date(premiereFois(t)).getTime()))
+            }
             // val : ce qui débloque le diplôme (record pour les séries) ; prog : où en est le candidat pour l'obtenir
             // (pour les séries, la série en cours, puisqu'il faut enchaîner les jours à partir de maintenant)
             const badges = [
@@ -921,7 +932,7 @@ function DashboardContent() {
               const reste = b.id === 'perfectionniste' ? 'Visez un 20/20'
                 : b.id === 'polyvalent' ? `Manque : ${typesManquants.join(', ')}`
                 : `Plus que ${r} ${UNITES[b.unite][r > 1 ? 1 : 0]}`
-              return { ...b, unlocked: b.val >= b.cible, prog, reste }
+              return { ...b, unlocked: b.val >= b.cible, prog, reste, date: DATES[b.id] ? new Date(DATES[b.id]) : null }
             })
             const unlockedCount = badges.filter(b => b.unlocked).length
             const prochain = badges.filter(b => !b.unlocked).sort((a, b) => (b.prog / b.cible) - (a.prog / a.cible))[0]
@@ -1138,12 +1149,21 @@ function DashboardContent() {
                   // Carte d'un diplôme (obtenu ou à obtenir)
                   const carte = b => {
                     const BIcon = b.Icon
+                    // Diplôme obtenu : médaille avec rubans et sceau doré, mention « Diplôme obtenu » et date d'obtention
                     if (b.unlocked) return (
-                      <div key={b.id} className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col items-center text-center">
-                        <span className="w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-600 text-white shadow-sm shadow-red-200"><BIcon size={22} strokeWidth={1.8} /></span>
+                      <div key={b.id} className="w-full rounded-2xl border-[3px] border-red-600 bg-white shadow-sm shadow-red-100 p-4 flex flex-col items-center text-center">
+                        <span className="relative mb-4" aria-hidden="true">
+                          <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top -translate-x-[115%] rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
+                          <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top translate-x-[15%] -rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
+                          <span className="relative w-12 h-12 rounded-full grid place-items-center bg-red-600 text-white ring-4 ring-red-100"><BIcon size={22} strokeWidth={1.8} /></span>
+                          <span className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-amber-400 text-amber-950 grid place-items-center ring-2 ring-white"><Check size={11} strokeWidth={3.2} /></span>
+                        </span>
                         <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                         <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
-                        <span className="mt-auto pt-3"><span className="inline-block text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Débloqué</span></span>
+                        <span className="mt-auto pt-3 flex flex-col items-center gap-0.5">
+                          <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-red-700"><BadgeCheck size={13} strokeWidth={2.2} />Diplôme obtenu</span>
+                          {b.date && <span className="text-[10px] font-semibold text-slate-400">le {fmtJour(b.date)}</span>}
+                        </span>
                       </div>
                     )
                     // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence

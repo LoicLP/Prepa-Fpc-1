@@ -141,7 +141,8 @@ export default function RedactionPage() {
     const t0 = performance.now()
     let raf
     const tick = (now) => {
-      const t = (now - t0) / 1000
+      // L'horodatage de la première image peut précéder t0 : sans ce plancher, t < 0 et Math.pow renvoie NaN
+      const t = Math.max(0, (now - t0) / 1000)
       setLoadingProgress(99 * (1 - Math.exp(-Math.pow(t, 1.5) / 18)))
       raf = requestAnimationFrame(tick)
     }

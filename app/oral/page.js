@@ -283,7 +283,14 @@ export default function OralPage() {
   if (showAccessBlock) return (<div className="min-h-screen bg-[#eceef1] flex items-center justify-center p-4"><div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-8 text-center"><div className="text-5xl mb-3 mx-auto">😢</div><h2 className="text-2xl font-black text-slate-900 mb-2">Votre essai gratuit est terminé</h2><p className="text-slate-500 font-medium mb-6">Pour continuer à vous entraîner et accéder à tous les exercices, souscrivez à un abonnement.</p><div className="flex flex-col gap-3"><a href="/tarifs" className="bg-slate-900 hover:bg-black text-white font-bold py-3 px-6 rounded-xl transition shadow-lg text-sm">Voir les tarifs</a><a href="/dashboard" className="text-slate-500 font-medium text-sm hover:text-slate-700 transition">Retour au tableau de bord</a></div></div></div>)
 
   return (
-    <div className="min-h-screen bg-slate-100 text-slate-900 flex" style={{backgroundImage: 'radial-gradient(#22c55e 1px, transparent 1px)', backgroundSize: '24px 24px'}}>
+    <div className="min-h-screen bg-slate-100 text-slate-900 flex isolate">
+      {/* Nuée de points animée en fond de page (comme sur les loaders), sous le contenu et la barre latérale.
+          Pendant le chargement, le loader affiche la sienne par-dessus : celle-ci est alors retirée. */}
+      {step !== 'loading' && (
+        <div className="fixed inset-0 top-14 lg:top-0 -z-10 pointer-events-none" aria-hidden="true">
+          <NueeChargement couleur="5,150,105" carte=".oral-carte" />
+        </div>
+      )}
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
       <style>{`
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
@@ -391,8 +398,7 @@ export default function OralPage() {
           {/* ===== UPLOAD ===== */}
           {step === 'upload' && (
             <div className="animate-fade-in min-h-full lg:h-[calc(100vh-2.5rem)] flex items-center justify-center" style={{fontFamily: "'Nunito', sans-serif"}}>
-              <div className="relative bg-white border border-slate-200 rounded-[20px] sm:rounded-[28px] max-w-2xl w-full p-6 sm:p-12 overflow-hidden">
-                <div aria-hidden="true" className="absolute inset-0 pointer-events-none" style={{background: 'radial-gradient(circle at top right, rgba(5,150,105,0.08), transparent 60%)'}}></div>
+              <div className="oral-carte relative bg-white border border-slate-200 rounded-[20px] sm:rounded-[28px] max-w-2xl w-full p-6 sm:p-12 overflow-hidden">
                 <div className="relative">
 
                   {/* En-tête façon LoaderArc */}
@@ -410,7 +416,7 @@ export default function OralPage() {
                     </a>
                   </div>
 
-                  <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">Votre CV, <span className="bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">vos questions</span>.</h2>
+                  <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">Votre CV, <span className="text-emerald-600">vos questions</span>.</h2>
                   <p className="text-[13px] sm:text-[15px] text-slate-500 font-semibold mb-6 sm:mb-8 max-w-lg">Déposez votre CV : notre IA prépare 10 questions de jury personnalisées sur votre parcours.</p>
 
                   {error && <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm p-4 rounded-xl mb-5 text-center">{error}</div>}
@@ -563,7 +569,7 @@ export default function OralPage() {
             const oralSeconds = elapsed % 60
             return (
             <div className="animate-fade-in min-h-[calc(100vh-6rem)] flex items-center justify-center">
-              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col w-full max-w-4xl">
+              <div className="oral-carte bg-white border border-slate-200 rounded-2xl shadow-sm flex flex-col w-full max-w-4xl">
 
                 {/* Header sombre */}
                 <div className="bg-slate-900 rounded-t-2xl px-3 sm:px-6 py-3 sm:py-5 overflow-hidden">

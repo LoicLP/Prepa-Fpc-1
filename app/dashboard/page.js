@@ -831,7 +831,6 @@ function DashboardContent() {
           {page === 'progression' && (() => {
             const JOUR = 86400000
             const fmtNote = n => (Math.round(n * 10) / 10).toString().replace('.', ',')
-            const fmtDuree = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, '0') : ''}`
             const fmtJour = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
             const debutJour = (d = new Date()) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x }
 
@@ -879,8 +878,6 @@ function DashboardContent() {
             const totalExos = historique.length
             const totalMin = historique.reduce((s, h) => s + (h.duration_minutes || 0), 0)
             const lundi = (() => { const d = debutJour(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d })()
-            const minSemaine = historique.filter(h => new Date(h.created_at) >= lundi).reduce((s, h) => s + (h.duration_minutes || 0), 0)
-            const exosSemaine = historique.filter(h => new Date(h.created_at) >= lundi).length
             const examensNotes = historique.filter(h => h.type === 'Examen' && h.note != null && h.note_max)
             const meilleurExamen = examensNotes.length ? examensNotes.reduce((a, b) => sur20(b) > sur20(a) ? b : a) : null
             const parJour = {}
@@ -982,13 +979,10 @@ function DashboardContent() {
                     <div className="pr-4 lg:pr-6">
                       <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Total exercices</p>
                       <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalExos}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">dont {exosSemaine} cette semaine</p>
                     </div>
                     <div className="pl-4 lg:px-6 border-l border-slate-200">
                       <p className="text-[11px] font-black uppercase tracking-widest text-blue-600">Temps total</p>
-                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalMin < 60 ? <>{totalMin}<span className="text-xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{fmtDuree(minSemaine)} cette semaine</p>
-                    </div>
+                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalMin < 60 ? <>{totalMin}<span className="text-xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>                    </div>
                     <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200">
                       <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
                       <p className={`text-4xl font-black tabular-nums leading-none mt-2 ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-xl text-slate-400">/20</span></> : '—'}</p>

@@ -991,9 +991,9 @@ function DashboardContent() {
                   <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                   <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
                   <div className="w-full mt-auto pt-3">
-                    <div className="flex items-end justify-between gap-2 mb-1">
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
                       <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
-                      <span className="text-[10px] font-bold text-slate-400 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
+                      <span className="text-[10px] font-black text-white bg-red-600 rounded-md px-1.5 py-0.5 tabular-nums shrink-0 whitespace-nowrap" title={`${b.prog}/${b.cible}`}>{Math.round((1 - b.prog / b.cible) * 100)} % restant</span>
                     </div>
                     <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
                   </div>

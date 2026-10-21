@@ -1068,12 +1068,9 @@ function DashboardContent() {
                     </div>
 
                     <div className="relative">
-                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto select-none" role="img" aria-label="Courbe de vos notes sur 20, avec la zone éliminatoire sous 8 sur 20">
-                        <rect x={G} y={py(8)} width={pw} height={py(0) - py(8)} fill="#fef2f2" />
-                        {[5, 10, 15, 20].map(v => <line key={v} x1={G} x2={W - D} y1={py(v)} y2={py(v)} stroke="#f1f5f9" />)}
-                        <line x1={G} x2={W - D} y1={py(8)} y2={py(8)} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="5 4" />
-                        {[0, 5, 8, 10, 15, 20].map(v => <text key={v} x={G - 8} y={py(v) + 4} textAnchor="end" fontSize="11" fontWeight={v === 8 ? 800 : 600} fill={v === 8 ? '#ef4444' : '#94a3b8'}>{v}</text>)}
-                        <text x={W - D - 6} y={py(0) - 8} textAnchor="end" fontSize="11" fontWeight="700" fill="#ef4444">Zone éliminatoire · moins de 8/20</text>
+                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto select-none" role="img" aria-label="Courbe de vos notes sur 20">
+                        {[0, 5, 10, 15, 20].map(v => <line key={v} x1={G} x2={W - D} y1={py(v)} y2={py(v)} stroke={v === 0 ? '#e2e8f0' : '#f1f5f9'} />)}
+                        {[0, 5, 10, 15, 20].map(v => <text key={v} x={G - 8} y={py(v) + 4} textAnchor="end" fontSize="11" fontWeight="600" fill="#94a3b8">{v}</text>)}
                         {courbe && <path d={courbe} fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />}
                         {points.map((p, i) => (
                           <circle key={i} cx={px(i)} cy={py(p.n)} r={survol === i ? 8 : i === points.length - 1 ? 7 : 5.5} fill={couleurType[p.type]} stroke="#fff" strokeWidth="2.5" style={{ cursor: 'pointer', transition: 'r 0.15s' }} onMouseEnter={() => setStatsSurvol(i)} onMouseLeave={() => setStatsSurvol(null)} onClick={() => setStatsSurvol(survol === i ? null : i)} />

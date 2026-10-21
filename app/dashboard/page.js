@@ -1134,11 +1134,12 @@ function DashboardContent() {
                   <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Diplômes</h2>
                   <span className="text-xs text-slate-400 font-semibold">{unlockedCount}/{badges.length} débloqués</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-5">
-                  {badges.map(b => {
+                {(() => {
+                  // Carte d'un diplôme (obtenu ou à obtenir)
+                  const carte = b => {
                     const BIcon = b.Icon
                     if (b.unlocked) return (
-                      <div key={b.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col items-center text-center">
+                      <div key={b.id} className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col items-center text-center">
                         <span className="w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-600 text-white shadow-sm shadow-red-200"><BIcon size={22} strokeWidth={1.8} /></span>
                         <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                         <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
@@ -1148,7 +1149,7 @@ function DashboardContent() {
                     // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
                     const estProchain = prochain && prochain.id === b.id
                     return (
-                      <div key={b.id} className={`relative rounded-2xl border bg-white p-4 flex flex-col items-center text-center transition ${estProchain ? 'border-red-300 ring-4 ring-red-50 shadow-sm' : 'border-slate-200 hover:border-red-200'}`}>
+                      <div key={b.id} className={`w-full relative rounded-2xl border bg-white p-4 flex flex-col items-center text-center transition ${estProchain ? 'border-red-300 ring-4 ring-red-50 shadow-sm' : 'border-slate-200 hover:border-red-200'}`}>
                         {estProchain && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-full">Prochain objectif</span>}
                         <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
                           <BIcon size={22} strokeWidth={1.8} />
@@ -1165,8 +1166,44 @@ function DashboardContent() {
                         </div>
                       </div>
                     )
-                  })}
-                </div>
+                  }
+
+                  // Chemin des diplômes, du plus simple au plus exigeant : grille en serpentin (une ligne de gauche
+                  // à droite, la suivante de droite à gauche) sur 2, 3 puis 5 colonnes selon la largeur d'écran.
+                  // Le trait est plein entre deux diplômes obtenus, pointillé rouge vers le prochain objectif, gris ensuite.
+                  const ORDRE = ['premier-pas', 'regulier', 'polyvalent', 'studieux', 'assidu', 'marathonien', 'perfectionniste', 'infatigable', 'expert', 'pret']
+                  const chemin = ORDRE.map(id => badges.find(b => b.id === id)).filter(Boolean)
+                  const placer = C => chemin.map((_, i) => {
+                    const r = Math.floor(i / C), p = i % C
+                    return { r: r + 1, c: (r % 2 === 0 ? p : C - 1 - p) + 1, dir: i === chemin.length - 1 ? null : Math.floor((i + 1) / C) !== r ? 'bas' : r % 2 === 0 ? 'droite' : 'gauche' }
+                  })
+                  const DIR = {
+                    droite: 'left:100%;right:auto;top:50%;bottom:auto;width:var(--gx);height:0;border-top-width:3px;border-left-width:0;transform:translateY(-50%)',
+                    gauche: 'right:100%;left:auto;top:50%;bottom:auto;width:var(--gx);height:0;border-top-width:3px;border-left-width:0;transform:translateY(-50%)',
+                    bas: 'top:100%;bottom:auto;left:50%;right:auto;height:var(--gy);width:0;border-left-width:3px;border-top-width:0;transform:translateX(-50%)'
+                  }
+                  const css = [[2, ''], [3, '(min-width: 640px)'], [5, '(min-width: 1024px)']].map(([C, mq]) => {
+                    const regles = `.ch-grille{grid-template-columns:repeat(${C},minmax(0,1fr))}` + placer(C).map((p, i) => `.ch-${i}{grid-row:${p.r};grid-column:${p.c}}` + (p.dir ? `.ch-${i} .ch-lien{${DIR[p.dir]}}` : '')).join('')
+                    return mq ? `@media ${mq}{${regles}}` : regles
+                  }).join('')
+                  return (
+                    <>
+                      <style>{css}</style>
+                      <div className="ch-grille grid gap-x-6 gap-y-8" style={{ '--gx': '1.5rem', '--gy': '2rem' }}>
+                        {chemin.map((b, i) => {
+                          const suivant = chemin[i + 1]
+                          const lien = !suivant ? null : b.unlocked && suivant.unlocked ? 'border-solid border-red-500' : b.unlocked && prochain && suivant.id === prochain.id ? 'border-dashed border-red-300' : 'border-dashed border-slate-300'
+                          return (
+                            <div key={b.id} className={`ch-${i} relative flex`}>
+                              {lien && <span aria-hidden="true" className={`ch-lien absolute ${lien}`}></span>}
+                              {carte(b)}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )
+                })()}
               </div>
             </div>
           )})()}

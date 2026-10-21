@@ -851,8 +851,10 @@ function DashboardContent() {
             const pw = W - G - D, ph = H - HT - B
             const px = i => G + (points.length <= 1 ? pw / 2 : (i / (points.length - 1)) * pw)
             const py = n => HT + ((20 - n) / 20) * ph
-            // Moyenne glissante sur les 3 dernières notes, tracée en courbe lissée
-            const glissante = points.map((p, i) => { const s = points.slice(Math.max(0, i - 2), i + 1); return s.reduce((t, x) => t + x.n, 0) / s.length })
+            // Moyenne cumulée : chaque point = moyenne de toutes les notes de la période jusque-là,
+            // le dernier point est donc égal à la moyenne affichée en grand. Tracée en courbe lissée.
+            let cumul = 0
+            const glissante = points.map((p, i) => { cumul += p.n; return cumul / (i + 1) })
             const courbe = (() => {
               if (glissante.length < 2) return ''
               const pts = glissante.map((n, i) => [px(i), py(n)])
@@ -865,11 +867,8 @@ function DashboardContent() {
               return d
             })()
             const moyennePeriode = points.length ? points.reduce((t, p) => t + p.n, 0) / points.length : null
-            const tendance = (() => {
-              if (points.length < 4) return null
-              const der = points.slice(-3), av = points.slice(-6, -3)
-              return Math.round((der.reduce((t, p) => t + p.n, 0) / der.length - av.reduce((t, p) => t + p.n, 0) / av.length) * 10) / 10
-            })()
+            // Tendance : de combien la moyenne a bougé sur les 3 dernières notes (dernier point de la courbe moins celui d'il y a 3 notes)
+            const tendance = points.length < 4 ? null : Math.round((glissante[glissante.length - 1] - glissante[glissante.length - 4]) * 10) / 10
             const ticksX = points.length > 1 ? [...new Set([0, Math.round((points.length - 1) / 2), points.length - 1])] : points.length ? [0] : []
             const survol = statsSurvol != null && points[statsSurvol] ? statsSurvol : null
 
@@ -1073,7 +1072,7 @@ function DashboardContent() {
                         {[0, 5, 10, 15, 20].map(v => <text key={v} x={G - 8} y={py(v) + 4} textAnchor="end" fontSize="11" fontWeight="600" fill="#94a3b8">{v}</text>)}
                         {courbe && <path d={courbe} fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />}
                         {points.map((p, i) => {
-                          // Un point noir sur la courbe à chaque fois que la moyenne glissante change
+                          // Un point noir sur la courbe à chaque fois que la moyenne change
                           if (i > 0 && Math.round(glissante[i] * 10) === Math.round(glissante[i - 1] * 10)) return null
                           return <circle key={i} cx={px(i)} cy={py(glissante[i])} r={survol === i ? 7 : 5} fill="#0f172a" stroke="#fff" strokeWidth="2" style={{ cursor: 'pointer', transition: 'r 0.15s' }} onMouseEnter={() => setStatsSurvol(i)} onMouseLeave={() => setStatsSurvol(null)} onClick={() => setStatsSurvol(survol === i ? null : i)} />
                         })}

@@ -1072,18 +1072,20 @@ function DashboardContent() {
                         {[0, 5, 10, 15, 20].map(v => <line key={v} x1={G} x2={W - D} y1={py(v)} y2={py(v)} stroke={v === 0 ? '#e2e8f0' : '#f1f5f9'} />)}
                         {[0, 5, 10, 15, 20].map(v => <text key={v} x={G - 8} y={py(v) + 4} textAnchor="end" fontSize="11" fontWeight="600" fill="#94a3b8">{v}</text>)}
                         {courbe && <path d={courbe} fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />}
-                        {points.map((p, i) => (
-                          <circle key={i} cx={px(i)} cy={py(p.n)} r={survol === i ? 8 : i === points.length - 1 ? 7 : 5.5} fill={couleurType[p.type]} stroke="#fff" strokeWidth="2.5" style={{ cursor: 'pointer', transition: 'r 0.15s' }} onMouseEnter={() => setStatsSurvol(i)} onMouseLeave={() => setStatsSurvol(null)} onClick={() => setStatsSurvol(survol === i ? null : i)} />
-                        ))}
+                        {points.map((p, i) => {
+                          // Un point noir sur la courbe à chaque fois que la moyenne glissante change
+                          if (i > 0 && Math.round(glissante[i] * 10) === Math.round(glissante[i - 1] * 10)) return null
+                          return <circle key={i} cx={px(i)} cy={py(glissante[i])} r={survol === i ? 7 : 5} fill="#0f172a" stroke="#fff" strokeWidth="2" style={{ cursor: 'pointer', transition: 'r 0.15s' }} onMouseEnter={() => setStatsSurvol(i)} onMouseLeave={() => setStatsSurvol(null)} onClick={() => setStatsSurvol(survol === i ? null : i)} />
+                        })}
                         {ticksX.map(i => <text key={i} x={px(i)} y={H - 8} textAnchor={points.length === 1 ? 'middle' : i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fontSize="11" fontWeight="600" fill="#94a3b8">{fmtJour(points[i].date)}</text>)}
                       </svg>
                       {survol != null && (() => {
                         const p = points[survol]
                         const xPct = (px(survol) / W) * 100
                         return (
-                          <div className="absolute pointer-events-none bg-slate-900 text-white rounded-xl px-3 py-2 shadow-lg whitespace-nowrap" style={{ left: `${xPct}%`, top: `${(py(p.n) / H) * 100}%`, transform: `translate(-${Math.min(85, Math.max(15, xPct))}%, calc(-100% - 14px))` }}>
-                            <p className="text-[11px] font-semibold text-slate-400">{fmtJour(p.date)} · {labelType[p.type]}</p>
-                            <p className="text-sm font-black tabular-nums">{fmtNote(p.n)}/20</p>
+                          <div className="absolute pointer-events-none bg-slate-900 text-white rounded-xl px-3 py-2 shadow-lg whitespace-nowrap" style={{ left: `${xPct}%`, top: `${(py(glissante[survol]) / H) * 100}%`, transform: `translate(-${Math.min(85, Math.max(15, xPct))}%, calc(-100% - 14px))` }}>
+                            <p className="text-sm font-black tabular-nums">Moyenne {fmtNote(glissante[survol])}/20</p>
+                            <p className="text-[11px] font-semibold text-slate-400">{fmtJour(p.date)} · {labelType[p.type]} {fmtNote(p.n)}/20</p>
                           </div>
                         )
                       })()}

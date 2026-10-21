@@ -994,10 +994,7 @@ function DashboardContent() {
                   <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                   <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
                   <div className="w-full mt-auto pt-3">
-                    <div className="flex items-end justify-between gap-2 mb-1">
-                      <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
-                      <span className="text-[10px] font-bold text-slate-500 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
-                    </div>
+                    <p className="text-[10px] font-black text-red-600 leading-tight mb-1">{b.reste}</p>
                     <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
                   </div>
                 </div>

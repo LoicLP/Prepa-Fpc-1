@@ -1030,7 +1030,7 @@ function DashboardContent() {
                     <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200 text-center flex flex-col">
                       <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
                       <div className="flex-1 flex flex-col items-center justify-center pt-3">
-                      <p className={`text-5xl lg:text-7xl font-black tabular-nums leading-none ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-2xl lg:text-3xl text-slate-400">/20</span></> : '—'}</p>
+                      <p className={`text-5xl lg:text-7xl font-black tabular-nums leading-none ${meilleurExamen ? 'text-yellow-500' : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-2xl lg:text-3xl text-slate-400">/20</span></> : '—'}</p>
                       {!meilleurExamen && <p className="text-xs text-slate-400 font-semibold mt-1.5">Pas encore d&apos;examen blanc</p>}
                       </div>
                     </div>

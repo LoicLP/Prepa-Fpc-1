@@ -955,8 +955,7 @@ function DashboardContent() {
 
             return (
             <div>
-              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Mes stats</h1>
-              <p className="text-slate-500 font-medium text-sm mb-8">Vos notes, votre régularité et vos diplômes.</p>
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-8">Mes stats</h1>
 
               {historique.length === 0 ? (
                 <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center mb-8">

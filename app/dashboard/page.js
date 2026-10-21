@@ -1049,7 +1049,7 @@ function DashboardContent() {
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
                       <div>
                         <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
-                          <span className="text-4xl font-black text-slate-900 tabular-nums leading-none">{moyennePeriode != null ? fmtNote(moyennePeriode) : '—'}<span className="text-lg text-slate-400">/20</span></span>
+                          <span className="text-4xl font-black text-slate-900 tabular-nums leading-none">{moyennePeriode != null ? fmtNote(moyennePeriode) : '—'}<span className="text-slate-400">/20</span></span>
                           {tendance != null && (
                             <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${tendance > 0 ? 'bg-emerald-50 text-emerald-700' : tendance < 0 ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
                               {tendance > 0 ? <TrendingUp size={14} strokeWidth={2.2} /> : tendance < 0 ? <TrendingDown size={14} strokeWidth={2.2} /> : null}

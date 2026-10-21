@@ -1049,8 +1049,7 @@ function DashboardContent() {
                   <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mb-6">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
                       <div>
-                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Mes notes sur 20</h2>
-                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2">
+                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1">
                           <span className="text-4xl font-black text-slate-900 tabular-nums leading-none">{moyennePeriode != null ? fmtNote(moyennePeriode) : '—'}<span className="text-lg text-slate-400">/20</span></span>
                           {tendance != null && (
                             <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${tendance > 0 ? 'bg-emerald-50 text-emerald-700' : tendance < 0 ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
@@ -1058,9 +1057,7 @@ function DashboardContent() {
                               {tendance > 0 ? '+' : ''}{fmtNote(tendance)} sur vos 3 dernières notes
                             </span>
                           )}
-                        </div>
-                        <p className="text-xs text-slate-400 font-semibold mt-2">Moyenne de la période · {points.length} note{points.length > 1 ? 's' : ''}</p>
-                      </div>
+                        </div>                      </div>
                       <div className="flex flex-col items-start lg:items-end gap-2">
                         <div className="inline-flex bg-slate-100 rounded-xl p-1" role="group" aria-label="Période affichée">
                           {[['30', '30 jours'], ['90', '3 mois'], ['tout', 'Tout']].map(([v, l]) => (

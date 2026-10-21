@@ -1015,18 +1015,24 @@ function DashboardContent() {
                 <>
                   {/* ----- Chiffres clés : bandeau posé sur le fond, sans cartes ----- */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 mb-8">
-                    <div className="pr-4 lg:pr-6 text-center">
+                    <div className="pr-4 lg:pr-6 text-center flex flex-col">
                       <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Total exercices</p>
-                      <p className="text-5xl lg:text-7xl font-black text-slate-900 tabular-nums leading-none mt-3">{totalExos}</p>
+                      <div className="flex-1 flex items-center justify-center pt-3">
+                      <p className="text-5xl lg:text-7xl font-black text-slate-900 tabular-nums leading-none">{totalExos}</p>
+                      </div>
                     </div>
-                    <div className="pl-4 lg:px-6 border-l border-slate-200 text-center">
+                    <div className="pl-4 lg:px-6 border-l border-slate-200 text-center flex flex-col">
                       <p className="text-[11px] font-black uppercase tracking-widest text-blue-600">Temps total</p>
-                      <p className="text-5xl lg:text-7xl font-black text-slate-900 tabular-nums leading-none mt-3">{totalMin < 60 ? <>{totalMin}<span className="text-2xl lg:text-3xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-2xl lg:text-3xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>
+                      <div className="flex-1 flex items-center justify-center pt-3">
+                      <p className="text-5xl lg:text-7xl font-black text-slate-900 tabular-nums leading-none">{totalMin < 60 ? <>{totalMin}<span className="text-2xl lg:text-3xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-2xl lg:text-3xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>
+                      </div>
                     </div>
-                    <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200 text-center">
+                    <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200 text-center flex flex-col">
                       <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
-                      <p className={`text-5xl lg:text-7xl font-black tabular-nums leading-none mt-3 ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-2xl lg:text-3xl text-slate-400">/20</span></> : '—'}</p>
+                      <div className="flex-1 flex flex-col items-center justify-center pt-3">
+                      <p className={`text-5xl lg:text-7xl font-black tabular-nums leading-none ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-2xl lg:text-3xl text-slate-400">/20</span></> : '—'}</p>
                       {!meilleurExamen && <p className="text-xs text-slate-400 font-semibold mt-1.5">Pas encore d&apos;examen blanc</p>}
+                      </div>
                     </div>
                     <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>

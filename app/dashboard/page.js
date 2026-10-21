@@ -976,24 +976,25 @@ function DashboardContent() {
                 <>
                   {/* ----- Chiffres clés : bandeau posé sur le fond, sans cartes ----- */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 mb-8">
-                    <div className="pr-4 lg:pr-6">
+                    <div className="pr-4 lg:pr-6 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Total exercices</p>
                       <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalExos}</p>
                     </div>
-                    <div className="pl-4 lg:px-6 border-l border-slate-200">
+                    <div className="pl-4 lg:px-6 border-l border-slate-200 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-blue-600">Temps total</p>
-                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalMin < 60 ? <>{totalMin}<span className="text-xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>                    </div>
-                    <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200">
+                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalMin < 60 ? <>{totalMin}<span className="text-xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>
+                    </div>
+                    <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
                       <p className={`text-4xl font-black tabular-nums leading-none mt-2 ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-xl text-slate-400">/20</span></> : '—'}</p>
                       <p className="text-xs text-slate-400 font-semibold mt-1.5">{meilleurExamen ? `Examen blanc du ${fmtJour(meilleurExamen.created_at)}` : 'Pas encore d\'examen blanc'}</p>
                     </div>
-                    <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0">
+                    <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>
                       {prochain ? (
                         <>
                           <p className="text-xl font-black text-slate-900 leading-tight mt-2.5 truncate">{prochain.label}</p>
-                          <div className="h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
+                          <div className="h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden max-w-[200px] mx-auto"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
                           <p className="text-xs text-slate-400 font-semibold mt-1.5">{prochain.reste}</p>
                         </>
                       ) : (

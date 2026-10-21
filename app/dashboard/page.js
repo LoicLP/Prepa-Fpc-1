@@ -1090,9 +1090,7 @@ function DashboardContent() {
                         )
                       })()}
                       {points.length === 0 && <div className="absolute inset-0 grid place-items-center text-sm font-bold text-slate-400">Aucune note sur cette période</div>}
-                    </div>
-                    <p className="text-xs text-slate-400 font-semibold mt-3 flex items-center gap-2"><span className="inline-block w-5 h-[3px] bg-slate-900 rounded-full"></span>Moyenne glissante sur vos 3 dernières notes · survolez un point pour le détail</p>
-                  </section>
+                    </div>                  </section>
 
                   {/* ----- Par épreuve ----- */}
                   <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4">Par épreuve</h2>

@@ -917,12 +917,6 @@ function DashboardContent() {
             const prochain = badges.filter(b => !b.unlocked).sort((a, b) => (b.val / b.cible) - (a.val / a.cible))[0]
 
             // ----- Par épreuve -----
-            const parEpreuve = EPREUVES.map(e => {
-              const vals = notees.filter(h => h.type === e.type).map(sur20)
-              return { ...e, essais: vals.length, moyenne: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, derniere: vals.length ? vals[vals.length - 1] : null, serie: vals.slice(-8) }
-            })
-            const oral = historique.filter(h => h.type === 'Oral')
-            const dernierOral = oral.length ? oral.reduce((a, b) => new Date(a.created_at) > new Date(b.created_at) ? a : b) : null
             const repartition = [...EPREUVES, { type: 'Oral', label: 'Oral', couleur: '#10b981' }, { type: 'Spécifique', label: 'Entraînement ciblé', couleur: '#3b82f6' }]
               .map(e => ({ ...e, n: historique.filter(h => h.type === e.type).length })).filter(e => e.n > 0)
             const NOTIONS = ['Produit en croix', 'Pourcentages', 'Conversions & opérations', 'Équations et problèmes']
@@ -1080,7 +1074,7 @@ function DashboardContent() {
 
                   {/* ----- Par épreuve ----- */}
                   <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4">Par épreuve</h2>
-                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-4">
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-8">
                     <p className="text-sm font-bold text-slate-900 mb-3">Répartition de vos {totalExos} exercice{totalExos > 1 ? 's' : ''}</p>
                     <div className="flex h-3 rounded-full overflow-hidden gap-0.5">
                       {repartition.map(e => <span key={e.type} title={`${e.label} : ${e.n}`} style={{ width: `${(e.n / totalExos) * 100}%`, backgroundColor: e.couleur }}></span>)}
@@ -1089,42 +1083,6 @@ function DashboardContent() {
                       {repartition.map(e => <span key={e.type} className="text-xs font-semibold text-slate-600 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: e.couleur }}></span>{e.label} <b className="text-slate-900 tabular-nums">{e.n}</b></span>)}
                     </div>
                   </div>
-                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    {parEpreuve.map(e => (
-                      <div key={e.type} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className={`text-[11px] font-black px-2 py-0.5 rounded-md ${e.teinte}`}>{e.label}</span>
-                          <span className="text-xs text-slate-400 font-semibold">{e.essais} essai{e.essais > 1 ? 's' : ''}</span>
-                        </div>
-                        {e.moyenne != null ? (
-                          <>
-                            <p className={`text-3xl font-black mt-3 tabular-nums leading-none ${e.moyenne < 8 ? 'text-red-600' : 'text-slate-900'}`}>{fmtNote(e.moyenne)}<span className="text-base text-slate-400">/20</span></p>
-                            <p className="text-xs text-slate-400 font-semibold mt-1.5">Moyenne · dernière note {fmtNote(e.derniere)}/20</p>
-                            <svg viewBox="0 0 120 40" className="w-full h-10 mt-auto pt-3" aria-hidden="true">
-                              <line x1="0" x2="120" y1={38 - (8 / 20) * 34} y2={38 - (8 / 20) * 34} stroke="#fecaca" strokeDasharray="3 3" />
-                              {e.serie.length > 1 && <polyline fill="none" stroke={e.couleur} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points={e.serie.map((v, i) => `${(i / (e.serie.length - 1)) * 114 + 3},${38 - (v / 20) * 34}`).join(' ')} />}
-                              <circle cx={e.serie.length > 1 ? 117 : 60} cy={38 - (e.serie[e.serie.length - 1] / 20) * 34} r="3" fill={e.couleur} />
-                            </svg>
-                          </>
-                        ) : (
-                          <div className="flex-1 flex flex-col justify-center mt-3">
-                            <p className="text-sm font-bold text-slate-400">Pas encore de note</p>
-                            <a href={e.href} className="text-xs font-bold text-red-600 hover:underline mt-1">Faire un premier essai</a>
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-[11px] font-black px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600">Oral</span>
-                        <span className="text-xs text-slate-400 font-semibold">non noté</span>
-                      </div>
-                      <p className="text-3xl font-black text-slate-900 mt-3 tabular-nums leading-none">{oral.length}<span className="text-base text-slate-400"> séance{oral.length > 1 ? 's' : ''}</span></p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{dernierOral ? `Dernière le ${fmtJour(dernierOral.created_at)}` : 'Pas encore de séance'}</p>
-                      {!dernierOral && <a href="/oral" className="text-xs font-bold text-red-600 hover:underline mt-auto pt-3">Préparer mon oral</a>}
-                    </div>
-                  </div>
-
                   {/* ----- Régularité + entraînement ciblé ----- */}
                   <div className="grid lg:grid-cols-5 gap-4 mb-8">
                     <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">

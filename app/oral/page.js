@@ -172,6 +172,8 @@ export default function OralPage() {
 
   async function handleUpload(e) {
     const file = e.target.files[0]
+    // Vider le champ : sinon, après une erreur, redéposer le même fichier ne déclenche plus rien
+    e.target.value = ''
     if (!file) return
     if (file.type !== 'application/pdf') { setError('Seuls les fichiers PDF sont acceptés.'); return }
     if (file.size > 10 * 1024 * 1024) { setError('Le fichier ne doit pas dépasser 10 Mo.'); return }

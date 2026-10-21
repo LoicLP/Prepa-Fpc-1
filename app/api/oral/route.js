@@ -35,15 +35,24 @@ export async function POST(request) {
     const systemInstruction = BASE_ORAL + '\n\n' + SYSTEM_ORAL
     const userPrompt = PROMPT_ORAL + '\n\n' + FORMAT_SORTIE_ORAL
 
-    const text = await callClaudeWithPDF(systemInstruction, userPrompt, pdfBase64, { temperature: 0.9, maxTokens: 8000 })
+    // Réponse courte (10 questions, 3 champs chacune) : rapide, et loin de la limite de tokens.
+    // L'ancienne demande (points clés, erreurs, exemples) dépassait 8 000 tokens : JSON coupé, puis erreur 500.
+    const text = await callClaudeWithPDF(systemInstruction, userPrompt, pdfBase64, { temperature: 0.9, maxTokens: 3000 })
 
     let raw
     try {
       raw = JSON.parse(text)
     } catch {
-      const jsonMatch = text.match(/\{[\s\S]*\}/)
-      if (!jsonMatch) return NextResponse.json({ error: 'Erreur de format.' }, { status: 500 })
-      raw = JSON.parse(jsonMatch[0])
+      try {
+        const jsonMatch = text.match(/\{[\s\S]*\}/)
+        raw = jsonMatch ? JSON.parse(jsonMatch[0]) : null
+      } catch {
+        raw = null
+      }
+    }
+    if (!raw || !Array.isArray(raw.questions) || raw.questions.length === 0) {
+      console.error('Oral : réponse illisible', text.slice(0, 300))
+      return NextResponse.json({ error: 'La préparation des questions a échoué. Réessayez dans quelques secondes.' }, { status: 502 })
     }
 
     // Mapper vers le format attendu par le front (numero→id, categorie→category)
@@ -56,6 +65,6 @@ export async function POST(request) {
     return NextResponse.json({ questions })
   } catch (error) {
     console.error('Server error:', error)
-    return NextResponse.json({ error: 'Erreur serveur : ' + error.message }, { status: 500 })
+    return NextResponse.json({ error: 'La préparation des questions a échoué. Réessayez dans quelques secondes.' }, { status: 500 })
   }
 }

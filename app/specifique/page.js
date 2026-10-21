@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { supabase } from '../../lib/supabase'
+import { entetesAuth } from '../../lib/entetes-auth'
 import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, Target, BookOpen, Sparkles, ClipboardCheck, Sigma, Percent, ArrowLeftRight, Equal, ArrowRight } from 'lucide-react'
 
 const sidebarItems = [
@@ -125,10 +126,13 @@ export default function SpecifiquePage() {
     try {
       const res = await fetch('/api/specifique', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await entetesAuth({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ action: 'generer', famille: famille.id })
       })
       const data = await res.json()
+      // Session expirée → reconnexion ; essai terminé (contrôlé par le serveur) → écran dédié
+      if (res.status === 401) { window.location.assign('/auth'); return }
+      if (res.status === 403) { setLoadingFamille(null); setStep('choix'); setShowAccessBlock(true); return }
       if (!res.ok || data.error) {
         setError(data.error || 'Erreur lors de la génération.')
         setLoadingFamille(null)

@@ -128,9 +128,8 @@ function DashboardContent() {
   const [calMonth, setCalMonth] = useState(new Date().getMonth())
   const [calYear, setCalYear] = useState(new Date().getFullYear())
   const [selectedDay, setSelectedDay] = useState(null)
-  // Mes stats : période du graphique, épreuves masquées dans la légende, point survolé
+  // Mes stats : période du graphique, point survolé
   const [statsPeriode, setStatsPeriode] = useState('tout')
-  const [statsMasques, setStatsMasques] = useState([])
   const [statsSurvol, setStatsSurvol] = useState(null)
 
   async function fetchHistorique(userId) {
@@ -847,7 +846,7 @@ function DashboardContent() {
 
             // ----- Graphique des notes -----
             const depuis = statsPeriode === 'tout' ? null : Date.now() - (statsPeriode === '30' ? 30 : 90) * JOUR
-            const points = notees.filter(h => !statsMasques.includes(h.type) && (!depuis || new Date(h.created_at) >= depuis)).map(h => ({ n: sur20(h), type: h.type, date: h.created_at }))
+            const points = notees.filter(h => !depuis || new Date(h.created_at) >= depuis).map(h => ({ n: sur20(h), type: h.type, date: h.created_at }))
             const W = 760, H = 260, G = 38, D = 18, HT = 18, B = 30
             const pw = W - G - D, ph = H - HT - B
             const px = i => G + (points.length <= 1 ? pw / 2 : (i / (points.length - 1)) * pw)
@@ -1057,22 +1056,13 @@ function DashboardContent() {
                               {tendance > 0 ? '+' : ''}{fmtNote(tendance)} sur vos 3 dernières notes
                             </span>
                           )}
-                        </div>                      </div>
+                        </div>
+                      </div>
                       <div className="flex flex-col items-start lg:items-end gap-2">
                         <div className="inline-flex bg-slate-100 rounded-xl p-1" role="group" aria-label="Période affichée">
                           {[['30', '30 jours'], ['90', '3 mois'], ['tout', 'Tout']].map(([v, l]) => (
                             <button key={v} type="button" aria-pressed={statsPeriode === v} onClick={() => { setStatsPeriode(v); setStatsSurvol(null) }} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${statsPeriode === v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>{l}</button>
                           ))}
-                        </div>
-                        <div className="flex flex-wrap gap-1.5">
-                          {EPREUVES.map(e => {
-                            const off = statsMasques.includes(e.type)
-                            return (
-                              <button key={e.type} type="button" aria-pressed={!off} onClick={() => { setStatsMasques(m => off ? m.filter(t => t !== e.type) : [...m, e.type]); setStatsSurvol(null) }} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold transition cursor-pointer ${off ? 'border-slate-200 text-slate-400 bg-white line-through' : 'border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100'}`}>
-                                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: off ? '#cbd5e1' : e.couleur }}></span>{e.label}
-                              </button>
-                            )
-                          })}
                         </div>
                       </div>
                     </div>

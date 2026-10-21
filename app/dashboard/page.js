@@ -987,7 +987,7 @@ function DashboardContent() {
                     <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
                       <p className={`text-4xl font-black tabular-nums leading-none mt-2 ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-xl text-slate-400">/20</span></> : '—'}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{meilleurExamen ? `Examen blanc du ${fmtJour(meilleurExamen.created_at)}` : 'Pas encore d\'examen blanc'}</p>
+                      {!meilleurExamen && <p className="text-xs text-slate-400 font-semibold mt-1.5">Pas encore d&apos;examen blanc</p>}
                     </div>
                     <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>

@@ -981,9 +981,12 @@ function DashboardContent() {
                   </span>
                 </div>
               )
-              // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
+              // Diplôme à obtenir : icône en couleur avec cadenas, ce qu'il reste à faire en évidence, et fond rempli
+              // de rouge clair depuis la gauche selon la progression (trait plus marqué à la limite)
+              const pct = Math.round((b.prog / b.cible) * 100)
+              const remplissage = pct > 0 ? { background: `linear-gradient(to right, #fee2e2 calc(${pct}% - 2px), #fca5a5 calc(${pct}% - 2px), #fca5a5 ${pct}%, #ffffff ${pct}%)` } : undefined
               return (
-                <div key={b.id} className="w-full relative rounded-2xl border border-slate-200 hover:border-red-200 bg-white p-4 flex flex-col items-center text-center transition">
+                <div key={b.id} className="w-full relative rounded-2xl border border-slate-200 hover:border-red-200 bg-white p-4 flex flex-col items-center text-center transition" style={remplissage}>
                   <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
                     <BIcon size={22} strokeWidth={1.8} />
                     <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-slate-900 text-white grid place-items-center ring-2 ring-white" title="À débloquer"><Lock size={10} strokeWidth={2.5} /></span>
@@ -991,9 +994,9 @@ function DashboardContent() {
                   <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                   <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
                   <div className="w-full mt-auto pt-3">
-                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                    <div className="flex items-end justify-between gap-2 mb-1">
                       <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
-                      <span className="text-[10px] font-black text-white bg-red-600 rounded-md px-1.5 py-0.5 tabular-nums shrink-0 whitespace-nowrap" title={`${b.prog}/${b.cible}`}>{Math.round((1 - b.prog / b.cible) * 100)} % restant</span>
+                      <span className="text-[10px] font-bold text-slate-500 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
                     </div>
                     <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
                   </div>

@@ -417,7 +417,7 @@ export default function OralPage() {
                   </div>
 
                   <h2 className="text-2xl sm:text-4xl font-black tracking-tight text-slate-900 mb-2">Votre CV, <span className="text-emerald-600">vos questions</span>.</h2>
-                  <p className="text-[13px] sm:text-[15px] text-slate-500 font-semibold mb-6 sm:mb-8 max-w-lg">Déposez votre CV : notre IA prépare 10 questions de jury personnalisées sur votre parcours.</p>
+                  <p className="text-[13px] sm:text-[15px] text-slate-500 font-semibold mb-6 sm:mb-8 max-w-lg">Déposez votre CV : nous préparons 10 questions de jury personnalisées sur votre parcours.</p>
 
                   {error && <div className="bg-red-50 border border-red-200 text-red-700 font-bold text-sm p-4 rounded-xl mb-5 text-center">{error}</div>}
 

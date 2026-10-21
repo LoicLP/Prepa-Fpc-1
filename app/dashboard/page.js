@@ -1035,9 +1035,8 @@ function DashboardContent() {
                       </div>
                     </div>
                     <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0 text-center">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>
                       {prochain ? (
-                        <div className="mt-3 max-w-[220px] mx-auto flex">{carteDiplome(prochain)}</div>
+                        <div className="max-w-[220px] mx-auto flex">{carteDiplome(prochain)}</div>
                       ) : (
                         <>
                           <p className="text-xl font-black text-slate-900 leading-tight mt-2.5">Tous obtenus</p>

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy } from 'lucide-react'
+import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock } from 'lucide-react'
 
 
 const menuItems = [
@@ -900,21 +900,31 @@ function DashboardContent() {
             // ----- Diplômes -----
             const serieRef = Math.max(streak, meilleureSerie)
             const has2020 = historique.some(h => h.note != null && h.note_max && h.note >= h.note_max)
-            const typesFaits = ['Maths', 'Rédaction', 'Oral'].filter(t => historique.some(h => h.type === t)).length
+            const typesManquants = ['Maths', 'Rédaction', 'Oral'].filter(t => !historique.some(h => h.type === t))
+            const UNITES = { jours: ['jour', 'jours'], exercices: ['exercice', 'exercices'] }
+            // val : ce qui débloque le diplôme (record pour les séries) ; prog : où en est le candidat pour l'obtenir
+            // (pour les séries, la série en cours, puisqu'il faut enchaîner les jours à partir de maintenant)
             const badges = [
-              { id: 'premier-pas', label: 'Premier pas', desc: '1er exercice terminé', Icon: Footprints, val: totalExos, cible: 1 },
-              { id: 'regulier', label: 'Régulier', desc: '3 jours d\'affilée', Icon: CalendarCheck, val: serieRef, cible: 3, unite: 'jours' },
-              { id: 'assidu', label: 'Assidu', desc: '5 jours d\'affilée', Icon: Dumbbell, val: serieRef, cible: 5, unite: 'jours' },
-              { id: 'marathonien', label: 'Marathonien', desc: '7 jours d\'affilée', Icon: Medal, val: serieRef, cible: 7, unite: 'jours' },
+              { id: 'premier-pas', label: 'Premier pas', desc: '1er exercice terminé', Icon: Footprints, val: totalExos, cible: 1, unite: 'exercices' },
+              { id: 'regulier', label: 'Régulier', desc: '3 jours d\'affilée', Icon: CalendarCheck, val: serieRef, prog: streak, cible: 3, unite: 'jours' },
+              { id: 'assidu', label: 'Assidu', desc: '5 jours d\'affilée', Icon: Dumbbell, val: serieRef, prog: streak, cible: 5, unite: 'jours' },
+              { id: 'marathonien', label: 'Marathonien', desc: '7 jours d\'affilée', Icon: Medal, val: serieRef, prog: streak, cible: 7, unite: 'jours' },
               { id: 'studieux', label: 'Studieux', desc: '10 exercices terminés', Icon: BookOpen, val: totalExos, cible: 10, unite: 'exercices' },
-              { id: 'infatigable', label: 'Infatigable', desc: '14 jours d\'affilée', Icon: Flame, val: serieRef, cible: 14, unite: 'jours' },
+              { id: 'infatigable', label: 'Infatigable', desc: '14 jours d\'affilée', Icon: Flame, val: serieRef, prog: streak, cible: 14, unite: 'jours' },
               { id: 'expert', label: 'Expert', desc: '50 exercices terminés', Icon: GraduationCap, val: totalExos, cible: 50, unite: 'exercices' },
               { id: 'perfectionniste', label: 'Perfectionniste', desc: 'Obtenir 20/20', Icon: Star, val: has2020 ? 1 : 0, cible: 1 },
-              { id: 'polyvalent', label: 'Polyvalent', desc: 'Maths + Rédaction + Oral', Icon: Puzzle, val: typesFaits, cible: 3, unite: 'épreuves' },
-              { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', Icon: Trophy, val: serieRef, cible: 30, unite: 'jours' }
-            ].map(b => ({ ...b, unlocked: b.val >= b.cible }))
+              { id: 'polyvalent', label: 'Polyvalent', desc: 'Maths + Rédaction + Oral', Icon: Puzzle, val: 3 - typesManquants.length, cible: 3 },
+              { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', Icon: Trophy, val: serieRef, prog: streak, cible: 30, unite: 'jours' }
+            ].map(b => {
+              const prog = Math.min(b.cible, b.prog ?? b.val)
+              const r = b.cible - prog
+              const reste = b.id === 'perfectionniste' ? 'Visez un 20/20'
+                : b.id === 'polyvalent' ? `Manque : ${typesManquants.join(', ')}`
+                : `Plus que ${r} ${UNITES[b.unite][r > 1 ? 1 : 0]}`
+              return { ...b, unlocked: b.val >= b.cible, prog, reste }
+            })
             const unlockedCount = badges.filter(b => b.unlocked).length
-            const prochain = badges.filter(b => !b.unlocked).sort((a, b) => (b.val / b.cible) - (a.val / a.cible))[0]
+            const prochain = badges.filter(b => !b.unlocked).sort((a, b) => (b.prog / b.cible) - (a.prog / a.cible))[0]
 
             // ----- Par épreuve -----
             const repartition = [...EPREUVES, { type: 'Oral', label: 'Oral', couleur: '#10b981' }, { type: 'Spécifique', label: 'Entraînement ciblé', couleur: '#3b82f6' }]
@@ -1060,8 +1070,8 @@ function DashboardContent() {
                       {prochain ? (
                         <>
                           <p className="text-base font-black text-slate-900 mt-4 leading-none">{prochain.label}</p>
-                          <div className="h-1.5 bg-slate-100 rounded-full mt-2.5 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, (prochain.val / prochain.cible) * 100)}%` }}></div></div>
-                          <p className="text-xs text-slate-400 font-semibold mt-1.5 tabular-nums">Prochain diplôme · {Math.min(prochain.val, prochain.cible)}/{prochain.cible}{prochain.unite ? ` ${prochain.unite}` : ''}</p>
+                          <div className="h-1.5 bg-slate-100 rounded-full mt-2.5 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
+                          <p className="text-xs text-slate-400 font-semibold mt-1.5">Prochain diplôme · {prochain.reste.charAt(0).toLowerCase() + prochain.reste.slice(1)}</p>
                         </>
                       ) : (
                         <>
@@ -1124,22 +1134,35 @@ function DashboardContent() {
                   <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Diplômes</h2>
                   <span className="text-xs text-slate-400 font-semibold">{unlockedCount}/{badges.length} débloqués</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-x-3 gap-y-5">
                   {badges.map(b => {
                     const BIcon = b.Icon
-                    return (
-                      <div key={b.id} className={`rounded-2xl border p-4 flex flex-col items-center text-center ${b.unlocked ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-50 border-slate-200/70'}`}>
-                        <span className={`w-12 h-12 rounded-full grid place-items-center mb-2.5 ${b.unlocked ? 'bg-red-600 text-white shadow-sm shadow-red-200' : 'bg-white border border-dashed border-slate-300 text-slate-300'}`}><BIcon size={22} strokeWidth={1.8} /></span>
-                        <p className={`text-xs font-black leading-tight ${b.unlocked ? 'text-slate-900' : 'text-slate-500'}`}>{b.label}</p>
+                    if (b.unlocked) return (
+                      <div key={b.id} className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4 flex flex-col items-center text-center">
+                        <span className="w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-600 text-white shadow-sm shadow-red-200"><BIcon size={22} strokeWidth={1.8} /></span>
+                        <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
                         <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
-                        {b.unlocked ? (
-                          <span className="mt-2.5 text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Débloqué</span>
-                        ) : (
-                          <div className="w-full mt-2.5">
-                            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden"><div className="h-full bg-red-400 rounded-full" style={{ width: `${Math.min(100, (b.val / b.cible) * 100)}%` }}></div></div>
-                            <p className="text-[10px] text-slate-400 font-bold mt-1 tabular-nums">{Math.min(b.val, b.cible)}/{b.cible}{b.unite ? ` ${b.unite}` : ''}</p>
+                        <span className="mt-auto pt-3"><span className="inline-block text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Débloqué</span></span>
+                      </div>
+                    )
+                    // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
+                    const estProchain = prochain && prochain.id === b.id
+                    return (
+                      <div key={b.id} className={`relative rounded-2xl border bg-white p-4 flex flex-col items-center text-center transition ${estProchain ? 'border-red-300 ring-4 ring-red-50 shadow-sm' : 'border-slate-200 hover:border-red-200'}`}>
+                        {estProchain && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-full">Prochain objectif</span>}
+                        <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
+                          <BIcon size={22} strokeWidth={1.8} />
+                          <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-slate-900 text-white grid place-items-center ring-2 ring-white" title="À débloquer"><Lock size={10} strokeWidth={2.5} /></span>
+                        </span>
+                        <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
+                        <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
+                        <div className="w-full mt-auto pt-3">
+                          <div className="flex items-end justify-between gap-2 mb-1">
+                            <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
+                            <span className="text-[10px] font-bold text-slate-400 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
                           </div>
-                        )}
+                          <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
+                        </div>
                       </div>
                     )
                   })}

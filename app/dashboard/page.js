@@ -1167,10 +1167,8 @@ function DashboardContent() {
                       </div>
                     )
                     // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
-                    const estProchain = prochain && prochain.id === b.id
                     return (
-                      <div key={b.id} className={`w-full relative rounded-2xl border bg-white p-4 flex flex-col items-center text-center transition ${estProchain ? 'border-red-300 ring-4 ring-red-50 shadow-sm' : 'border-slate-200 hover:border-red-200'}`}>
-                        {estProchain && <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-black uppercase tracking-wider bg-red-600 text-white px-2 py-0.5 rounded-full">Prochain objectif</span>}
+                      <div key={b.id} className="w-full relative rounded-2xl border border-slate-200 hover:border-red-200 bg-white p-4 flex flex-col items-center text-center transition">
                         <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
                           <BIcon size={22} strokeWidth={1.8} />
                           <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-slate-900 text-white grid place-items-center ring-2 ring-white" title="À débloquer"><Lock size={10} strokeWidth={2.5} /></span>
@@ -1190,7 +1188,7 @@ function DashboardContent() {
 
                   // Chemin des diplômes, du plus simple au plus exigeant : grille en serpentin (une ligne de gauche
                   // à droite, la suivante de droite à gauche) sur 2, 3 puis 5 colonnes selon la largeur d'écran.
-                  // Le trait est plein entre deux diplômes obtenus, pointillé rouge vers le prochain objectif, gris ensuite.
+                  // Le trait est plein entre deux diplômes obtenus, pointillé gris ensuite.
                   const ORDRE = ['premier-pas', 'regulier', 'polyvalent', 'studieux', 'assidu', 'marathonien', 'perfectionniste', 'infatigable', 'expert', 'pret']
                   const chemin = ORDRE.map(id => badges.find(b => b.id === id)).filter(Boolean)
                   const placer = C => chemin.map((_, i) => {
@@ -1212,7 +1210,7 @@ function DashboardContent() {
                       <div className="ch-grille grid gap-x-6 gap-y-8" style={{ '--gx': '1.5rem', '--gy': '2rem' }}>
                         {chemin.map((b, i) => {
                           const suivant = chemin[i + 1]
-                          const lien = !suivant ? null : b.unlocked && suivant.unlocked ? 'border-solid border-red-500' : b.unlocked && prochain && suivant.id === prochain.id ? 'border-dashed border-red-300' : 'border-dashed border-slate-300'
+                          const lien = !suivant ? null : b.unlocked && suivant.unlocked ? 'border-solid border-red-500' : 'border-dashed border-slate-300'
                           return (
                             <div key={b.id} className={`ch-${i} relative flex`}>
                               {lien && <span aria-hidden="true" className={`ch-lien absolute ${lien}`}></span>}

@@ -3,11 +3,8 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp } from 'lucide-react'
+import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy } from 'lucide-react'
 
-import { Bar, Doughnut, Line } from 'react-chartjs-2'
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend, Filler } from 'chart.js'
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
 const menuItems = [
   { id: 'dashboard', label: 'Accueil', icon: LayoutDashboard },
@@ -131,6 +128,10 @@ function DashboardContent() {
   const [calMonth, setCalMonth] = useState(new Date().getMonth())
   const [calYear, setCalYear] = useState(new Date().getFullYear())
   const [selectedDay, setSelectedDay] = useState(null)
+  // Mes stats : période du graphique, épreuves masquées dans la légende, point survolé
+  const [statsPeriode, setStatsPeriode] = useState('tout')
+  const [statsMasques, setStatsMasques] = useState([])
+  const [statsSurvol, setStatsSurvol] = useState(null)
 
   async function fetchHistorique(userId) {
     const { data } = await supabase
@@ -828,68 +829,137 @@ function DashboardContent() {
 
           {/* ============ MES STATS ============ */}
           {page === 'progression' && (() => {
-            // Exercices par jour (14 derniers jours)
-            const dailyData = (() => {
-              const days = []
-              for (let i = 13; i >= 0; i--) {
-                const d = new Date()
-                d.setDate(d.getDate() - i)
-                d.setHours(0, 0, 0, 0)
-                const next = new Date(d)
-                next.setDate(next.getDate() + 1)
-                const count = historique.filter(h => { const hd = new Date(h.created_at); return hd >= d && hd < next }).length
-                days.push({ label: `${d.getDate()}/${d.getMonth() + 1}`, count })
+            const JOUR = 86400000
+            const fmtNote = n => (Math.round(n * 10) / 10).toString().replace('.', ',')
+            const fmtDuree = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)}h${m % 60 ? String(m % 60).padStart(2, '0') : ''}`
+            const fmtJour = d => new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' })
+            const debutJour = (d = new Date()) => { const x = new Date(d); x.setHours(0, 0, 0, 0); return x }
+
+            // Épreuves notées sur 20 (l'entraînement ciblé est noté sur 10 et suivi à part, l'oral n'est pas noté)
+            const EPREUVES = [
+              { type: 'Maths', label: 'Maths', couleur: '#ef4444', teinte: 'bg-red-50 text-red-600', href: '/maths' },
+              { type: 'Rédaction', label: 'Rédaction', couleur: '#8b5cf6', teinte: 'bg-purple-50 text-purple-600', href: '/redaction' },
+              { type: 'Examen', label: 'Examen blanc', couleur: '#eab308', teinte: 'bg-yellow-50 text-yellow-700', href: '/examen' }
+            ]
+            const couleurType = Object.fromEntries(EPREUVES.map(e => [e.type, e.couleur]))
+            const labelType = Object.fromEntries(EPREUVES.map(e => [e.type, e.label]))
+            const sur20 = h => (h.note / h.note_max) * 20
+            const notees = historique.filter(h => h.note != null && h.note_max && couleurType[h.type]).sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+
+            // ----- Graphique des notes -----
+            const depuis = statsPeriode === 'tout' ? null : Date.now() - (statsPeriode === '30' ? 30 : 90) * JOUR
+            const points = notees.filter(h => !statsMasques.includes(h.type) && (!depuis || new Date(h.created_at) >= depuis)).map(h => ({ n: sur20(h), type: h.type, date: h.created_at }))
+            const W = 760, H = 260, G = 38, D = 18, HT = 18, B = 30
+            const pw = W - G - D, ph = H - HT - B
+            const px = i => G + (points.length <= 1 ? pw / 2 : (i / (points.length - 1)) * pw)
+            const py = n => HT + ((20 - n) / 20) * ph
+            // Moyenne glissante sur les 3 dernières notes, tracée en courbe lissée
+            const glissante = points.map((p, i) => { const s = points.slice(Math.max(0, i - 2), i + 1); return s.reduce((t, x) => t + x.n, 0) / s.length })
+            const courbe = (() => {
+              if (glissante.length < 2) return ''
+              const pts = glissante.map((n, i) => [px(i), py(n)])
+              const r = v => Math.round(v * 10) / 10
+              let d = `M ${r(pts[0][0])} ${r(pts[0][1])}`
+              for (let i = 0; i < pts.length - 1; i++) {
+                const p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2
+                d += ` C ${r(p1[0] + (p2[0] - p0[0]) / 6)} ${r(p1[1] + (p2[1] - p0[1]) / 6)}, ${r(p2[0] - (p3[0] - p1[0]) / 6)} ${r(p2[1] - (p3[1] - p1[1]) / 6)}, ${r(p2[0])} ${r(p2[1])}`
               }
-              return days
+              return d
+            })()
+            const moyennePeriode = points.length ? points.reduce((t, p) => t + p.n, 0) / points.length : null
+            const tendance = (() => {
+              if (points.length < 4) return null
+              const der = points.slice(-3), av = points.slice(-6, -3)
+              return Math.round((der.reduce((t, p) => t + p.n, 0) / der.length - av.reduce((t, p) => t + p.n, 0) / av.length) * 10) / 10
+            })()
+            const ticksX = points.length > 1 ? [...new Set([0, Math.round((points.length - 1) / 2), points.length - 1])] : points.length ? [0] : []
+            const survol = statsSurvol != null && points[statsSurvol] ? statsSurvol : null
+
+            // ----- Chiffres clés -----
+            const totalExos = historique.length
+            const totalMin = historique.reduce((s, h) => s + (h.duration_minutes || 0), 0)
+            const lundi = (() => { const d = debutJour(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d })()
+            const minSemaine = historique.filter(h => new Date(h.created_at) >= lundi).reduce((s, h) => s + (h.duration_minutes || 0), 0)
+            const semaines = Array.from({ length: 8 }, (_, i) => {
+              const deb = new Date(lundi); deb.setDate(deb.getDate() - (7 - i) * 7)
+              const fin = new Date(deb); fin.setDate(fin.getDate() + 7)
+              return historique.filter(h => { const d = new Date(h.created_at); return d >= deb && d < fin }).length
+            })
+            const maxSem = Math.max(1, ...semaines)
+            const parJour = {}
+            historique.forEach(h => { const k = debutJour(new Date(h.created_at)).getTime(); parJour[k] = (parJour[k] || 0) + 1 })
+            const septJours = Array.from({ length: 7 }, (_, i) => { const d = debutJour(); d.setDate(d.getDate() - (6 - i)); return { lettre: ['D', 'L', 'M', 'M', 'J', 'V', 'S'][d.getDay()], actif: !!parJour[d.getTime()] } })
+            // Meilleure série de jours d'affilée (les diplômes de régularité restent acquis même si la série s'arrête)
+            const meilleureSerie = (() => {
+              const jours = Object.keys(parJour).map(Number).sort((a, b) => a - b)
+              let best = 0, cur = 0, prev = null
+              for (const x of jours) { cur = prev != null && Math.round((x - prev) / JOUR) === 1 ? cur + 1 : 1; best = Math.max(best, cur); prev = x }
+              return best
             })()
 
-            // Répartition par type
-            const typeCount = {}
-            historique.forEach(h => { typeCount[h.type || 'Autre'] = (typeCount[h.type || 'Autre'] || 0) + 1 })
-            const typeLabels = Object.keys(typeCount)
-            const typeValues = Object.values(typeCount)
-            const typeColors = { Maths: '#ef4444', 'Rédaction': '#8b5cf6', Examen: '#eab308', Oral: '#10b981', Spécifique: '#3b82f6', Autre: '#94a3b8' }
+            // ----- Diplômes -----
+            const serieRef = Math.max(streak, meilleureSerie)
+            const has2020 = historique.some(h => h.note != null && h.note_max && h.note >= h.note_max)
+            const typesFaits = ['Maths', 'Rédaction', 'Oral'].filter(t => historique.some(h => h.type === t)).length
+            const badges = [
+              { id: 'premier-pas', label: 'Premier pas', desc: '1er exercice terminé', Icon: Footprints, val: totalExos, cible: 1 },
+              { id: 'regulier', label: 'Régulier', desc: '3 jours d\'affilée', Icon: CalendarCheck, val: serieRef, cible: 3, unite: 'jours' },
+              { id: 'assidu', label: 'Assidu', desc: '5 jours d\'affilée', Icon: Dumbbell, val: serieRef, cible: 5, unite: 'jours' },
+              { id: 'marathonien', label: 'Marathonien', desc: '7 jours d\'affilée', Icon: Medal, val: serieRef, cible: 7, unite: 'jours' },
+              { id: 'studieux', label: 'Studieux', desc: '10 exercices terminés', Icon: BookOpen, val: totalExos, cible: 10, unite: 'exercices' },
+              { id: 'infatigable', label: 'Infatigable', desc: '14 jours d\'affilée', Icon: Flame, val: serieRef, cible: 14, unite: 'jours' },
+              { id: 'expert', label: 'Expert', desc: '50 exercices terminés', Icon: GraduationCap, val: totalExos, cible: 50, unite: 'exercices' },
+              { id: 'perfectionniste', label: 'Perfectionniste', desc: 'Obtenir 20/20', Icon: Star, val: has2020 ? 1 : 0, cible: 1 },
+              { id: 'polyvalent', label: 'Polyvalent', desc: 'Maths + Rédaction + Oral', Icon: Puzzle, val: typesFaits, cible: 3, unite: 'épreuves' },
+              { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', Icon: Trophy, val: serieRef, cible: 30, unite: 'jours' }
+            ].map(b => ({ ...b, unlocked: b.val >= b.cible }))
+            const unlockedCount = badges.filter(b => b.unlocked).length
+            const prochain = badges.filter(b => !b.unlocked).sort((a, b) => (b.val / b.cible) - (a.val / a.cible))[0]
 
-            // Évolution de la moyenne (par exercice noté, chronologique) — exclure Spécifique
-            const notesChron = [...historique].filter(h => h.note != null && h.note_max && h.type !== 'Spécifique').sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
-            const moyenneEvolution = notesChron.map((h, i) => {
-              const slice = notesChron.slice(0, i + 1)
-              const moy = slice.reduce((sum, x) => sum + (x.note / x.note_max) * 20, 0) / slice.length
-              return { label: new Date(h.created_at).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }), moy: parseFloat(moy.toFixed(1)) }
+            // ----- Par épreuve -----
+            const parEpreuve = EPREUVES.map(e => {
+              const vals = notees.filter(h => h.type === e.type).map(sur20)
+              return { ...e, essais: vals.length, moyenne: vals.length ? vals.reduce((a, b) => a + b, 0) / vals.length : null, derniere: vals.length ? vals[vals.length - 1] : null, serie: vals.slice(-8) }
+            })
+            const oral = historique.filter(h => h.type === 'Oral')
+            const dernierOral = oral.length ? oral.reduce((a, b) => new Date(a.created_at) > new Date(b.created_at) ? a : b) : null
+            const repartition = [...EPREUVES, { type: 'Oral', label: 'Oral', couleur: '#10b981' }, { type: 'Spécifique', label: 'Entraînement ciblé', couleur: '#3b82f6' }]
+              .map(e => ({ ...e, n: historique.filter(h => h.type === e.type).length })).filter(e => e.n > 0)
+            const NOTIONS = ['Produit en croix', 'Pourcentages', 'Conversions & opérations', 'Équations et problèmes']
+            const cibles = NOTIONS.map(nom => {
+              const s = historique.filter(h => h.type === 'Spécifique' && h.label === nom).sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+              return { nom, series: s.length, dernier: s[0] && s[0].note_max ? { note: s[0].note, max: s[0].note_max } : null }
             })
 
-            // Stats rapides
-            const totalExos = historique.length
-            const notesForStats = historique.filter(h => h.note != null && h.note_max)
-            const meilleureNote = notesForStats.length > 0 ? parseFloat(Math.max(...notesForStats.map(h => (h.note / h.note_max) * 20)).toFixed(1)) : null
-            const pireNote = notesForStats.length > 0 ? parseFloat(Math.min(...notesForStats.map(h => (h.note / h.note_max) * 20)).toFixed(1)) : null
-            const totalMin = historique.reduce((sum, h) => sum + (h.duration_minutes || 0), 0)
-
-            // Badges / Diplômes
-            const hasType = (type) => historique.some(h => h.type === type)
-            const has2020 = notesForStats.some(h => (h.note / h.note_max) * 20 >= 20)
-            const badges = [
-              { id: 'premier-pas', label: 'Premier pas', desc: '1er exercice terminé', icon: '🎯', unlocked: totalExos >= 1 },
-              { id: 'regulier', label: 'Régulier', desc: '3 jours d\'affilée', icon: '📅', unlocked: streak >= 3 },
-              { id: 'assidu', label: 'Assidu', desc: '5 jours d\'affilée', icon: '💪', unlocked: streak >= 5 },
-              { id: 'marathonien', label: 'Marathonien', desc: '7 jours d\'affilée', icon: '🏃', unlocked: streak >= 7 },
-              { id: 'studieux', label: 'Studieux', desc: '10 exercices terminés', icon: '📚', unlocked: totalExos >= 10 },
-              { id: 'infatigable', label: 'Infatigable', desc: '14 jours d\'affilée', icon: '🔥', unlocked: streak >= 14 },
-              { id: 'expert', label: 'Expert', desc: '50 exercices terminés', icon: '🎓', unlocked: totalExos >= 50 },
-              { id: 'perfectionniste', label: 'Perfectionniste', desc: 'Obtenir 20/20', icon: '⭐', unlocked: has2020 },
-              { id: 'polyvalent', label: 'Polyvalent', desc: 'Maths + Rédaction + Oral', icon: '🧩', unlocked: hasType('Maths') && hasType('Rédaction') && hasType('Oral') },
-              { id: 'pret', label: 'Prêt pour le concours', desc: '30 jours d\'affilée', icon: '🏆', unlocked: streak >= 30 },
-            ]
-
-            const unlockedCount = badges.filter(b => b.unlocked).length
+            // ----- Régularité : 16 semaines, une colonne par semaine (lundi en haut) -----
+            const NB_SEM = 16
+            const debutGrille = new Date(lundi); debutGrille.setDate(debutGrille.getDate() - (NB_SEM - 1) * 7)
+            const maintenant = new Date()
+            const cases = Array.from({ length: NB_SEM * 7 }, (_, i) => { const d = new Date(debutGrille); d.setDate(d.getDate() + i); return { d, n: parJour[d.getTime()] || 0, futur: d > maintenant } })
+            const joursActifs16 = cases.filter(c => c.n > 0).length
+            const moisSemaine = Array.from({ length: NB_SEM }, (_, w) => {
+              const sem = cases.slice(w * 7, w * 7 + 7)
+              const premier = sem.find(c => c.d.getDate() === 1)
+              if (w === 0 && !premier) return sem[0].d.toLocaleDateString('fr-FR', { month: 'short' })
+              return premier ? premier.d.toLocaleDateString('fr-FR', { month: 'short' }) : ''
+            })
+            const couleurCase = n => n === 0 ? '#f1f5f9' : n === 1 ? '#fecaca' : n === 2 ? '#f87171' : '#dc2626'
+            const grille = [<span key="coin"></span>, ...moisSemaine.map((m, w) => <span key={`m${w}`} className="text-[10px] font-bold text-slate-400 leading-none h-3.5 whitespace-nowrap">{m}</span>)]
+            for (let j = 0; j < 7; j++) {
+              grille.push(<span key={`l${j}`} className="text-[10px] font-bold text-slate-400 leading-none flex items-center pr-1">{['L', '', 'M', '', 'V', '', ''][j]}</span>)
+              for (let w = 0; w < NB_SEM; w++) {
+                const c = cases[w * 7 + j]
+                grille.push(<span key={`c${w}-${j}`} title={c.futur ? '' : `${c.n} exercice${c.n > 1 ? 's' : ''} · ${c.d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })}`} className="aspect-square rounded-[4px]" style={{ backgroundColor: c.futur ? 'transparent' : couleurCase(c.n) }}></span>)
+              }
+            }
 
             return (
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Mes stats</h1>
-              <p className="text-slate-500 font-medium text-sm mb-8">Suivez votre progression et débloquez vos diplômes.</p>
+              <p className="text-slate-500 font-medium text-sm mb-8">Vos notes, votre régularité et vos diplômes.</p>
 
               {historique.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center">
+                <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 text-center mb-8">
                   <div className="w-16 h-16 bg-slate-100 text-slate-300 rounded-2xl flex items-center justify-center mx-auto mb-4"><svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path d="M18 20V10"/><path d="M12 20V4"/><path d="M6 20v-6"/></svg></div>
                   <h3 className="font-black text-slate-900 text-lg mb-2">Commencez à vous entraîner</h3>
                   <p className="text-slate-500 font-medium text-sm mb-6">Vos statistiques apparaîtront ici dès votre premier entraînement.</p>
@@ -897,179 +967,225 @@ function DashboardContent() {
                 </div>
               ) : (
                 <>
-                  {/* Stats rapides - 4 cartes */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
-                      <div className="w-11 h-11 bg-red-50 text-red-500 rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-                      </div>
+                  {/* ----- Mes notes sur 20 ----- */}
+                  <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mb-6">
+                    <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
                       <div>
-                        <p className="text-2xl font-black text-slate-900 leading-none">{totalExos}</p>
-                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Exercices faits</p>
+                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Mes notes sur 20</h2>
+                        <div className="flex items-center flex-wrap gap-x-3 gap-y-1 mt-2">
+                          <span className="text-4xl font-black text-slate-900 tabular-nums leading-none">{moyennePeriode != null ? fmtNote(moyennePeriode) : '—'}<span className="text-lg text-slate-400">/20</span></span>
+                          {tendance != null && (
+                            <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded-lg ${tendance > 0 ? 'bg-emerald-50 text-emerald-700' : tendance < 0 ? 'bg-red-50 text-red-600' : 'bg-slate-100 text-slate-600'}`}>
+                              {tendance > 0 ? <TrendingUp size={14} strokeWidth={2.2} /> : tendance < 0 ? <TrendingDown size={14} strokeWidth={2.2} /> : null}
+                              {tendance > 0 ? '+' : ''}{fmtNote(tendance)} sur vos 3 dernières notes
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-xs text-slate-400 font-semibold mt-2">Moyenne de la période · {points.length} note{points.length > 1 ? 's' : ''}</p>
                       </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
-                      <div className="w-11 h-11 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                      <div className="flex flex-col items-start lg:items-end gap-2">
+                        <div className="inline-flex bg-slate-100 rounded-xl p-1" role="group" aria-label="Période affichée">
+                          {[['30', '30 jours'], ['90', '3 mois'], ['tout', 'Tout']].map(([v, l]) => (
+                            <button key={v} type="button" aria-pressed={statsPeriode === v} onClick={() => { setStatsPeriode(v); setStatsSurvol(null) }} className={`px-3 py-1.5 rounded-lg text-xs font-bold transition cursor-pointer ${statsPeriode === v ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-800'}`}>{l}</button>
+                          ))}
+                        </div>
+                        <div className="flex flex-wrap gap-1.5">
+                          {EPREUVES.map(e => {
+                            const off = statsMasques.includes(e.type)
+                            return (
+                              <button key={e.type} type="button" aria-pressed={!off} onClick={() => { setStatsMasques(m => off ? m.filter(t => t !== e.type) : [...m, e.type]); setStatsSurvol(null) }} className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-xs font-bold transition cursor-pointer ${off ? 'border-slate-200 text-slate-400 bg-white line-through' : 'border-slate-200 text-slate-700 bg-slate-50 hover:bg-slate-100'}`}>
+                                <span className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: off ? '#cbd5e1' : e.couleur }}></span>{e.label}
+                              </button>
+                            )
+                          })}
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-2xl font-black text-slate-900 leading-none">{totalMin < 60 ? `${totalMin}m` : `${Math.floor(totalMin / 60)}h${totalMin % 60 > 0 ? String(totalMin % 60).padStart(2, '0') : ''}`}</p>
-                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Temps total</p>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
-                      <div className="w-11 h-11 bg-emerald-50 text-emerald-500 rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-slate-900 leading-none">{meilleureNote != null ? meilleureNote : '—'}<span className="text-sm text-slate-400">/20</span></p>
-                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Meilleure note</p>
-                      </div>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex items-center gap-4">
-                      <div className="w-11 h-11 bg-amber-50 text-amber-500 rounded-xl flex items-center justify-center shrink-0">
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path d="M12 2v4"/><path d="m16.2 7.8 2.9-2.9"/><path d="M18 12h4"/><path d="m16.2 16.2 2.9 2.9"/><path d="M12 18v4"/><path d="m4.9 19.1 2.9-2.9"/><path d="M2 12h4"/><path d="m4.9 4.9 2.9 2.9"/></svg>
-                      </div>
-                      <div>
-                        <p className="text-2xl font-black text-slate-900 leading-none">{streak}</p>
-                        <p className="text-[11px] text-slate-400 font-semibold mt-0.5">Jours d'affilée</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Graphiques */}
-                  <div className="grid lg:grid-cols-5 gap-6 mb-8">
-                    {/* Barres : exercices par jour */}
-                    <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="font-bold text-slate-900 text-sm">Activité des 14 derniers jours</h3>
-                        <span className="text-xs text-slate-400 font-medium">{dailyData.reduce((s, d) => s + d.count, 0)} exercices</span>
-                      </div>
-                      <Bar
-                        data={{
-                          labels: dailyData.map(d => d.label),
-                          datasets: [{
-                            label: 'Exercices',
-                            data: dailyData.map(d => d.count),
-                            backgroundColor: dailyData.map(d => d.count > 0 ? '#ef4444' : '#f1f5f9'),
-                            borderRadius: 8,
-                            maxBarThickness: 24,
-                            borderSkipped: false
-                          }]
-                        }}
-                        options={{
-                          responsive: true,
-                          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 } },
-                          scales: {
-                            y: { beginAtZero: true, ticks: { stepSize: 1, font: { weight: '600', size: 11 }, color: '#94a3b8' }, grid: { color: '#f8fafc', drawBorder: false }, border: { display: false } },
-                            x: { ticks: { font: { size: 10 }, color: '#94a3b8' }, grid: { display: false }, border: { display: false } }
-                          }
-                        }}
-                      />
                     </div>
 
-                    {/* Doughnut : répartition par type */}
-                    <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-                      <h3 className="font-bold text-slate-900 text-sm mb-5">Répartition</h3>
-                      <div className="max-w-[200px] mx-auto">
-                        <Doughnut
-                          data={{
-                            labels: typeLabels,
-                            datasets: [{
-                              data: typeValues,
-                              backgroundColor: typeLabels.map(l => typeColors[l] || '#94a3b8'),
-                              borderWidth: 0,
-                              spacing: 4
-                            }]
-                          }}
-                          options={{
-                            responsive: true,
-                            plugins: {
-                              legend: { display: false },
-                              tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 }
-                            },
-                            cutout: '70%'
-                          }}
-                        />
-                      </div>
-                      <div className="flex flex-col gap-2 mt-5">
-                        {typeLabels.map((label, i) => (
-                          <div key={label} className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: typeColors[label] || '#94a3b8' }}></div>
-                              <span className="text-xs font-semibold text-slate-600">{label}</span>
-                            </div>
-                            <span className="text-xs font-bold text-slate-900">{typeValues[i]}</span>
-                          </div>
+                    <div className="relative">
+                      <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto select-none" role="img" aria-label="Courbe de vos notes sur 20, avec la zone éliminatoire sous 8 sur 20">
+                        <rect x={G} y={py(8)} width={pw} height={py(0) - py(8)} fill="#fef2f2" />
+                        {[5, 10, 15, 20].map(v => <line key={v} x1={G} x2={W - D} y1={py(v)} y2={py(v)} stroke="#f1f5f9" />)}
+                        <line x1={G} x2={W - D} y1={py(8)} y2={py(8)} stroke="#ef4444" strokeWidth="1.5" strokeDasharray="5 4" />
+                        {[0, 5, 8, 10, 15, 20].map(v => <text key={v} x={G - 8} y={py(v) + 4} textAnchor="end" fontSize="11" fontWeight={v === 8 ? 800 : 600} fill={v === 8 ? '#ef4444' : '#94a3b8'}>{v}</text>)}
+                        <text x={W - D - 6} y={py(0) - 8} textAnchor="end" fontSize="11" fontWeight="700" fill="#ef4444">Zone éliminatoire · moins de 8/20</text>
+                        {courbe && <path d={courbe} fill="none" stroke="#0f172a" strokeWidth="2.5" strokeLinecap="round" />}
+                        {points.map((p, i) => (
+                          <circle key={i} cx={px(i)} cy={py(p.n)} r={survol === i ? 8 : i === points.length - 1 ? 7 : 5.5} fill={couleurType[p.type]} stroke="#fff" strokeWidth="2.5" style={{ cursor: 'pointer', transition: 'r 0.15s' }} onMouseEnter={() => setStatsSurvol(i)} onMouseLeave={() => setStatsSurvol(null)} onClick={() => setStatsSurvol(survol === i ? null : i)} />
                         ))}
+                        {ticksX.map(i => <text key={i} x={px(i)} y={H - 8} textAnchor={points.length === 1 ? 'middle' : i === 0 ? 'start' : i === points.length - 1 ? 'end' : 'middle'} fontSize="11" fontWeight="600" fill="#94a3b8">{fmtJour(points[i].date)}</text>)}
+                      </svg>
+                      {survol != null && (() => {
+                        const p = points[survol]
+                        const xPct = (px(survol) / W) * 100
+                        return (
+                          <div className="absolute pointer-events-none bg-slate-900 text-white rounded-xl px-3 py-2 shadow-lg whitespace-nowrap" style={{ left: `${xPct}%`, top: `${(py(p.n) / H) * 100}%`, transform: `translate(-${Math.min(85, Math.max(15, xPct))}%, calc(-100% - 14px))` }}>
+                            <p className="text-[11px] font-semibold text-slate-400">{fmtJour(p.date)} · {labelType[p.type]}</p>
+                            <p className="text-sm font-black tabular-nums">{fmtNote(p.n)}/20</p>
+                          </div>
+                        )
+                      })()}
+                      {points.length === 0 && <div className="absolute inset-0 grid place-items-center text-sm font-bold text-slate-400">Aucune note sur cette période</div>}
+                    </div>
+                    <p className="text-xs text-slate-400 font-semibold mt-3 flex items-center gap-2"><span className="inline-block w-5 h-[3px] bg-slate-900 rounded-full"></span>Moyenne glissante sur vos 3 dernières notes · survolez un point pour le détail</p>
+                  </section>
+
+                  {/* ----- Chiffres clés ----- */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="w-10 h-10 bg-red-50 text-red-600 rounded-xl grid place-items-center shrink-0"><ClipboardList size={20} strokeWidth={1.8} /></span>
+                        <div className="flex items-end gap-[3px] h-8" title="Exercices par semaine, sur 8 semaines">
+                          {semaines.map((n, i) => <span key={i} className={`w-1.5 rounded-sm ${i === semaines.length - 1 ? 'bg-red-600' : n ? 'bg-red-200' : 'bg-slate-100'}`} style={{ height: `${Math.max(14, (n / maxSem) * 100)}%` }}></span>)}
+                        </div>
                       </div>
+                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{totalExos}</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1">Exercices · {semaines[semaines.length - 1]} cette semaine</p>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                      <span className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl grid place-items-center"><Clock size={20} strokeWidth={1.8} /></span>
+                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{fmtDuree(totalMin)}</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1">Temps total · {fmtDuree(minSemaine)} cette semaine</p>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                      <div className="flex items-start justify-between gap-2">
+                        <span className="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl grid place-items-center shrink-0"><Flame size={20} strokeWidth={1.8} /></span>
+                        <div className="flex gap-1" title="Vos 7 derniers jours">
+                          {septJours.map((j, i) => (
+                            <span key={i} className="flex flex-col items-center gap-1">
+                              <span className={`w-2.5 h-2.5 rounded-full ${j.actif ? 'bg-amber-500' : 'bg-slate-200'}`}></span>
+                              <span className="text-[9px] font-bold text-slate-400 leading-none">{j.lettre}</span>
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{streak} <span className="text-sm text-slate-400">jour{streak > 1 ? 's' : ''}</span></p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1">Série en cours · record {meilleureSerie} j</p>
+                    </div>
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+                      <span className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl grid place-items-center"><Award size={20} strokeWidth={1.8} /></span>
+                      {prochain ? (
+                        <>
+                          <p className="text-base font-black text-slate-900 mt-4 leading-none">{prochain.label}</p>
+                          <div className="h-1.5 bg-slate-100 rounded-full mt-2.5 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${Math.min(100, (prochain.val / prochain.cible) * 100)}%` }}></div></div>
+                          <p className="text-xs text-slate-400 font-semibold mt-1.5 tabular-nums">Prochain diplôme · {Math.min(prochain.val, prochain.cible)}/{prochain.cible}{prochain.unite ? ` ${prochain.unite}` : ''}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-base font-black text-slate-900 mt-4 leading-none">Tous débloqués</p>
+                          <p className="text-xs text-slate-400 font-semibold mt-1.5">Bravo, la collection est complète.</p>
+                        </>
+                      )}
                     </div>
                   </div>
 
-                  {/* Ligne : évolution de la moyenne */}
-                  {moyenneEvolution.length >= 2 && (
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-8">
-                      <div className="flex items-center justify-between mb-5">
-                        <h3 className="font-bold text-slate-900 text-sm">Évolution de la moyenne</h3>
-                        <span className="text-xs font-bold text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">{moyenneEvolution[moyenneEvolution.length - 1].moy}/20</span>
-                      </div>
-                      <Line
-                        data={{
-                          labels: moyenneEvolution.map(d => d.label),
-                          datasets: [{
-                            label: 'Moyenne /20',
-                            data: moyenneEvolution.map(d => d.moy),
-                            borderColor: '#ef4444',
-                            backgroundColor: (ctx) => {
-                              if (!ctx.chart.chartArea) return 'rgba(239, 68, 68, 0.05)'
-                              const gradient = ctx.chart.ctx.createLinearGradient(0, ctx.chart.chartArea.top, 0, ctx.chart.chartArea.bottom)
-                              gradient.addColorStop(0, 'rgba(239, 68, 68, 0.12)')
-                              gradient.addColorStop(1, 'rgba(239, 68, 68, 0)')
-                              return gradient
-                            },
-                            borderWidth: 2.5,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#ef4444',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.4,
-                            fill: true
-                          }]
-                        }}
-                        options={{
-                          responsive: true,
-                          plugins: { legend: { display: false }, tooltip: { backgroundColor: '#0f172a', titleFont: { weight: 'bold' }, bodyFont: { weight: '600' }, padding: 10, cornerRadius: 8 } },
-                          scales: {
-                            y: { min: 0, max: 20, ticks: { stepSize: 5, font: { weight: '600', size: 11 }, color: '#94a3b8' }, grid: { color: '#f8fafc', drawBorder: false }, border: { display: false } },
-                            x: { ticks: { font: { size: 10 }, color: '#94a3b8' }, grid: { display: false }, border: { display: false } }
-                          }
-                        }}
-                      />
+                  {/* ----- Par épreuve ----- */}
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4">Par épreuve</h2>
+                  <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 mb-4">
+                    <p className="text-sm font-bold text-slate-900 mb-3">Répartition de vos {totalExos} exercice{totalExos > 1 ? 's' : ''}</p>
+                    <div className="flex h-3 rounded-full overflow-hidden gap-0.5">
+                      {repartition.map(e => <span key={e.type} title={`${e.label} : ${e.n}`} style={{ width: `${(e.n / totalExos) * 100}%`, backgroundColor: e.couleur }}></span>)}
                     </div>
-                  )}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-3">
+                      {repartition.map(e => <span key={e.type} className="text-xs font-semibold text-slate-600 flex items-center gap-1.5"><span className="w-2 h-2 rounded-full" style={{ backgroundColor: e.couleur }}></span>{e.label} <b className="text-slate-900 tabular-nums">{e.n}</b></span>)}
+                    </div>
+                  </div>
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    {parEpreuve.map(e => (
+                      <div key={e.type} className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className={`text-[11px] font-black px-2 py-0.5 rounded-md ${e.teinte}`}>{e.label}</span>
+                          <span className="text-xs text-slate-400 font-semibold">{e.essais} essai{e.essais > 1 ? 's' : ''}</span>
+                        </div>
+                        {e.moyenne != null ? (
+                          <>
+                            <p className={`text-3xl font-black mt-3 tabular-nums leading-none ${e.moyenne < 8 ? 'text-red-600' : 'text-slate-900'}`}>{fmtNote(e.moyenne)}<span className="text-base text-slate-400">/20</span></p>
+                            <p className="text-xs text-slate-400 font-semibold mt-1.5">Moyenne · dernière note {fmtNote(e.derniere)}/20</p>
+                            <svg viewBox="0 0 120 40" className="w-full h-10 mt-auto pt-3" aria-hidden="true">
+                              <line x1="0" x2="120" y1={38 - (8 / 20) * 34} y2={38 - (8 / 20) * 34} stroke="#fecaca" strokeDasharray="3 3" />
+                              {e.serie.length > 1 && <polyline fill="none" stroke={e.couleur} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" points={e.serie.map((v, i) => `${(i / (e.serie.length - 1)) * 114 + 3},${38 - (v / 20) * 34}`).join(' ')} />}
+                              <circle cx={e.serie.length > 1 ? 117 : 60} cy={38 - (e.serie[e.serie.length - 1] / 20) * 34} r="3" fill={e.couleur} />
+                            </svg>
+                          </>
+                        ) : (
+                          <div className="flex-1 flex flex-col justify-center mt-3">
+                            <p className="text-sm font-bold text-slate-400">Pas encore de note</p>
+                            <a href={e.href} className="text-xs font-bold text-red-600 hover:underline mt-1">Faire un premier essai</a>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 flex flex-col">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-black px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600">Oral</span>
+                        <span className="text-xs text-slate-400 font-semibold">non noté</span>
+                      </div>
+                      <p className="text-3xl font-black text-slate-900 mt-3 tabular-nums leading-none">{oral.length}<span className="text-base text-slate-400"> séance{oral.length > 1 ? 's' : ''}</span></p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{dernierOral ? `Dernière le ${fmtJour(dernierOral.created_at)}` : 'Pas encore de séance'}</p>
+                      {!dernierOral && <a href="/oral" className="text-xs font-bold text-red-600 hover:underline mt-auto pt-3">Préparer mon oral</a>}
+                    </div>
+                  </div>
+
+                  {/* ----- Régularité + entraînement ciblé ----- */}
+                  <div className="grid lg:grid-cols-5 gap-4 mb-8">
+                    <div className="lg:col-span-3 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Régularité</h2>
+                        <span className="text-xs text-slate-400 font-semibold">{joursActifs16} jour{joursActifs16 > 1 ? 's' : ''} actif{joursActifs16 > 1 ? 's' : ''} sur 16 semaines</span>
+                      </div>
+                      <div className="grid gap-[3px]" style={{ gridTemplateColumns: `auto repeat(${NB_SEM}, minmax(0, 1fr))` }}>{grille}</div>
+                      <div className="flex items-center justify-end gap-1.5 mt-3 text-[10px] font-bold text-slate-400">
+                        Moins {[0, 1, 2, 3].map(n => <span key={n} className="w-3 h-3 rounded-[3px]" style={{ backgroundColor: couleurCase(n) }}></span>)} Plus
+                      </div>
+                    </div>
+                    <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6">
+                      <div className="flex items-center justify-between gap-3 mb-2">
+                        <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Entraînement ciblé</h2>
+                        <span className="text-xs text-slate-400 font-semibold">dernier score</span>
+                      </div>
+                      {cibles.map(c => {
+                        const ratio = c.dernier ? c.dernier.note / c.dernier.max : 0
+                        return (
+                          <div key={c.nom} className="py-2.5 border-t border-slate-100 first:border-t-0">
+                            <div className="flex items-center justify-between gap-2 text-sm font-bold">
+                              <span className="text-slate-700 truncate">{c.nom}</span>
+                              <span className={`tabular-nums ${c.dernier ? 'text-slate-900' : 'text-slate-300'}`}>{c.dernier ? `${c.dernier.note}/${c.dernier.max}` : '—'}</span>
+                            </div>
+                            <div className="h-2 bg-slate-100 rounded-full mt-1.5 overflow-hidden"><div className={`h-full rounded-full ${ratio < 0.5 ? 'bg-red-400' : 'bg-blue-500'}`} style={{ width: `${ratio * 100}%` }}></div></div>
+                            <p className="text-[11px] text-slate-400 font-semibold mt-1">{c.series ? `${c.series} série${c.series > 1 ? 's' : ''} faite${c.series > 1 ? 's' : ''}` : 'Jamais tentée'}</p>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
                 </>
               )}
 
-              {/* Diplômes */}
+              {/* ----- Diplômes ----- */}
               <div className="mb-8">
                 <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-xs font-black uppercase tracking-widest text-slate-400">Diplômes</h3>
+                  <h2 className="text-xs font-black uppercase tracking-widest text-slate-900">Diplômes</h2>
                   <span className="text-xs text-slate-400 font-semibold">{unlockedCount}/{badges.length} débloqués</span>
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {badges.map(b => (
-                    <div key={b.id} className={`relative rounded-2xl border p-4 text-center transition-all ${b.unlocked ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-50 border-slate-100 opacity-50'}`}>
-                      {b.unlocked && (
-                        <div className="absolute top-2.5 right-2.5 w-5 h-5 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="3" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        </div>
-                      )}
-                      <span className="text-2xl block mb-2">{b.icon}</span>
-                      <p className={`text-xs font-bold leading-tight ${b.unlocked ? 'text-slate-900' : 'text-slate-400'}`}>{b.label}</p>
-                      <p className="text-[10px] text-slate-400 mt-0.5">{b.desc}</p>
-                    </div>
-                  ))}
+                  {badges.map(b => {
+                    const BIcon = b.Icon
+                    return (
+                      <div key={b.id} className={`rounded-2xl border p-4 flex flex-col items-center text-center ${b.unlocked ? 'bg-white border-slate-200 shadow-sm' : 'bg-slate-50 border-slate-200/70'}`}>
+                        <span className={`w-12 h-12 rounded-full grid place-items-center mb-2.5 ${b.unlocked ? 'bg-red-600 text-white shadow-sm shadow-red-200' : 'bg-white border border-dashed border-slate-300 text-slate-300'}`}><BIcon size={22} strokeWidth={1.8} /></span>
+                        <p className={`text-xs font-black leading-tight ${b.unlocked ? 'text-slate-900' : 'text-slate-500'}`}>{b.label}</p>
+                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
+                        {b.unlocked ? (
+                          <span className="mt-2.5 text-[10px] font-black text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full">Débloqué</span>
+                        ) : (
+                          <div className="w-full mt-2.5">
+                            <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden"><div className="h-full bg-red-400 rounded-full" style={{ width: `${Math.min(100, (b.val / b.cible) * 100)}%` }}></div></div>
+                            <p className="text-[10px] text-slate-400 font-bold mt-1 tabular-nums">{Math.min(b.val, b.cible)}/{b.cible}{b.unite ? ` ${b.unite}` : ''}</p>
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>

@@ -3,6 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
+import { entetesAuth } from '../../lib/entetes-auth'
 import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, Flame, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock, Check } from 'lucide-react'
 
 
@@ -192,13 +193,11 @@ function DashboardContent() {
   async function handleCheckout(plan) {
     setCheckoutLoading(true)
     try {
-      const priceId = plan === 'monthly'
-        ? process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY
-        : process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY
+      // Le serveur choisit le prix d'après l'offre et lit l'identité dans la session (jeton joint)
       const res = await fetch('/api/stripe/checkout', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ priceId, userId: user.id, userEmail: user.email }),
+        headers: await entetesAuth({ 'Content-Type': 'application/json' }),
+        body: JSON.stringify({ plan }),
       })
       const { url, error } = await res.json()
       if (error) throw new Error(error)

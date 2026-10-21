@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
+import { entetesAuth } from '../../lib/entetes-auth'
 import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, Timer, Ban, Sparkles, ClipboardCheck, PenLine, GraduationCap } from 'lucide-react'
 
 const sidebarItems = [
@@ -226,16 +227,19 @@ export default function ExamenPage() {
       const [resMaths, resRedaction] = await Promise.all([
         fetch('/api/maths', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await entetesAuth({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ action: 'generer', history: historyMaths, recent })
         }),
         fetch('/api/redaction', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await entetesAuth({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ action: 'generer', history: historyRedac })
         })
       ])
       const [dataMaths, dataRedaction] = await Promise.all([resMaths.json(), resRedaction.json()])
+      // Session expirée → reconnexion ; essai terminé (contrôlé par le serveur) → écran dédié
+      if (resMaths.status === 401 || resRedaction.status === 401) { window.location.assign('/auth'); return }
+      if (resMaths.status === 403 || resRedaction.status === 403) { setStep(null); setShowAccessBlock(true); return }
       if (!resMaths.ok || dataMaths.error) { setStep(null); setShowWaitPopup(true); return }
       if (!resRedaction.ok || dataRedaction.error) { setStep(null); setShowWaitPopup(true); return }
       const elapsed = Date.now() - startTime
@@ -288,12 +292,12 @@ export default function ExamenPage() {
       const [resCorrMaths, resCorrRedaction] = await Promise.all([
         fetch('/api/maths', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await entetesAuth({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ action: 'corriger', exercices: sujetMaths.exercices, reponses })
         }),
         fetch('/api/redaction', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: await entetesAuth({ 'Content-Type': 'application/json' }),
           body: JSON.stringify({ action: 'corriger', sujet: sujetRedaction, redaction })
         })
       ])

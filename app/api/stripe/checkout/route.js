@@ -1,17 +1,35 @@
 import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
+import { utilisateurConnecte } from '@/lib/acces'
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+// Seuls les deux prix de Prépa FPC sont acceptés, choisis ici côté serveur.
+// Avant, le navigateur envoyait l'identifiant du prix : tout autre prix du compte Stripe (partagé avec
+// d'autres sites) passait en « paiement annuel » et donnait un an d'accès.
+function prixDuPlan(plan) {
+  if (plan === 'monthly') return process.env.STRIPE_PRICE_MONTHLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_MONTHLY
+  if (plan === 'yearly') return process.env.STRIPE_PRICE_YEARLY || process.env.NEXT_PUBLIC_STRIPE_PRICE_YEARLY
+  return null
+}
 
 export async function POST(req) {
   try {
-    const { priceId, userId, userEmail } = await req.json()
+    // Identité tirée de la session vérifiée, jamais du corps de la requête
+    const acces = await utilisateurConnecte(req)
+    if (acces.erreur) return acces.erreur
+    const userId = acces.user.id
+    const userEmail = acces.user.email
+    if (!userEmail) return NextResponse.json({ error: 'Adresse e-mail introuvable sur votre compte.' }, { status: 400 })
 
-    if (!priceId || !userId || !userEmail) {
-      return NextResponse.json({ error: 'Paramètres manquants' }, { status: 400 })
-    }
+    const { plan } = await req.json()
+    const priceId = prixDuPlan(plan)
+    if (!priceId) return NextResponse.json({ error: 'Offre inconnue.' }, { status: 400 })
+    const isRecurring = plan === 'monthly'
 
-    const isRecurring = priceId === process.env.STRIPE_PRICE_MONTHLY
+    // Adresse du site prise sur la requête elle-même, pas sur l'en-tête Origin (falsifiable par un appel direct)
+    const site = new URL(req.url).origin
+
+    // Client Stripe créé après les contrôles d'accès
+    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 
     // Créer ou récupérer un customer Stripe avec pays France pour la TVA
     const existingCustomers = await stripe.customers.list({ email: userEmail, limit: 1 })
@@ -35,8 +53,8 @@ export async function POST(req) {
       // Les clients existants du compte partage n'ont pas toujours d'adresse :
       // on enregistre celle saisie dans Checkout (requis par automatic_tax)
       customer_update: { address: 'auto' },
-      success_url: `${req.headers.get('origin')}/dashboard?success=true`,
-      cancel_url: `${req.headers.get('origin')}/dashboard?tab=abonnement&canceled=true`,
+      success_url: `${site}/dashboard?success=true`,
+      cancel_url: `${site}/dashboard?tab=abonnement&canceled=true`,
     }
 
     // Transférer les metadata vers le payment_intent (annuel) ou la subscription (mensuel)
@@ -51,6 +69,7 @@ export async function POST(req) {
     return NextResponse.json({ url: session.url })
   } catch (err) {
     console.error('Stripe checkout error:', err)
-    return NextResponse.json({ error: err.message }, { status: 500 })
+    // Message générique : le détail Stripe reste dans les logs
+    return NextResponse.json({ error: 'Le paiement n\'a pas pu démarrer. Réessayez dans quelques instants.' }, { status: 500 })
   }
 }

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { checkDailyLimit } from '@/lib/daily-limit'
+import { verifierAccesExercices } from '@/lib/acces'
 import { callClaude } from '@/lib/anthropic'
 
 export async function POST(request) {
@@ -13,6 +14,10 @@ export async function POST(request) {
         remaining: 0
       }, { status: 429 })
     }
+
+    // Compte connecté avec essai ou abonnement valide, vérifié côté serveur
+    const acces = await verifierAccesExercices(request)
+    if (acces.erreur) return acces.erreur
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })

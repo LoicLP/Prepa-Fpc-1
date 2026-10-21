@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
+import { entetesAuth } from '../../lib/entetes-auth'
 import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, Timer, PenLine, Sparkles, ClipboardCheck } from 'lucide-react'
 
 const sidebarItems = [
@@ -204,10 +205,13 @@ export default function RedactionPage() {
 
       const res = await fetch('/api/redaction', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await entetesAuth({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ action: 'generer', history })
       })
       const data = await res.json()
+      // Session expirée → reconnexion ; essai terminé (contrôlé par le serveur) → écran dédié
+      if (res.status === 401) { window.location.assign('/auth'); return }
+      if (res.status === 403) { setStep(null); setShowAccessBlock(true); return }
       if (!res.ok || data.error) { setStep(null); setShowWaitPopup(true); return }
       const elapsed = Date.now() - startTime
       if (elapsed < 20000) await new Promise(r => setTimeout(r, 20000 - elapsed))
@@ -234,7 +238,7 @@ export default function RedactionPage() {
       const startTime = Date.now()
       const res = await fetch('/api/redaction', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: await entetesAuth({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ action: 'corriger', sujet, redaction })
       })
       const data = await res.json()

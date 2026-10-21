@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { readFileSync } from 'fs'
 import { join } from 'path'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { verifierAccesExercices } from '@/lib/acces'
 import { BASE_SYSTEM, FORMAT_SORTIE } from '@/lib/prompts/base-maths'
 import { SYSTEM_POURCENTAGES, PROMPT_POURCENTAGES } from '@/lib/prompts/famille-pourcentages'
 import { SYSTEM_PROPORTIONNALITE, PROMPT_PROPORTIONNALITE } from '@/lib/prompts/famille-proportionnalite'
@@ -30,6 +31,10 @@ export async function POST(request) {
   try {
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
+    // Compte connecté avec essai ou abonnement valide, vérifié ici et pas seulement dans la page
+    const acces = await verifierAccesExercices(request)
+    if (acces.erreur) return acces.erreur
+    if (!checkRateLimit('compte:' + acces.user.id)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { checkRateLimit } from '@/lib/rate-limit'
+import { verifierAccesExercices } from '@/lib/acces'
 import { BASE_REDACTION, FORMAT_SORTIE_REDACTION, buildHistoryContextRedaction } from '@/lib/prompts/base-redaction'
 import { SYSTEM_CLASSIQUE, PROMPT_CLASSIQUE } from '@/lib/prompts/format-classique'
 import { SYSTEM_MINI_TEXTE, PROMPT_MINI_TEXTE } from '@/lib/prompts/format-mini-texte'
@@ -24,6 +25,10 @@ export async function POST(request) {
   try {
     const ip = request.headers.get('x-forwarded-for') || 'unknown'
     if (!checkRateLimit(ip)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
+    // Compte connecté avec essai ou abonnement valide, vérifié ici et pas seulement dans la page
+    const acces = await verifierAccesExercices(request)
+    if (acces.erreur) return acces.erreur
+    if (!checkRateLimit('compte:' + acces.user.id)) return NextResponse.json({ error: 'Trop de requêtes. Réessayez dans quelques secondes.' }, { status: 429 })
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json({ error: 'Clé API manquante.' }, { status: 500 })

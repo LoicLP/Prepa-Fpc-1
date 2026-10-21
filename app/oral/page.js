@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect, useRef } from 'react'
 import { supabase } from '../../lib/supabase'
+import { entetesAuth } from '../../lib/entetes-auth'
 import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, Upload, Sparkles, MessageCircleQuestion, Lightbulb } from 'lucide-react'
 
 const catColors = {
@@ -190,8 +191,11 @@ export default function OralPage() {
 
     try {
       const startTime = Date.now()
-      const res = await fetch('/api/oral', { method: 'POST', body: formData })
+      const res = await fetch('/api/oral', { method: 'POST', headers: await entetesAuth(), body: formData })
       const data = await res.json()
+      // Session expirée → reconnexion ; essai terminé (contrôlé par le serveur) → écran dédié
+      if (res.status === 401) { window.location.assign('/auth'); return }
+      if (res.status === 403) { setStep('upload'); setShowAccessBlock(true); return }
       if (!res.ok || data.error) { setError(data.error || "Erreur lors de l'analyse du CV."); setStep('upload'); return }
       const elapsed = Date.now() - startTime
       if (elapsed < 12000) await new Promise(r => setTimeout(r, 12000 - elapsed))

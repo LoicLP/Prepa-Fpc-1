@@ -881,6 +881,8 @@ function DashboardContent() {
             const lundi = (() => { const d = debutJour(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d })()
             const minSemaine = historique.filter(h => new Date(h.created_at) >= lundi).reduce((s, h) => s + (h.duration_minutes || 0), 0)
             const exosSemaine = historique.filter(h => new Date(h.created_at) >= lundi).length
+            const examensNotes = historique.filter(h => h.type === 'Examen' && h.note != null && h.note_max)
+            const meilleurExamen = examensNotes.length ? examensNotes.reduce((a, b) => sur20(b) > sur20(a) ? b : a) : null
             const parJour = {}
             historique.forEach(h => { const k = debutJour(new Date(h.created_at)).getTime(); parJour[k] = (parJour[k] || 0) + 1 })
             // Meilleure série de jours d'affilée (les diplômes de régularité restent acquis même si la série s'arrête)
@@ -978,9 +980,9 @@ function DashboardContent() {
                   {/* ----- Chiffres clés : bandeau posé sur le fond, sans cartes ----- */}
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 mb-8">
                     <div className="pr-4 lg:pr-6">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Exercices</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Total exercices</p>
                       <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalExos}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{exosSemaine} cette semaine</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">dont {exosSemaine} cette semaine</p>
                     </div>
                     <div className="pl-4 lg:px-6 border-l border-slate-200">
                       <p className="text-[11px] font-black uppercase tracking-widest text-blue-600">Temps total</p>
@@ -988,9 +990,9 @@ function DashboardContent() {
                       <p className="text-xs text-slate-400 font-semibold mt-1.5">{fmtDuree(minSemaine)} cette semaine</p>
                     </div>
                     <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200">
-                      <p className="text-[11px] font-black uppercase tracking-widest text-amber-600">Série</p>
-                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{streak}<span className="text-xl text-slate-400"> jour{streak > 1 ? 's' : ''}</span></p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1.5">Record : {meilleureSerie} jour{meilleureSerie > 1 ? 's' : ''}</p>
+                      <p className="text-[11px] font-black uppercase tracking-widest text-yellow-600">Meilleure note examen</p>
+                      <p className={`text-4xl font-black tabular-nums leading-none mt-2 ${meilleurExamen ? (sur20(meilleurExamen) < 8 ? 'text-red-600' : 'text-slate-900') : 'text-slate-300'}`}>{meilleurExamen ? <>{fmtNote(sur20(meilleurExamen))}<span className="text-xl text-slate-400">/20</span></> : '—'}</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{meilleurExamen ? `Examen blanc du ${fmtJour(meilleurExamen.created_at)}` : 'Pas encore d\'examen blanc'}</p>
                     </div>
                     <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0">
                       <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>

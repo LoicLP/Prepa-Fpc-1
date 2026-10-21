@@ -961,6 +961,46 @@ function DashboardContent() {
               }
             }
 
+            // Carte d'un diplôme (obtenu ou à obtenir), utilisée dans le chemin des diplômes et le bandeau du haut
+            const carteDiplome = b => {
+              const BIcon = b.Icon
+              // Diplôme obtenu : médaille avec rubans et sceau doré, mention « Diplôme obtenu » et date d'obtention
+              if (b.unlocked) return (
+                <div key={b.id} className="w-full rounded-2xl border-[3px] border-red-600 bg-white shadow-sm shadow-red-100 p-4 flex flex-col items-center text-center">
+                  <span className="relative mb-4" aria-hidden="true">
+                    <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top -translate-x-[115%] rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
+                    <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top translate-x-[15%] -rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
+                    <span className="relative w-12 h-12 rounded-full grid place-items-center bg-red-600 text-white ring-4 ring-red-100"><BIcon size={22} strokeWidth={1.8} /></span>
+                    <span className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-amber-400 text-amber-950 grid place-items-center ring-2 ring-white"><Check size={11} strokeWidth={3.2} /></span>
+                  </span>
+                  <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
+                  <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
+                  <span className="mt-auto pt-3 flex flex-col items-center gap-0.5">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-red-700"><BadgeCheck size={13} strokeWidth={2.2} />Diplôme obtenu</span>
+                    {b.date && <span className="text-[10px] font-semibold text-slate-400">le {fmtJour(b.date)}</span>}
+                  </span>
+                </div>
+              )
+              // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
+              return (
+                <div key={b.id} className="w-full relative rounded-2xl border border-slate-200 hover:border-red-200 bg-white p-4 flex flex-col items-center text-center transition">
+                  <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
+                    <BIcon size={22} strokeWidth={1.8} />
+                    <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-slate-900 text-white grid place-items-center ring-2 ring-white" title="À débloquer"><Lock size={10} strokeWidth={2.5} /></span>
+                  </span>
+                  <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
+                  <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
+                  <div className="w-full mt-auto pt-3">
+                    <div className="flex items-end justify-between gap-2 mb-1">
+                      <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
+                      <span className="text-[10px] font-bold text-slate-400 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
+                    </div>
+                    <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
+                  </div>
+                </div>
+              )
+            }
+
             return (
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-8">Mes stats</h1>
@@ -992,11 +1032,7 @@ function DashboardContent() {
                     <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0 text-center">
                       <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>
                       {prochain ? (
-                        <>
-                          <p className="text-xl font-black text-slate-900 leading-tight mt-2.5 truncate">{prochain.label}</p>
-                          <div className="h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden max-w-[200px] mx-auto"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
-                          <p className="text-xs text-slate-400 font-semibold mt-1.5">{prochain.reste}</p>
-                        </>
+                        <div className="mt-3 max-w-[220px] mx-auto flex">{carteDiplome(prochain)}</div>
                       ) : (
                         <>
                           <p className="text-xl font-black text-slate-900 leading-tight mt-2.5">Tous obtenus</p>
@@ -1121,45 +1157,7 @@ function DashboardContent() {
                   <span className="text-xs text-slate-400 font-semibold">{unlockedCount}/{badges.length} débloqués</span>
                 </div>
                 {(() => {
-                  // Carte d'un diplôme (obtenu ou à obtenir)
-                  const carte = b => {
-                    const BIcon = b.Icon
-                    // Diplôme obtenu : médaille avec rubans et sceau doré, mention « Diplôme obtenu » et date d'obtention
-                    if (b.unlocked) return (
-                      <div key={b.id} className="w-full rounded-2xl border-[3px] border-red-600 bg-white shadow-sm shadow-red-100 p-4 flex flex-col items-center text-center">
-                        <span className="relative mb-4" aria-hidden="true">
-                          <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top -translate-x-[115%] rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
-                          <span className="absolute top-8 left-1/2 w-3.5 h-6 bg-red-700 origin-top translate-x-[15%] -rotate-[22deg] [clip-path:polygon(0_0,100%_0,100%_100%,50%_78%,0_100%)]"></span>
-                          <span className="relative w-12 h-12 rounded-full grid place-items-center bg-red-600 text-white ring-4 ring-red-100"><BIcon size={22} strokeWidth={1.8} /></span>
-                          <span className="absolute -bottom-0.5 -right-1 w-5 h-5 rounded-full bg-amber-400 text-amber-950 grid place-items-center ring-2 ring-white"><Check size={11} strokeWidth={3.2} /></span>
-                        </span>
-                        <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
-                        <p className="text-[10px] text-slate-400 font-semibold mt-0.5">{b.desc}</p>
-                        <span className="mt-auto pt-3 flex flex-col items-center gap-0.5">
-                          <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider text-red-700"><BadgeCheck size={13} strokeWidth={2.2} />Diplôme obtenu</span>
-                          {b.date && <span className="text-[10px] font-semibold text-slate-400">le {fmtJour(b.date)}</span>}
-                        </span>
-                      </div>
-                    )
-                    // Diplôme à obtenir : carte blanche, icône en couleur avec cadenas, ce qu'il reste à faire en évidence
-                    return (
-                      <div key={b.id} className="w-full relative rounded-2xl border border-slate-200 hover:border-red-200 bg-white p-4 flex flex-col items-center text-center transition">
-                        <span className="relative w-12 h-12 rounded-full grid place-items-center mb-2.5 bg-red-50 text-red-500">
-                          <BIcon size={22} strokeWidth={1.8} />
-                          <span className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-slate-900 text-white grid place-items-center ring-2 ring-white" title="À débloquer"><Lock size={10} strokeWidth={2.5} /></span>
-                        </span>
-                        <p className="text-xs font-black leading-tight text-slate-900">{b.label}</p>
-                        <p className="text-[10px] text-slate-500 font-semibold mt-0.5">{b.desc}</p>
-                        <div className="w-full mt-auto pt-3">
-                          <div className="flex items-end justify-between gap-2 mb-1">
-                            <span className="text-[10px] font-black text-red-600 text-left leading-tight">{b.reste}</span>
-                            <span className="text-[10px] font-bold text-slate-400 tabular-nums shrink-0">{b.prog}/{b.cible}</span>
-                          </div>
-                          <div className="h-2 bg-red-50 rounded-full overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{ width: `${b.prog > 0 ? Math.max(6, (b.prog / b.cible) * 100) : 0}%` }}></div></div>
-                        </div>
-                      </div>
-                    )
-                  }
+                  const carte = carteDiplome
 
                   // Chemin des diplômes, du plus simple au plus exigeant : grille en serpentin (une ligne de gauche
                   // à droite, la suivante de droite à gauche) sur 2, 3 puis 5 colonnes selon la largeur d'écran.

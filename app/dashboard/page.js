@@ -3,7 +3,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import Link from 'next/link'
 import { useSearchParams } from 'next/navigation'
 import { supabase } from '../../lib/supabase'
-import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, ClipboardList, Clock, Flame, Award, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock, Check } from 'lucide-react'
+import { LayoutDashboard, ChartNoAxesColumn, History, CircleUserRound, BadgeCheck, LogOut, Stethoscope, CircleX, CreditCard, Lightbulb, MessageCircle, CircleHelp, Flame, TrendingUp, TrendingDown, Footprints, CalendarCheck, Dumbbell, Medal, BookOpen, GraduationCap, Star, Puzzle, Trophy, Lock, Check } from 'lucide-react'
 
 
 const menuItems = [
@@ -880,15 +880,9 @@ function DashboardContent() {
             const totalMin = historique.reduce((s, h) => s + (h.duration_minutes || 0), 0)
             const lundi = (() => { const d = debutJour(); d.setDate(d.getDate() - ((d.getDay() + 6) % 7)); return d })()
             const minSemaine = historique.filter(h => new Date(h.created_at) >= lundi).reduce((s, h) => s + (h.duration_minutes || 0), 0)
-            const semaines = Array.from({ length: 8 }, (_, i) => {
-              const deb = new Date(lundi); deb.setDate(deb.getDate() - (7 - i) * 7)
-              const fin = new Date(deb); fin.setDate(fin.getDate() + 7)
-              return historique.filter(h => { const d = new Date(h.created_at); return d >= deb && d < fin }).length
-            })
-            const maxSem = Math.max(1, ...semaines)
+            const exosSemaine = historique.filter(h => new Date(h.created_at) >= lundi).length
             const parJour = {}
             historique.forEach(h => { const k = debutJour(new Date(h.created_at)).getTime(); parJour[k] = (parJour[k] || 0) + 1 })
-            const septJours = Array.from({ length: 7 }, (_, i) => { const d = debutJour(); d.setDate(d.getDate() - (6 - i)); return { lettre: ['D', 'L', 'M', 'M', 'J', 'V', 'S'][d.getDay()], actif: !!parJour[d.getTime()] } })
             // Meilleure série de jours d'affilée (les diplômes de régularité restent acquis même si la série s'arrête)
             const meilleureSerie = (() => {
               const jours = Object.keys(parJour).map(Number).sort((a, b) => a - b)
@@ -981,6 +975,39 @@ function DashboardContent() {
                 </div>
               ) : (
                 <>
+                  {/* ----- Chiffres clés : bandeau posé sur le fond, sans cartes ----- */}
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-y-6 mb-8">
+                    <div className="pr-4 lg:pr-6">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-red-600">Exercices</p>
+                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalExos}</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{exosSemaine} cette semaine</p>
+                    </div>
+                    <div className="pl-4 lg:px-6 border-l border-slate-200">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-blue-600">Temps total</p>
+                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{totalMin < 60 ? <>{totalMin}<span className="text-xl text-slate-400"> min</span></> : <>{Math.floor(totalMin / 60)}<span className="text-xl text-slate-400">h</span>{totalMin % 60 ? String(totalMin % 60).padStart(2, '0') : ''}</>}</p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">{fmtDuree(minSemaine)} cette semaine</p>
+                    </div>
+                    <div className="pr-4 lg:px-6 lg:border-l lg:border-slate-200">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-amber-600">Série</p>
+                      <p className="text-4xl font-black text-slate-900 tabular-nums leading-none mt-2">{streak}<span className="text-xl text-slate-400"> jour{streak > 1 ? 's' : ''}</span></p>
+                      <p className="text-xs text-slate-400 font-semibold mt-1.5">Record : {meilleureSerie} jour{meilleureSerie > 1 ? 's' : ''}</p>
+                    </div>
+                    <div className="pl-4 lg:pl-6 border-l border-slate-200 min-w-0">
+                      <p className="text-[11px] font-black uppercase tracking-widest text-emerald-600">Prochain diplôme</p>
+                      {prochain ? (
+                        <>
+                          <p className="text-xl font-black text-slate-900 leading-tight mt-2.5 truncate">{prochain.label}</p>
+                          <div className="h-1.5 bg-slate-200 rounded-full mt-2 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
+                          <p className="text-xs text-slate-400 font-semibold mt-1.5">{prochain.reste}</p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="text-xl font-black text-slate-900 leading-tight mt-2.5">Tous obtenus</p>
+                          <p className="text-xs text-slate-400 font-semibold mt-1.5">La collection est complète.</p>
+                        </>
+                      )}
+                    </div>
+                  </div>
                   {/* ----- Mes notes sur 20 ----- */}
                   <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 mb-6">
                     <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-4">
@@ -1043,55 +1070,6 @@ function DashboardContent() {
                     </div>
                     <p className="text-xs text-slate-400 font-semibold mt-3 flex items-center gap-2"><span className="inline-block w-5 h-[3px] bg-slate-900 rounded-full"></span>Moyenne glissante sur vos 3 dernières notes · survolez un point pour le détail</p>
                   </section>
-
-                  {/* ----- Chiffres clés ----- */}
-                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="w-10 h-10 bg-red-50 text-red-600 rounded-xl grid place-items-center shrink-0"><ClipboardList size={20} strokeWidth={1.8} /></span>
-                        <div className="flex items-end gap-[3px] h-8" title="Exercices par semaine, sur 8 semaines">
-                          {semaines.map((n, i) => <span key={i} className={`w-1.5 rounded-sm ${i === semaines.length - 1 ? 'bg-red-600' : n ? 'bg-red-200' : 'bg-slate-100'}`} style={{ height: `${Math.max(14, (n / maxSem) * 100)}%` }}></span>)}
-                        </div>
-                      </div>
-                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{totalExos}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1">Exercices · {semaines[semaines.length - 1]} cette semaine</p>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                      <span className="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl grid place-items-center"><Clock size={20} strokeWidth={1.8} /></span>
-                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{fmtDuree(totalMin)}</p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1">Temps total · {fmtDuree(minSemaine)} cette semaine</p>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="w-10 h-10 bg-amber-50 text-amber-500 rounded-xl grid place-items-center shrink-0"><Flame size={20} strokeWidth={1.8} /></span>
-                        <div className="flex gap-1" title="Vos 7 derniers jours">
-                          {septJours.map((j, i) => (
-                            <span key={i} className="flex flex-col items-center gap-1">
-                              <span className={`w-2.5 h-2.5 rounded-full ${j.actif ? 'bg-amber-500' : 'bg-slate-200'}`}></span>
-                              <span className="text-[9px] font-bold text-slate-400 leading-none">{j.lettre}</span>
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="text-2xl font-black text-slate-900 mt-4 tabular-nums leading-none">{streak} <span className="text-sm text-slate-400">jour{streak > 1 ? 's' : ''}</span></p>
-                      <p className="text-xs text-slate-400 font-semibold mt-1">Série en cours · record {meilleureSerie} j</p>
-                    </div>
-                    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
-                      <span className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl grid place-items-center"><Award size={20} strokeWidth={1.8} /></span>
-                      {prochain ? (
-                        <>
-                          <p className="text-base font-black text-slate-900 mt-4 leading-none">{prochain.label}</p>
-                          <div className="h-1.5 bg-slate-100 rounded-full mt-2.5 overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{ width: `${(prochain.prog / prochain.cible) * 100}%` }}></div></div>
-                          <p className="text-xs text-slate-400 font-semibold mt-1.5">Prochain diplôme · {prochain.reste.charAt(0).toLowerCase() + prochain.reste.slice(1)}</p>
-                        </>
-                      ) : (
-                        <>
-                          <p className="text-base font-black text-slate-900 mt-4 leading-none">Tous débloqués</p>
-                          <p className="text-xs text-slate-400 font-semibold mt-1.5">Bravo, la collection est complète.</p>
-                        </>
-                      )}
-                    </div>
-                  </div>
 
                   {/* ----- Par épreuve ----- */}
                   <h2 className="text-xs font-black uppercase tracking-widest text-slate-900 mb-4">Par épreuve</h2>

@@ -9,37 +9,33 @@ import { useState, useEffect, useRef } from 'react'
 
 const MODULES = [
   // Gélule
-  { label: 'Calculs de doses', bg: 'linear-gradient(145deg, #ef4444, #dc2626)', ink: '#ffffff', accent: '#dc2626', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="m8.5 8.5 7 7"/></svg> },
-  // Livre ouvert
-  { label: 'Rédaction', bg: 'linear-gradient(145deg, #a5b4fc, #818cf8)', ink: '#1e1b4b', accent: '#6366f1', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg> },
+  { label: 'Calculs de doses', bg: 'linear-gradient(145deg, #ef4444, #dc2626)', ink: '#ffffff', accent: '#dc2626', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m10.5 20.5 10-10a4.95 4.95 0 1 0-7-7l-10 10a4.95 4.95 0 1 0 7 7Z"/><path d="M8.5 8.5 3.5 13.5a4.95 4.95 0 0 0 7 7l5-5Z" fill={c}/><path d="m8.5 8.5 7 7"/></svg> },
+  // Microscope
+  { label: 'Sciences', bg: 'linear-gradient(145deg, #1e40af, #1e3a8a)', ink: '#ffffff', accent: '#1e40af', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg> },
   // Stéthoscope
-  { label: 'Oral', bg: 'linear-gradient(145deg, #fcd34d, #fbbf24)', ink: '#451a03', accent: '#e5a50c', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg> },
+  { label: 'Oral', bg: 'linear-gradient(145deg, #dbeafe, #bfdbfe)', ink: '#1e3a8a', accent: '#60a5fa', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3"/><path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4"/><circle cx="20" cy="10" r="2"/></svg> },
   // Presse-papiers validé
-  { label: 'Examen blanc', bg: 'linear-gradient(145deg, #f9a8d4, #f472b6)', ink: '#500724', accent: '#ec4899', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg> },
+  { label: 'Examen blanc', bg: 'linear-gradient(145deg, #fee2e2, #fecaca)', ink: '#7f1d1d', accent: '#f87171', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg> },
   // Cœur avec pouls
-  { label: 'Culture sanitaire', bg: 'linear-gradient(145deg, #67e8f9, #22d3ee)', ink: '#083344', accent: '#0eb5d4', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg> },
-  // Chapeau de diplômé
-  { label: 'Annales', bg: 'linear-gradient(145deg, #cbd5e1, #94a3b8)', ink: '#0f172a', accent: '#64748b', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></svg> },
+  { label: 'Culture sanitaire', bg: 'linear-gradient(145deg, #60a5fa, #3b82f6)', ink: '#ffffff', accent: '#3b82f6', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/><path d="M3.22 12H9.5l.5-1 2 4.5 2-7 1.5 3.5h5.27"/></svg> },
+  // Électrocardiogramme
+  { label: 'Rythmes', bg: 'linear-gradient(145deg, #e2e8f0, #cbd5e1)', ink: '#0f172a', accent: '#94a3b8', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg> },
+  // Éprouvette
+  { label: 'Dilutions', bg: 'linear-gradient(145deg, #60a5fa, #3b82f6)', ink: '#ffffff', accent: '#3b82f6', icon: (c) => <svg className="w-11 h-11" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 8.04l-12.122 12.124a2.857 2.857 0 1 1 -4.041 -4.04l12.122 -12.124"/><path d="M7 13h8"/><path d="M19 15l1.5 1.6a2 2 0 1 1 -3 0l1.5 -1.6z"/><path d="M15 3l6 6"/></svg> },
 ]
 
 // Icônes médicales / éducation pour le second ticker
 const TICKER_MEDICAL = [
   // Seringue
-  { label: 'Injections', bg: 'linear-gradient(145deg, #fecaca, #fca5a5)', ink: '#450a0a', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg> },
-  // Microscope
-  { label: 'Sciences', bg: 'linear-gradient(145deg, #c7d2fe, #a5b4fc)', ink: '#1e1b4b', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg> },
+  { label: 'Injections', bg: 'linear-gradient(145deg, #fee2e2, #fecaca)', ink: '#7f1d1d', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-1 1-2.5 1-3.4 0l-.6-.6c-1-1-1-2.5 0-3.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/><path d="m14 4 6 6"/></svg> },
   // Thermomètre
-  { label: 'Constantes', bg: 'linear-gradient(145deg, #fed7aa, #fdba74)', ink: '#431407', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg> },
+  { label: 'Constantes', bg: 'linear-gradient(145deg, #ef4444, #dc2626)', ink: '#ffffff', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/></svg> },
   // Croix médicale
-  { label: 'Soins', bg: 'linear-gradient(145deg, #bbf7d0, #86efac)', ink: '#052e16', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2Z"/></svg> },
-  // Éprouvette
-  { label: 'Dilutions', bg: 'linear-gradient(145deg, #a5f3fc, #67e8f9)', ink: '#083344', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2v17.5c0 1.4-1.1 2.5-2.5 2.5c-1.4 0-2.5-1.1-2.5-2.5V2"/><path d="M8.5 2h7"/><path d="M14.5 16h-5"/></svg> },
-  // Électrocardiogramme
-  { label: 'Rythmes', bg: 'linear-gradient(145deg, #fbcfe8, #f9a8d4)', ink: '#500724', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></svg> },
+  { label: 'Soins', bg: 'linear-gradient(145deg, #1e40af, #1e3a8a)', ink: '#ffffff', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2a2 2 0 0 0 2 2h5v5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2Z"/></svg> },
   // Crayon
-  { label: 'Écriture', bg: 'linear-gradient(145deg, #fde68a, #fcd34d)', ink: '#451a03', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> },
+  { label: 'Écriture', bg: 'linear-gradient(145deg, #fecaca, #fca5a5)', ink: '#7f1d1d', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/></svg> },
   // Cahier
-  { label: 'Révisions', bg: 'linear-gradient(145deg, #ddd6fe, #c4b5fd)', ink: '#2e1065', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9.5 8h5"/><path d="M9.5 12H16"/><path d="M9.5 16H14"/></svg> },
+  { label: 'Révisions', bg: 'linear-gradient(145deg, #dbeafe, #93c5fd)', ink: '#1e3a8a', icon: (c) => <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke={c} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 6h4"/><path d="M2 10h4"/><path d="M2 14h4"/><path d="M2 18h4"/><rect width="16" height="20" x="4" y="2" rx="2"/><path d="M9.5 8h5"/><path d="M9.5 12H16"/><path d="M9.5 16H14"/></svg> },
 ]
 
 const SCREENS = [
@@ -65,28 +61,39 @@ function AppLogoStack({ onChange }) {
   onChangeRef.current = onChange
   const indexRef = useRef(0)
   useEffect(() => {
-    const interval = setInterval(() => {
+    const DUREE = 4000
+    const avancer = () => {
       setLeaving(true)
-      // Notifier dès le début de l'envol : la bascule du titre (840 ms, couleur
+      // Notifier dès le début de l'envol : le flou du titre (840 ms, couleur
       // changée à mi-course = 420 ms) tombe pile quand la nouvelle tuile apparaît
       const next = (indexRef.current + 1) % MODULES.length
       onChangeRef.current?.(MODULES[next])
       setTimeout(() => { indexRef.current = next; setIndex(next); setLeaving(false) }, 420)
-    }, 2400)
-    return () => clearInterval(interval)
+    }
+    // Le premier changement compte depuis l'affichage de la page (rendu serveur) et non depuis le
+    // chargement du JavaScript : sinon la première icône restait 4 s + le temps de chargement.
+    // Arrivée par un lien interne (affichage plus ancien que 4 s) : délai normal.
+    const affichage = performance.getEntriesByName('first-contentful-paint')[0]
+    const ecoule = affichage ? performance.now() - affichage.startTime : DUREE
+    const premier = ecoule < DUREE ? Math.max(600, DUREE - ecoule) : DUREE
+    let interval
+    const depart = setTimeout(() => { avancer(); interval = setInterval(avancer, DUREE) }, premier)
+    return () => { clearTimeout(depart); clearInterval(interval) }
   }, [])
   const mod = MODULES[index]
   return (
-    <div className="relative w-[88px] h-[88px] mx-auto" aria-hidden="true">
-      <div className="absolute inset-0 rounded-[24px] bg-[#ececec]" style={{transform: 'translateY(-14px) scale(0.84)'}}></div>
-      <div className="absolute inset-0 rounded-[24px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-7px) scale(0.92)'}}></div>
+    // Pile agrandie de 15 % puis encore de 10 % (88 → 111 px, icône 44 → 56 px) ; l'icône est agrandie
+    // ici seulement, les mêmes icônes gardent leur taille dans la section des tuiles flottantes
+    <div className="relative w-[111px] h-[111px] mx-auto" aria-hidden="true">
+      <div className="absolute inset-0 rounded-[31px] bg-[#ececec]" style={{transform: 'translateY(-18px) scale(0.84)'}}></div>
+      <div className="absolute inset-0 rounded-[31px] bg-[#f7f7f7] shadow-[0_1px_2px_rgba(0,0,0,0.05)]" style={{transform: 'translateY(-9px) scale(0.92)'}}></div>
       <div
         key={index}
-        className="tuile-entree absolute inset-0 rounded-[24px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)]"
+        className="tuile-entree absolute inset-0 rounded-[31px] flex items-center justify-center shadow-[0_10px_25px_rgba(0,0,0,0.14)] [&>svg]:w-[56px] [&>svg]:h-[56px]"
         style={{
           background: mod.bg,
           transition: leaving ? 'transform 0.42s cubic-bezier(0.55,0.06,0.68,0.19), opacity 0.42s cubic-bezier(0.55,0.06,0.68,0.19)' : 'none',
-          transform: leaving ? 'translateY(-34px) scale(0.9)' : undefined,
+          transform: leaving ? 'translateY(-43px) scale(0.9)' : undefined,
           opacity: leaving ? 0 : undefined,
         }}
       >
@@ -96,8 +103,8 @@ function AppLogoStack({ onChange }) {
   )
 }
 
-// Mot façon horloge à palettes : il bascule sur son axe, disparaît sur la
-// tranche, et se redéploie dans la nouvelle couleur quand `color` change
+// Mot du titre : quand `color` change, il se brouille puis redevient net dans la nouvelle couleur
+// (classe mot-flou du layout). Pas d'animation au premier affichage.
 function FlipWord({ color, children }) {
   const prevRef = useRef(color)
   const [anim, setAnim] = useState({ shown: color, key: 0 })
@@ -105,14 +112,14 @@ function FlipWord({ color, children }) {
     if (color === prevRef.current) return
     const nouvelle = color
     prevRef.current = color
-    // Relancer la bascule en gardant l'ancienne couleur, puis échanger à
-    // mi-course (420 ms) — au même instant que l'arrivée de la nouvelle tuile
+    // Relancer le flou en gardant l'ancienne couleur, puis échanger au plus flou,
+    // à mi-course (420 ms) — au même instant que l'arrivée de la nouvelle tuile
     setAnim(a => ({ shown: a.shown, key: a.key + 1 }))
     const t = setTimeout(() => setAnim(a => ({ ...a, shown: nouvelle })), 420)
     return () => clearTimeout(t)
   }, [color])
   return (
-    <span key={anim.key} className="flip-word" style={{ color: anim.shown, transition: 'none' }}>{children}</span>
+    <span key={anim.key} className={`inline-block ${anim.key ? 'mot-flou' : ''}`} style={{ color: anim.shown, transition: 'none' }}>{children}</span>
   )
 }
 
@@ -490,17 +497,19 @@ export default function MaquettePage() {
       icone: <><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></> },
     { titre: 'Le bac ou une dispense', desc: 'Baccalauréat, équivalence, ou dispense via la VAPP si vous ne l’avez pas.', couleur: '#64748b', fond: '#f1f5f9',
       icone: <><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="m9 15 2 2 4-4"/></> },
-    { titre: 'Le concours FPC', desc: 'Un écrit (maths + rédaction) et un oral. Nous sommes là pour que vous le réussissiez.', couleur: '#64748b', fond: '#f1f5f9', enCours: true,
+    { titre: 'Le concours FPC', desc: 'Un écrit (maths + rédaction) et un oral. Nous sommes là pour que vous le réussissiez.', couleur: '#dc2626', fond: '#fee2e2', enCours: true,
       icone: <><rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></> },
     { titre: 'L’IFSI', desc: 'Intégrez un IFSI grâce à l’obtention du concours et devenez infirmier(ère).', couleur: '#64748b', fond: '#f1f5f9',
       icone: <><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"/><path d="M22 10v6"/><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"/></> },
   ]
   // Sous-parties de l'examen pour la frise chronologique (durées proportionnelles)
   const SOUS_EPREUVES = [
-    { court: 'Calculs', titre: 'Sous-épreuve de calculs', etiquette: '/10', duree: '30 min', bg: '#ef4444', clair: '#fca5a5', desc: 'Calculs de doses, conversions, pourcentages, produits en croix.' },
-    { court: 'Rédaction', titre: 'Sous-épreuve de rédaction', etiquette: '/10', duree: '30 min', bg: '#dc2626', clair: '#fca5a5', desc: 'Analyse ou questions/réponses sur un texte de culture sanitaire et sociale.' },
-    { court: 'Parcours', titre: 'Présentation du parcours', etiquette: '10 min', duree: '10 min', bg: '#3b82f6', clair: '#93c5fd', desc: 'Valorisez votre expérience professionnelle et votre projet.' },
-    { court: 'Jury', titre: 'Entretien avec le jury', etiquette: '10 min', duree: '10 min', bg: '#2563eb', clair: '#93c5fd', desc: 'Vos motivations et votre connaissance du métier IDE.' },
+    // Textes calés sur l'article du blog « Concours FPC 2027 : épreuves, places et nouvelles règles »
+    // (arrêté du 20 février 2026, structure des épreuves inchangée), sur le modèle des cartes de Prépa POLICE
+    { court: 'Calculs', titre: 'Sous-épreuve de calculs simples', etiquette: 'notée sur 10', duree: '30 min', bg: '#ef4444', clair: '#fca5a5', desc: '30 minutes de calculs : les quatre opérations, les conversions d’unités (mg, mL, heures) et la résolution de petits problèmes chiffrés, comme un calcul de dose ou de débit. La partie où l’on gagne le plus de points avec un entraînement régulier.', lien: { href: '/calculs-doses/produit-en-croix', label: 'Les fiches de calcul de doses' } },
+    { court: 'Rédaction', titre: 'Sous-épreuve de rédaction', etiquette: 'notée sur 10', duree: '30 min', bg: '#dc2626', clair: '#fca5a5', desc: '30 minutes pour une rédaction ou des réponses à des questions sur un sujet sanitaire, médico-social ou social. Le jury évalue vos qualités rédactionnelles, votre analyse, votre argumentation et votre capacité à vous projeter dans le métier.', lien: { href: '/blog/sujets-culture-sanitaire-sociale-concours-fpc-2027', label: 'Les thèmes sanitaires à réviser' } },
+    { court: 'Parcours', titre: 'Présentation de votre parcours', etiquette: '10 min', duree: '10 min', bg: '#3b82f6', clair: '#93c5fd', desc: 'L’entretien s’ouvre sur votre présentation, appuyée sur votre dossier de candidature (CV, attestations, lettre exposant votre projet) : votre expérience professionnelle, ce qu’elle vous a appris et pourquoi vous voulez devenir infirmier.', lien: { href: '/blog/dossier-inscription-concours-fpc-infirmier-guide-complet-2026', label: 'Préparer son dossier de candidature' } },
+    { court: 'Jury', titre: 'Échange avec le jury', etiquette: '10 min', duree: '10 min', bg: '#2563eb', clair: '#93c5fd', desc: 'Le jury vous questionne sur votre parcours, votre motivation et votre connaissance du métier infirmier. Il apprécie votre façon d’argumenter et votre capacité à suivre la formation. L’entretien complet est noté sur 20 points.', lien: { href: '/blog/reussir-oral-concours-fpc-infirmier', label: 'Les questions du jury à l’oral' } },
   ]
 
   // Progression de la ligne verticale des 5 catégories (suit le scroll).
@@ -579,7 +588,9 @@ export default function MaquettePage() {
       </section>
 
       {/* ===================== ÉLIGIBILITÉ ===================== */}
-      <section id="eligibilite" className="relative overflow-hidden pt-8 pb-12 sm:pt-10 sm:pb-16 px-5 fade-in-up" style={{background: 'linear-gradient(to bottom, #ffffff 0%, #f7f6f4 90px, #f7f6f4 calc(100% - 140px), #ffffff 100%)', scrollMarginTop: '115px'}}>
+      {/* Le fondu d'apparition est sur le contenu, pas sur la section : son fond et le prolongement
+          de la brume restent visibles d'emblée, sinon le bas du hero s'arrêtait net sur une bande blanche */}
+      <section id="eligibilite" className="relative overflow-hidden pt-8 pb-12 sm:pt-10 sm:pb-16 px-5" style={{background: 'linear-gradient(to bottom, #ffffff 0%, #f7f6f4 90px, #f7f6f4 calc(100% - 140px), #ffffff 100%)', scrollMarginTop: '115px'}}>
         {/* Prolongement de la brume bleu marine du hero (mêmes positions, fondu vers le bas) */}
         <div aria-hidden="true" className="absolute inset-x-0 top-0 h-[340px] pointer-events-none" style={{background: 'radial-gradient(ellipse 46% 324px at 5% -54px, rgba(30,58,138,0.17), transparent 70%), radial-gradient(ellipse 72% 252px at 50% 72px, rgba(30,58,138,0.12), transparent 70%), radial-gradient(ellipse 42% 306px at 96% -27px, rgba(30,58,138,0.16), transparent 70%), radial-gradient(ellipse 38% 216px at 50% -9px, rgba(30,58,138,0.13), transparent 70%)'}}></div>
         {/* Décorations */}
@@ -588,9 +599,9 @@ export default function MaquettePage() {
         <svg aria-hidden="true" className="absolute top-[30%] left-[10%] w-6 h-6 text-black/[0.12] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-10deg)'}}><path d="M12 5v14M5 12h14"/></svg>
         <svg aria-hidden="true" className="absolute bottom-[22%] left-[16%] w-4 h-4 text-red-500/30 hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" style={{transform: 'rotate(18deg)'}}><path d="M12 5v14M5 12h14"/></svg>
         <svg aria-hidden="true" className="absolute top-[62%] right-[9%] w-5 h-5 text-black/[0.1] hidden md:block pointer-events-none" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{transform: 'rotate(-14deg)'}}><path d="M12 5v14M5 12h14"/></svg>
-        <div className="max-w-5xl mx-auto">
+        <div className="max-w-5xl mx-auto fade-in-up">
           <div className="text-center max-w-2xl mx-auto mb-10">
-            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.2]"><span style={{background: 'linear-gradient(100deg, rgba(100,116,139,0) 0.8%, rgba(100,116,139,0.32) 2.8%, rgba(100,116,139,0.25) 50%, rgba(100,116,139,0.32) 97%, rgba(100,116,139,0) 99.2%)', borderRadius: '0.45em 0.2em 0.55em 0.25em', padding: '0.04em 0.22em', margin: '0 -0.06em', WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone'}}>Êtes-vous éligible au concours FPC&nbsp;?</span></h2>
+            <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.2]"><span style={{background: 'linear-gradient(100deg, rgba(239,68,68,0) 0.8%, rgba(239,68,68,0.3) 2.8%, rgba(239,68,68,0.22) 50%, rgba(239,68,68,0.3) 97%, rgba(239,68,68,0) 99.2%)', borderRadius: '0.45em 0.2em 0.55em 0.25em', padding: '0.04em 0.22em', margin: '0 -0.06em', WebkitBoxDecorationBreak: 'clone', boxDecorationBreak: 'clone'}}>Êtes-vous éligible au concours FPC&nbsp;?</span></h2>
             <p className="mt-5 text-lg text-black/55 font-medium leading-relaxed">La voie de la Formation Professionnelle Continue (FPC) est une passerelle spécifique qui permet d&apos;intégrer un IFSI. Quatre étapes vous séparent du diplôme d&apos;infirmier — et vous avez déjà fait une partie du chemin.</p>
           </div>
           {/* Frise du parcours : 4 étapes qui s'allument en cascade au scroll */}
@@ -618,8 +629,8 @@ export default function MaquettePage() {
                     <div className={`relative z-10 w-[56px] h-[56px] md:w-[68px] md:h-[68px] shrink-0 rounded-2xl flex items-center justify-center ring-4 ring-[#f7f6f4] ${e.enCours ? 'micro-beat' : ''}`} style={{background: e.fond, color: e.couleur, boxShadow: `0 10px 24px ${e.couleur}2e`}}>
                       {e.enCours && (
                         <>
-                          <span aria-hidden="true" className="micro-pulse absolute inset-0 rounded-2xl bg-slate-500/25"></span>
-                          <span aria-hidden="true" className="micro-pulse-retard absolute inset-0 rounded-2xl bg-slate-500/15"></span>
+                          <span aria-hidden="true" className="micro-pulse absolute inset-0 rounded-2xl bg-red-500/25"></span>
+                          <span aria-hidden="true" className="micro-pulse-retard absolute inset-0 rounded-2xl bg-red-500/15"></span>
                         </>
                       )}
                       <svg className="w-7 h-7 md:w-8 md:h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{e.icone}</svg>
@@ -706,7 +717,7 @@ export default function MaquettePage() {
       <section id="composition-examen" className="relative overflow-hidden bg-[#0d0d0d] py-20 sm:py-28 px-5 fade-in-up">
         <div aria-hidden="true" className="absolute -top-32 -right-24 w-[32rem] h-[24rem] bg-red-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div aria-hidden="true" className="absolute -bottom-32 -left-24 w-[28rem] h-[20rem] bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="relative max-w-5xl mx-auto">
+        <div className="deroule relative max-w-5xl mx-auto">
           <div className="text-center max-w-2xl mx-auto mb-14">
             <h2 className="text-3xl sm:text-5xl font-extrabold tracking-[-0.03em] leading-[1.05] text-white">Déroulement de l&apos;examen</h2>
             <p className="mt-5 text-lg text-white/55 font-medium leading-relaxed">Vous devez impérativement obtenir un total d&apos;au moins <strong className="font-bold text-white">20 sur 40</strong> aux épreuves pour être admis.</p>
@@ -718,28 +729,61 @@ export default function MaquettePage() {
             .fade-in-up.visible .chrono-seg { animation: chrono-pousse 0.65s cubic-bezier(0.4, 0, 0.2, 1) both; }
             .chrono-detail { opacity: 0; }
             .fade-in-up.visible .chrono-detail { animation: chrono-fondu 0.5s ease-out both; }
+            /* Survol croisé frise ↔ cartes, repris de Prépa POLICE : survoler un segment OU une carte
+               met en avant la paire (la carte monte et prend un liseré et un halo de sa couleur --c,
+               le segment s'éclaire avec un liseré blanc) ; les autres cartes et segments s'estompent.
+               En CSS pur (:has), sans état React. Opacité et décalage des cartes portent sur
+               l'enveloppe (.deroule-carte), pas sur .chrono-detail : son animation d'entrée (fill
+               « both ») les écraserait. Réservé aux écrans à souris (hover: hover). */
+            [data-epreuve] { cursor: default; transition: filter 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease; }
+            .deroule-carte { transition: opacity 0.25s ease, transform 0.25s ease; }
+            .deroule-carte .chrono-detail { transition: background-color 0.25s ease, box-shadow 0.25s ease; }
+            @media (hover: hover) {
+              .deroule:has([data-epreuve]:hover) .deroule-carte,
+              .deroule:has([data-carte]:hover) .deroule-carte { opacity: 0.4; }
+              .deroule:has([data-epreuve]:hover) [data-epreuve],
+              .deroule:has([data-carte]:hover) [data-epreuve] { opacity: 0.35; }
+              ${[0, 1, 2, 3].map((n) => `
+              .deroule:has([data-epreuve="${n}"]:hover) [data-carte="${n}"],
+              .deroule:has([data-carte="${n}"]:hover) [data-carte="${n}"] { opacity: 1; transform: translateY(-6px); }
+              .deroule:has([data-epreuve="${n}"]:hover) [data-carte="${n}"] .chrono-detail,
+              .deroule:has([data-carte="${n}"]:hover) [data-carte="${n}"] .chrono-detail { background-color: rgba(255,255,255,0.08); box-shadow: 0 0 0 2px var(--c), 0 20px 44px -14px var(--c); }
+              .deroule:has([data-epreuve="${n}"]:hover) [data-epreuve="${n}"],
+              .deroule:has([data-carte="${n}"]:hover) [data-epreuve="${n}"] { opacity: 1; filter: brightness(1.15); box-shadow: inset 0 0 0 2px rgba(255,255,255,0.6); }`).join('')}
+            }
+            @media (prefers-reduced-motion: reduce) {
+              .deroule-carte, .deroule-carte .chrono-detail, [data-epreuve] { transition: none; }
+              .deroule:has([data-epreuve]:hover) [data-carte], .deroule:has([data-carte]:hover) [data-carte] { transform: none; }
+            }
           `}</style>
 
           {/* ===== Frise chronologique du jour J (desktop) ===== */}
           <div className="hidden md:block">
-            {/* En-têtes des deux blocs */}
+            {/* En-têtes des deux blocs, chacun calé au-dessus de sa barre, sous-titre sous le titre
+                (comme Prépa POLICE) */}
             <div className="flex gap-6 mb-4">
-              <div className="flex items-center gap-2.5" style={{width: '72%'}}>
-                <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
-                <h3 className="text-lg font-extrabold text-white">Épreuve écrite</h3>
-                <span className="text-sm font-bold text-white/45">1 heure · 20 points</span>
+              <div className="shrink-0" style={{width: '72%'}}>
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-red-500"></span>
+                  <h3 className="text-lg font-extrabold text-white">Épreuve écrite</h3>
+                </div>
+                <p className="pl-5 text-sm font-bold text-white/45">1 heure · notée sur 20</p>
               </div>
-              <div className="flex items-center gap-2.5 flex-1">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
-                <h3 className="text-lg font-extrabold text-white whitespace-nowrap">Épreuve orale</h3>
-                <span className="text-sm font-bold text-white/45 whitespace-nowrap">20 min · 20 points</span>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500 shrink-0"></span>
+                  <h3 className="text-lg font-extrabold text-white whitespace-nowrap">Épreuve orale</h3>
+                </div>
+                <p className="pl-5 text-sm font-bold text-white/45 whitespace-nowrap">20 minutes · notée sur 20</p>
               </div>
             </div>
-            {/* Barre du temps : segments proportionnels aux durées */}
+            {/* Barre du temps : segments proportionnels aux durées. Chaque segment reprend l'arrondi
+                de la barre de son côté extérieur : sinon le liseré blanc du survol était coupé net
+                dans les coins arrondis */}
             <div className="flex items-stretch gap-6">
               <div className="flex h-14 rounded-2xl overflow-hidden ring-1 ring-white/10" style={{width: '72%'}}>
                 {SOUS_EPREUVES.slice(0, 2).map((s, i) => (
-                  <div key={i} className="chrono-seg flex items-center justify-center gap-2.5" style={{width: '50%', background: s.bg, animationDelay: `${0.1 + i * 0.45}s`}}>
+                  <div key={i} data-epreuve={i} className={`chrono-seg flex items-center justify-center gap-2.5 ${i === 0 ? 'rounded-l-2xl' : 'rounded-r-2xl'}`} style={{width: '50%', background: s.bg, animationDelay: `${0.1 + i * 0.45}s`}}>
                     <span className="text-[15px] font-extrabold text-white">{s.court}</span>
                     <span className="text-[11px] font-bold text-white/75">{s.duree}</span>
                   </div>
@@ -747,7 +791,7 @@ export default function MaquettePage() {
               </div>
               <div className="flex h-14 rounded-2xl overflow-hidden ring-1 ring-white/10 flex-1">
                 {SOUS_EPREUVES.slice(2).map((s, i) => (
-                  <div key={i} className="chrono-seg flex items-center justify-center gap-2" style={{width: '50%', background: s.bg, animationDelay: `${1 + i * 0.25}s`}}>
+                  <div key={i} data-epreuve={i + 2} className={`chrono-seg flex items-center justify-center gap-2 ${i === 0 ? 'rounded-l-2xl' : 'rounded-r-2xl'}`} style={{width: '50%', background: s.bg, animationDelay: `${1 + i * 0.25}s`}}>
                     <span className="text-[15px] font-extrabold text-white">{s.court}</span>
                     <span className="text-[11px] font-bold text-white/75">{s.duree}</span>
                   </div>
@@ -769,42 +813,50 @@ export default function MaquettePage() {
             </div>
           </div>
 
-          {/* ===== Version mobile : frise verticale ===== */}
-          <div className="md:hidden space-y-3">
+          {/* Détail des 4 temps forts : un seul jeu de cartes pour mobile et desktop, comme Prépa POLICE
+              (pas de textes en double dans la page). Mobile : intertitre de bloc et pastille de durée à
+              gauche ; desktop : 4 colonnes sous la frise, étiquette sur la ligne du trait de couleur,
+              lien en pied de carte aligné d'une carte à l'autre. */}
+          <div className="grid md:grid-cols-4 gap-3 md:gap-4 md:mt-7">
             {SOUS_EPREUVES.map((s, i) => (
-              <div key={i}>
+              <div key={i} data-carte={i} className={`deroule-carte ${i === 2 ? 'mt-2 md:mt-0' : ''}`} style={{'--c': s.bg}}>
                 {(i === 0 || i === 2) && (
-                  <div className="flex items-center gap-2.5 mb-3 mt-5 first:mt-0">
+                  <p className="md:hidden flex items-center gap-2.5 mb-3">
                     <span className="w-2.5 h-2.5 rounded-full" style={{background: s.bg}}></span>
-                    <h3 className="text-base font-extrabold text-white">{i === 0 ? 'Épreuve écrite' : 'Épreuve orale'}</h3>
-                    <span className="text-[13px] font-bold text-white/45">{i === 0 ? '1 heure · 20 points' : '20 min · 20 points'}</span>
-                  </div>
+                    <span className="text-base font-extrabold text-white">{i === 0 ? 'Épreuve écrite' : 'Épreuve orale'}</span>
+                    <span className="text-[13px] font-bold text-white/45">{i === 0 ? '1 heure · notée sur 20' : '20 minutes · notée sur 20'}</span>
+                  </p>
                 )}
-                <div className="flex items-stretch gap-3">
-                  <div className="w-[64px] shrink-0 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white" style={{background: s.bg}}>{s.duree}</div>
-                  <div className="flex-1 bg-white/[0.04] ring-1 ring-white/[0.06] rounded-xl px-4 py-3">
-                    <p className="font-bold text-white text-[14px]">{s.titre} <span className="ml-1 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md align-middle" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span></p>
-                    <p className="text-[13px] text-white/55 font-medium leading-relaxed mt-0.5">{s.desc}</p>
+                <div className="flex items-stretch gap-3 md:h-full">
+                  <div className="md:hidden w-[64px] shrink-0 rounded-xl flex items-center justify-center text-[13px] font-extrabold text-white" style={{background: s.bg}}>{s.duree}</div>
+                  <div className="chrono-detail flex-1 md:flex md:flex-col bg-white/[0.04] ring-1 ring-white/[0.06] rounded-xl md:rounded-2xl px-4 py-3 md:p-5" style={{animationDelay: `${0.35 + i * 0.35}s`}}>
+                    <div className="hidden md:flex items-center gap-3 mb-4">
+                      <div className="h-1 w-9 rounded-full" style={{background: s.bg}}></div>
+                      <span className="text-[11px] font-extrabold px-1.5 py-0.5 rounded-md whitespace-nowrap" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span>
+                    </div>
+                    <p className="font-bold text-white text-[14px] md:text-[15px] md:leading-snug">{s.titre} <span className="md:hidden ml-1 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md align-middle whitespace-nowrap" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span></p>
+                    <p className="text-[13px] md:text-sm text-white/55 font-medium leading-relaxed mt-0.5 md:mt-2">{s.desc}</p>
+                    {/* Pied poussé en bas et haut de deux lignes : les liens tombent à la même hauteur
+                        d'une carte à l'autre ; la flèche reste collée au dernier mot */}
+                    <div className="md:mt-auto md:pt-4 md:min-h-[3.75rem]">
+                      <a href={s.lien.href} className="mt-2.5 md:mt-0 inline-block align-top text-[13px] font-bold leading-snug hover:underline underline-offset-4" style={{color: s.clair}}>
+                        {s.lien.label.split(' ').slice(0, -1).join(' ')}{' '}
+                        <span className="whitespace-nowrap">
+                          {s.lien.label.split(' ').slice(-1)[0]}
+                          <svg aria-hidden="true" className="inline-block w-3.5 h-3.5 ml-1 -mt-0.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14m-7-7 7 7-7 7"/></svg>
+                        </span>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
             ))}
           </div>
 
-          {/* Détails des 4 temps forts (desktop, alignés sous la frise) */}
-          <div className="hidden md:grid grid-cols-4 gap-4 mt-7">
-            {SOUS_EPREUVES.map((s, i) => (
-              <div key={i} className="chrono-detail bg-white/[0.04] ring-1 ring-white/[0.06] rounded-2xl p-5" style={{animationDelay: `${0.35 + i * 0.35}s`}}>
-                <div className="h-1 w-9 rounded-full mb-4" style={{background: s.bg}}></div>
-                <p className="font-bold text-white text-[15px] leading-snug">{s.titre} <span className="ml-1 text-[11px] font-extrabold px-1.5 py-0.5 rounded-md align-middle whitespace-nowrap" style={{background: `${s.bg}33`, color: s.clair}}>{s.etiquette}</span></p>
-                <p className="text-sm text-white/55 font-medium leading-relaxed mt-2">{s.desc}</p>
-              </div>
-            ))}
-          </div>
-
           {/* Seuil éliminatoire commun */}
           <div className="chrono-detail mt-8 flex items-center justify-center gap-2.5" style={{animationDelay: '1.6s'}}>
-            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            {/* Extrémités arrondies sur tout le SVG : sans elles, le point du « ! » (trait de 0,01) était invisible */}
+            <svg className="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
             <p className="text-sm text-red-200/90 font-medium">Une note en dessous de <strong className="font-bold text-white">8/20</strong> à l&apos;une ou l&apos;autre des épreuves est <strong className="font-bold text-white">éliminatoire</strong>.</p>
           </div>
         </div>

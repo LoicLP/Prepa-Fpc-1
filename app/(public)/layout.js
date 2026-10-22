@@ -76,14 +76,13 @@ export default function LayoutPublic({ children }) {
         @keyframes tile-float { 0%, 100% { transform: translateY(-7px); } 50% { transform: translateY(7px); } }
         .tile-float { animation: tile-float 5s ease-in-out infinite; }
 
-        /* Mot du titre façon horloge à palettes : bascule, disparaît, revient recoloré */
-        .flip-word { display: inline-block; animation: word-flip 0.84s cubic-bezier(0.45,0,0.25,1) forwards; }
-        @keyframes word-flip {
-          0%   { transform: perspective(600px) rotateX(0deg); }
-          49.9%{ transform: perspective(600px) rotateX(-90deg); }
-          50.1%{ transform: perspective(600px) rotateX(90deg); }
-          100% { transform: perspective(600px) rotateX(0deg); }
+        /* Mot du titre : il se brouille, change de couleur au plus flou (mi-course, 420 ms), puis redevient net */
+        .mot-flou { animation: mot-flou 0.84s ease-in-out both; }
+        @keyframes mot-flou {
+          0%, 100% { filter: blur(0); opacity: 1; }
+          50%      { filter: blur(7px); opacity: 0.25; }
         }
+        @media (prefers-reduced-motion: reduce) { .mot-flou { animation: none; } }
 
         /* Étapes du quiz : glissement latéral */
         @keyframes slide-in { from { opacity: 0; transform: translateX(42px); } to { opacity: 1; transform: translateX(0); } }

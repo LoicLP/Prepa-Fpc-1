@@ -1,6 +1,7 @@
 import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { accesPremiumStripe, enregistrerAcces, finDePeriode, idAbonnementFacture } from '@/lib/abonnement-stripe'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
 const supabaseAdmin = createClient(
@@ -84,10 +85,13 @@ export async function POST(req) {
         break
       }
 
-      // Abonnement mensuel : premier paiement ou renouvellement
+      // Abonnement mensuel : premier paiement ou renouvellement.
+      // L'abonnement est lu aux deux emplacements possibles selon la version d'API Stripe : avec la
+      // seule lecture d'invoice.subscription (absent depuis l'API 2025-03-31), les renouvellements
+      // n'étaient pas enregistrés, l'abonné payant passait « expiré » et pouvait payer une seconde fois.
       case 'invoice.paid': {
         const invoice = event.data.object
-        const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
+        const subId = idAbonnementFacture(invoice)
         if (!subId) break
 
         const subscription = await stripe.subscriptions.retrieve(subId)
@@ -99,8 +103,9 @@ export async function POST(req) {
           break
         }
 
-        const endDate = new Date()
-        endDate.setMonth(endDate.getMonth() + 1)
+        // Fin de la période payée d'après Stripe ; à défaut, un mois
+        let endDate = finDePeriode(subscription)
+        if (!endDate) { endDate = new Date(); endDate.setMonth(endDate.getMonth() + 1) }
 
         const { error } = await supabaseAdmin.from('subscriptions').upsert({
           user_id: userId,
@@ -114,9 +119,21 @@ export async function POST(req) {
         break
       }
 
-      // Annulation abonnement
+      // Annulation abonnement. Si un autre accès Prépa FPC court encore pour ce compte (doublon dont on
+      // résilie un exemplaire, abonnement annuel…), la ligne bascule dessus au lieu de couper l'accès.
       case 'customer.subscription.deleted': {
         const subscription = event.data.object
+        if (subscription.metadata?.site) break
+        const userId = subscription.metadata?.userId
+        if (userId) {
+          const client = typeof subscription.customer === 'string' ? await stripe.customers.retrieve(subscription.customer) : subscription.customer
+          const autre = await accesPremiumStripe(stripe, { userId, email: client?.email || null, exclure: subscription.id })
+          if (autre) {
+            const { error } = await enregistrerAcces(supabaseAdmin, userId, autre)
+            if (error) console.error('Supabase upsert error (autre abonnement après résiliation):', error)
+            break
+          }
+        }
         await supabaseAdmin.from('subscriptions').update({
           status: 'canceled',
         }).eq('stripe_subscription_id', subscription.id)
@@ -126,7 +143,7 @@ export async function POST(req) {
       // Paiement échoué
       case 'invoice.payment_failed': {
         const invoice = event.data.object
-        const subId = typeof invoice.subscription === 'string' ? invoice.subscription : invoice.subscription?.id
+        const subId = idAbonnementFacture(invoice)
         if (subId) {
           await supabaseAdmin.from('subscriptions').update({
             status: 'past_due',

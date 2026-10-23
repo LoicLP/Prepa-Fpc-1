@@ -96,6 +96,7 @@ function DashboardContent() {
   const [subscriptionPlan, setSubscriptionPlan] = useState(null)
   const [subscriptionEnd, setSubscriptionEnd] = useState(null)
   const [checkoutLoading, setCheckoutLoading] = useState(false)
+  const [checkoutMsg, setCheckoutMsg] = useState('')
   // Ligne sous « Bonjour … » : avance d'un cran toutes les 10 s (voir le calcul des emplacements plus bas)
   const [tipTick, setTipTick] = useState(0)
   // Les astuces reprennent là où la visite précédente s'est arrêtée (sinon au hasard)
@@ -199,11 +200,20 @@ function DashboardContent() {
         headers: await entetesAuth({ 'Content-Type': 'application/json' }),
         body: JSON.stringify({ plan }),
       })
-      const { url, error } = await res.json()
+      const { url, error, dejaAbonne } = await res.json()
+      // Abonnement déjà actif (refusé par le serveur, qui a remis l'accès à jour) : message, puis
+      // rechargement du tableau de bord pour afficher l'accès Premium
+      if (dejaAbonne) {
+        setCheckoutMsg(error)
+        setCheckoutLoading(false)
+        setTimeout(() => window.location.assign('/dashboard'), 3000)
+        return
+      }
       if (error) throw new Error(error)
       window.location.href = url
     } catch (err) {
       console.error('Checkout error:', err)
+      setCheckoutMsg(err.message || 'Le paiement n\'a pas pu démarrer. Réessayez dans quelques instants.')
       setCheckoutLoading(false)
     }
   }
@@ -1520,6 +1530,7 @@ function DashboardContent() {
             <div>
               <h1 className="text-2xl sm:text-3xl font-black text-slate-900 mb-1">Devenir Premium</h1>
               <p className="text-slate-500 font-medium text-sm mb-8">Choisissez la formule qui s'adapte le plus à votre besoin.</p>
+              {checkoutMsg && <div role="alert" className="mb-6 max-w-[90%] bg-amber-50 border border-amber-200 text-amber-900 font-bold text-sm px-4 py-3 rounded-xl">{checkoutMsg}</div>}
               <div className="grid md:grid-cols-3 gap-6 lg:gap-8 max-w-[90%]">
 
                 {/* Essai Gratuit */}

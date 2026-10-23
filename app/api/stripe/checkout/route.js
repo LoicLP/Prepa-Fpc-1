@@ -1,6 +1,10 @@
 import Stripe from 'stripe'
 import { NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 import { utilisateurConnecte } from '@/lib/acces'
+import { accesPremiumStripe, enregistrerAcces } from '@/lib/abonnement-stripe'
+
+const dejaAbonne = () => NextResponse.json({ error: 'Vous avez déjà un abonnement Premium actif : aucun nouveau paiement n\'est nécessaire.', dejaAbonne: true }, { status: 409 })
 
 // Seuls les deux prix de Prépa FPC sont acceptés, choisis ici côté serveur.
 // Avant, le navigateur envoyait l'identifiant du prix : tout autre prix du compte Stripe (partagé avec
@@ -30,6 +34,23 @@ export async function POST(req) {
 
     // Client Stripe créé après les contrôles d'accès
     const stripe = new Stripe(process.env.STRIPE_SECRET_KEY)
+
+    // Un seul abonnement par compte (un utilisateur a payé deux mensuels en octobre 2026) : refus si un
+    // accès Premium court déjà, d'après Supabase ou, à défaut, d'après Stripe lui-même
+    const { data: ligne } = await acces.supabase.from('subscriptions').select('current_period_end').eq('user_id', userId).eq('status', 'active').maybeSingle()
+    if (ligne && new Date(ligne.current_period_end) > new Date()) return dejaAbonne()
+    const existant = await accesPremiumStripe(stripe, { userId, email: userEmail })
+    if (existant) {
+      // Supabase était en retard sur Stripe : la ligne est remise à jour pour rendre l'accès tout de suite
+      try {
+        const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY)
+        const { error } = await enregistrerAcces(admin, userId, existant)
+        if (error) console.error('Resynchronisation de l\'abonnement impossible :', error)
+      } catch (err) {
+        console.error('Resynchronisation de l\'abonnement impossible :', err)
+      }
+      return dejaAbonne()
+    }
 
     // Créer ou récupérer un customer Stripe avec pays France pour la TVA
     const existingCustomers = await stripe.customers.list({ email: userEmail, limit: 1 })

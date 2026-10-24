@@ -84,6 +84,23 @@ export async function POST(request) {
         }))
       }
 
+      // Barème ramené à 10 points : le modèle ne respecte pas toujours le total demandé (12 ou 15 points
+      // pour un sujet « sur 10 »), ce qui donnait des notes au-dessus de 10/10 à la correction.
+      // Points au quart de point ; l'écart d'arrondi est réparti par quarts de point en partant de la fin.
+      const questions = sujetData.exercices.flatMap(ex => ex.questions)
+      if (questions.length) {
+        const somme = questions.reduce((s, q) => s + (Number(q.points) || 0), 0)
+        questions.forEach(q => { q.points = Math.max(0.25, somme > 0 ? Math.round((Number(q.points) || 0) * 10 / somme * 4) / 4 : Math.round(10 / questions.length * 4) / 4) })
+        let quarts = Math.round((10 - questions.reduce((s, q) => s + q.points, 0)) * 4)
+        for (let n = 0; quarts !== 0 && n < questions.length * 40; n++) {
+          const q = questions[questions.length - 1 - (n % questions.length)]
+          const pas = quarts > 0 ? 0.25 : -0.25
+          if (q.points + pas > 0) { q.points += pas; quarts -= Math.sign(quarts) }
+        }
+        sujetData.exercices.forEach(ex => { ex.points = ex.questions.reduce((s, q) => s + q.points, 0) })
+      }
+      sujetData.noteMax = 10
+
       return NextResponse.json({ sujet: sujetData, brief: brief.meta })
     }
 
@@ -146,22 +163,40 @@ Tu dois répondre UNIQUEMENT au format JSON strict :
         return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
       }
       const correction = JSON.parse(jsonMatch[0])
-      correction.note = typeof correction.note === 'number' ? correction.note : 0
-      correction.noteMax = 10
       correction.appreciation = correction.appreciation || ''
       correction.points_forts = Array.isArray(correction.points_forts) ? correction.points_forts : []
       correction.points_ameliorer = Array.isArray(correction.points_ameliorer) ? correction.points_ameliorer : []
       correction.conseil = correction.conseil || ''
-      correction.corrections = (correction.corrections || []).map(c => ({
-        id: c.id || '',
-        question: c.question || '',
-        reponse_candidat: c.reponse_candidat || '',
-        reponse_attendue: c.reponse_attendue || '',
-        correct: c.correct === true || c.correct === 'true' ? true : c.correct === 'partiel' ? 'partiel' : false,
-        points_obtenus: typeof c.points_obtenus === 'number' ? c.points_obtenus : 0,
-        points_max: typeof c.points_max === 'number' ? c.points_max : 0,
-        explication: c.explication || ''
-      }))
+
+      // Points de chaque question bornés par le barème du sujet (et non par celui que le modèle réécrit)
+      const bareme = new Map()
+      for (const ex of exercices) for (const q of ex.questions || []) bareme.set(String(q.id), Number(q.points) || 0)
+      const vues = new Set()
+      correction.corrections = (correction.corrections || []).map(c => {
+        const pointsMax = bareme.get(String(c.id)) ?? (typeof c.points_max === 'number' ? c.points_max : 0)
+        const obtenus = typeof c.points_obtenus === 'number' ? c.points_obtenus : 0
+        return {
+          id: c.id || '',
+          question: c.question || '',
+          reponse_candidat: c.reponse_candidat || '',
+          reponse_attendue: c.reponse_attendue || '',
+          correct: c.correct === true || c.correct === 'true' ? true : c.correct === 'partiel' ? 'partiel' : false,
+          points_obtenus: Math.min(pointsMax, Math.max(0, obtenus)),
+          points_max: pointsMax,
+          explication: c.explication || ''
+        }
+      }).filter(c => { const cle = String(c.id); if (vues.has(cle)) return false; vues.add(cle); return true })
+
+      // Note calculée ici, sur 10 : total des points obtenus rapporté au total du barème du sujet
+      // (toutes ses questions, même celles que le modèle aurait oublié de corriger). Avant, la note du
+      // modèle était reprise telle quelle et dépassait régulièrement 10/10.
+      const totalSujet = [...bareme.values()].reduce((s, p) => s + p, 0)
+      const totalMax = totalSujet > 0 ? totalSujet : correction.corrections.reduce((s, c) => s + c.points_max, 0)
+      const totalObtenu = correction.corrections.reduce((s, c) => s + c.points_obtenus, 0)
+      const noteModele = typeof correction.note === 'number' ? correction.note : 0
+      const note = totalMax > 0 ? totalObtenu / totalMax * 10 : noteModele
+      correction.note = Math.min(10, Math.max(0, Math.round(note * 10) / 10))
+      correction.noteMax = 10
       return NextResponse.json({ correction })
     }
 

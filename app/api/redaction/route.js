@@ -131,9 +131,19 @@ Tu dois répondre UNIQUEMENT au format JSON strict, sans aucun texte avant ou ap
       const correction = JSON.parse(jsonMatch[0])
       const nbFautes = correction.fautes?.length || 0
       const penalite = nbFautes * 0.25
-      const noteFond = correction.note_fond ?? correction.note_finale ?? 10
+      // Note de fond ramenée sur 10 et bornée : le modèle notait parfois sur un autre total (sur 20) ou
+      // au-dessus du maximum, d'où des notes au-dessus de 10/10. Sans note exploitable, on redemande
+      // une correction plutôt que d'accorder 10/10 par défaut comme avant.
+      const fondMax = Number(correction.note_fond_max) > 0 ? Number(correction.note_fond_max) : 10
+      const brute = Number(correction.note_fond ?? correction.note_finale)
+      if (!Number.isFinite(brute)) {
+        return NextResponse.json({ error: 'Erreur de format. Réessayez.' }, { status: 500 })
+      }
+      const noteFond = Math.min(10, Math.max(0, brute * 10 / fondMax))
+      correction.note_fond = Math.round(noteFond * 10) / 10
+      correction.note_fond_max = 10
       correction.penalite_orthographe = -penalite
-      correction.note_finale = Math.max(0, Math.round((noteFond - penalite) * 10) / 10)
+      correction.note_finale = Math.min(10, Math.max(0, Math.round((noteFond - penalite) * 10) / 10))
       correction.noteMax = 10
       correction.note = correction.note_finale
       return NextResponse.json({ correction })
